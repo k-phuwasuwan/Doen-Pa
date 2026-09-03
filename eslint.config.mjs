@@ -13,6 +13,12 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      "css/no-at-rule": "off",
+      "css/no-invalid-at-rule": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

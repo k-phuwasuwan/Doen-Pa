@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F1E8;
+  --foreground: #2D5F4F;
+  --glass-blur-desktop: 10px;
+  --glass-blur-mobile: 8px;
+  --glass-blur: var(--glass-blur-desktop);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-forest: #2D5F4F;
+  --color-beige: #D4C5B0;
+  --color-gold: #FFB347;
+  --color-slate: #7A8FA3;
+  --color-cream: #F5F1E8;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --shadow-glass: 0 8px 24px rgba(45, 95, 79, 0.12);
+  --shadow-glass-md: 0 12px 32px rgba(45, 95, 79, 0.15);
+  --shadow-glass-lg: 0 20px 48px rgba(45, 95, 79, 0.2);
+  --shadow-glow: 0 4px 16px rgba(45, 95, 79, 0.08);
+  --animate-glass-in: glass-slide-up 0.5s ease-out;
+  --animate-soft-scale: soft-scale 0.4s ease-out;
 }
 
-@media (prefers-color-scheme: dark) {
+@keyframes glass-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 767px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --glass-blur: var(--glass-blur-mobile);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.card-glass {
+  backdrop-filter: blur(var(--glass-blur));
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(45, 95, 79, 0.12);
+}
+
+.glass-button {
+  backdrop-filter: blur(8px);
+  background: rgba(45, 95, 79, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+}
+
+.glass-input {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.80);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+}
+
+.nav-glass {
+  backdrop-filter: blur(8px);
+  background: rgba(245, 241, 232, 0.90);
+  border-bottom: 1px solid rgba(212, 197, 176, 0.3);
 }

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { SearchBar } from "@/components/search/SearchBar";
 import { FilterSection } from "@/components/search/FilterSection";
-import { PlaceList, PlaceListSkeleton } from "@/components/search/PlaceList";
+import { PlaceList } from "@/components/search/PlaceList";
 import { placeService } from "@/services/place.service";
 import type { PlaceType } from "@/types";
 

@@ -45,4 +45,3 @@ export function PlaceActions({ placeId, hasRecord }: PlaceActionsProps) {
     </div>
   );
 }
-

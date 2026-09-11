@@ -1,0 +1,44 @@
+import Image from "next/image";
+import Link from "next/link";
+import { Images } from "lucide-react";
+import type { Place } from "@/types";
+
+interface GalleryPost {
+  photo: string;
+  place: Place;
+  recordId: string;
+}
+
+interface PostGalleryProps {
+  posts: GalleryPost[];
+}
+
+export function PostGallery({ posts }: PostGalleryProps) {
+  return (
+    <section className="card-glass p-5 sm:p-6" aria-labelledby="gallery-heading">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h2 id="gallery-heading" className="text-xl font-bold text-forest">Post Gallery</h2>
+          <p className="mt-1 text-sm text-slate">รูปภาพจากการเดินทางของคุณ</p>
+        </div>
+        <span className="text-sm text-slate">{posts.length} รูป</span>
+      </div>
+      {posts.length > 0 ? (
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {posts.map((post) => (
+            <Link key={`${post.recordId}-${post.photo}`} href={`/places/${post.place.id}`} className="group relative aspect-square overflow-hidden rounded-xl bg-beige/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest">
+              <Image src={post.photo} alt={`ภาพความทรงจำจาก ${post.place.name}`} fill className="object-cover transition duration-300 group-hover:scale-105" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" />
+              <span className="absolute inset-x-0 bottom-0 truncate bg-forest/75 px-3 py-2 text-xs font-medium text-white opacity-0 transition group-hover:opacity-100">{post.place.name}</span>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="flex min-h-56 flex-col items-center justify-center text-center">
+          <Images className="h-10 w-10 text-beige" aria-hidden="true" />
+          <p className="mt-3 font-medium text-forest">ยังไม่มีรูปภาพในแกลเลอรี</p>
+          <p className="mt-1 text-sm text-slate">เพิ่มรูปภาพเมื่อบันทึกการเดินทางครั้งถัดไป</p>
+        </div>
+      )}
+    </section>
+  );
+}

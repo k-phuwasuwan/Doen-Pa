@@ -54,7 +54,7 @@ export default function PassportPage() {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-[1280px] px-4 py-8 sm:px-6 lg:px-8">
+    <main className="mx-auto min-h-screen max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <PassportHeader
         user={user}
         placeCount={entries.length}
@@ -62,7 +62,7 @@ export default function PassportPage() {
         photoCount={photoCount}
       />
 
-      <section className="mt-8" aria-labelledby="records-heading">
+      <section className="mt-6 sm:mt-8" aria-labelledby="records-heading">
         <div className="mb-4 flex items-end justify-between gap-4">
           <div>
             <h2 id="records-heading" className="text-2xl font-bold text-forest">บันทึกการเดินทาง</h2>

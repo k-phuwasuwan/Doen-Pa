@@ -22,10 +22,10 @@ export function PlaceActions({ placeId, hasRecord }: PlaceActionsProps) {
   };
 
   return (
-    <div className="flex gap-3">
+    <div className="flex items-center gap-3">
       <button
         onClick={handleAddRecord}
-        className="glass-button flex items-center gap-2 px-5 py-2.5 text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2"
+        className="glass-button flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 sm:flex-none sm:px-5"
       >
         <PlusCircle className="w-4 h-4" />
         {hasRecord ? "เพิ่มบันทึกใหม่" : "+ เพิ่มบันทึก"}
@@ -34,7 +34,7 @@ export function PlaceActions({ placeId, hasRecord }: PlaceActionsProps) {
       <button
         onClick={handleBookmark}
         aria-label={bookmarked ? "ยกเลิกบุ๊กมาร์ก" : "บุ๊กมาร์กสถานที่นี้"}
-        className={`flex items-center justify-center w-10 h-10 rounded-lg border transition-all duration-150 active:scale-95 focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 ${
+        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border transition-all duration-150 active:scale-95 focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 ${
           bookmarked
             ? "bg-gold/10 border-gold/40 text-gold"
             : "bg-white/70 border-beige/60 text-slate hover:border-forest/30 hover:text-forest"

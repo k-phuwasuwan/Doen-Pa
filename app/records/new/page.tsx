@@ -25,7 +25,7 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
+    <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
       {/* Back link */}
       <Link
         href={`/places/${place.id}`}
@@ -37,7 +37,7 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
 
       {/* Centered card */}
       <div className="max-w-xl mx-auto">
-        <div className="card-glass p-6 md:p-8">
+        <div className="card-glass p-4 sm:p-6 md:p-8">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-forest">บันทึกการเดินทาง</h1>
             <p className="text-slate text-sm mt-1">

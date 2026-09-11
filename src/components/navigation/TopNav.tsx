@@ -43,7 +43,7 @@ export function TopNav() {
       </div>
 
       {/* Mobile Hamburger */}
-      <button className="md:hidden text-forest" aria-label="Menu">
+      <button className="flex h-11 w-11 items-center justify-center text-forest md:hidden" aria-label="เปิดเมนู">
         <Menu className="w-6 h-6" />
       </button>
     </nav>

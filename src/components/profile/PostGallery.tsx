@@ -28,7 +28,7 @@ export function PostGallery({ posts }: PostGalleryProps) {
           {posts.map((post) => (
             <Link key={`${post.recordId}-${post.photo}`} href={`/places/${post.place.id}`} className="group relative aspect-square overflow-hidden rounded-xl bg-beige/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest">
               <Image src={post.photo} alt={`ภาพความทรงจำจาก ${post.place.name}`} fill className="object-cover transition duration-300 group-hover:scale-105" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" />
-              <span className="absolute inset-x-0 bottom-0 truncate bg-forest/75 px-3 py-2 text-xs font-medium text-white opacity-0 transition group-hover:opacity-100">{post.place.name}</span>
+              <span className="absolute inset-x-0 bottom-0 truncate bg-forest/75 px-3 py-2 text-xs font-medium text-white sm:opacity-0 sm:transition sm:group-hover:opacity-100">{post.place.name}</span>
             </Link>
           ))}
         </div>

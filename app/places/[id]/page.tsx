@@ -38,9 +38,9 @@ export default async function PlacePage({ params }: PlacePageProps) {
     ) ?? null;
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
+    <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
       {/* Desktop: 2-col grid | Mobile: stacked */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-12">
         {/* Left column — Hero image */}
         <div className="lg:sticky lg:top-24">
           <PlaceHero place={place} />

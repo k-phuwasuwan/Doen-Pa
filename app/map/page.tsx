@@ -30,8 +30,8 @@ export default function MapPage() {
   }));
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 h-[calc(100vh-4rem)]">
-      <div className="relative h-full flex flex-col lg:flex-row gap-6">
+    <div className="mx-auto max-w-[1280px] px-4 py-4 sm:px-6 sm:py-8 lg:h-[calc(100vh-4rem)]">
+      <div className="relative flex flex-col gap-4 lg:h-full lg:flex-row lg:gap-6">
 
         {/* Badge overlay — top-center */}
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] pointer-events-none lg:left-auto lg:translate-x-0 lg:right-80">
@@ -42,7 +42,7 @@ export default function MapPage() {
         </div>
 
         {/* Map — takes all available height */}
-        <div className="flex-1 relative h-[60vh] lg:h-full">
+        <div className="relative h-[55vh] min-h-[360px] flex-1 lg:h-full">
           <DynamicThailandMap visitedProvinces={visitedProvinces} />
         </div>
 

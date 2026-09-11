@@ -30,6 +30,7 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
               alt={`ภาพความทรงจำจาก ${place.name}`}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-slate">ไม่มีรูปภาพ</div>

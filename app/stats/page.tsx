@@ -13,7 +13,7 @@ export default function StatsPage() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <StatsHero stats={stats} />
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">

@@ -40,14 +40,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
+    <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
       {/* Search Header Area */}
-      <div className="card-glass p-6 md:p-8 mb-8 relative overflow-hidden">
+      <div className="card-glass relative mb-6 overflow-hidden p-4 sm:mb-8 sm:p-6 md:p-8">
         <div className="relative z-10">
           <h1 className="text-2xl md:text-3xl font-bold text-forest mb-2">
             สำรวจเส้นทางใหม่
           </h1>
-          <p className="text-slate mb-6">
+          <p className="mb-5 text-slate sm:mb-6">
             ค้นหาสถานที่เดินป่าที่ใช่ และบันทึกเรื่องราวของคุณ
           </p>
           <div className="max-w-xl">
@@ -59,7 +59,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </div>
 
       {/* Filter Section */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <Suspense fallback={<div className="h-[96px] w-full bg-white/20 animate-pulse rounded-2xl" />}>
           <FilterSection currentType={type} />
         </Suspense>

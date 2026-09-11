@@ -36,9 +36,13 @@ export default function ThailandMap({ visitedProvinces }: ThailandMapProps) {
 
     mapRef.current = map;
 
+    let isMounted = true;
+
     fetch("/data/thailand.json")
       .then((res) => res.json())
       .then((geojson: GeoJsonObject) => {
+        if (!isMounted) return;
+
         L.geoJSON(geojson, {
           style: (feature?: Feature) => {
             const name = (feature?.properties as { name: string } | undefined)?.name ?? "";
@@ -66,6 +70,7 @@ export default function ThailandMap({ visitedProvinces }: ThailandMapProps) {
       });
 
     return () => {
+      isMounted = false;
       map.remove();
       mapRef.current = null;
     };

@@ -26,7 +26,7 @@ export default function PassportPage() {
       return {
         user: null,
         entries: [],
-        error: "ไม่สามารถโหลดแพสพอร์ตได้ กรุณาลองใหม่อีกครั้ง",
+        error: "ไม่สามารถโหลดพาสปอร์ตได้ กรุณาลองใหม่อีกครั้ง",
       };
     }
   });
@@ -85,7 +85,7 @@ export default function PassportPage() {
             {entries.length === 0 ? <BookOpen className="h-7 w-7" aria-hidden="true" /> : <Compass className="h-7 w-7" aria-hidden="true" />}
           </div>
           <h3 className="mt-4 text-xl font-bold text-forest">
-            {entries.length === 0 ? "แพสพอร์ตของคุณยังว่างเปล่า" : "ไม่พบบันทึกในหมวดนี้"}
+            {entries.length === 0 ? "พาสปอร์ตของคุณยังว่างเปล่า" : "ไม่พบบันทึกในหมวดนี้"}
           </h3>
           <p className="mt-2 max-w-md text-sm text-slate">
             {entries.length === 0 ? "เริ่มต้นด้วยการเพิ่มสถานที่ที่คุณเคยไป" : "ลองเลือกประเภทสถานที่อื่นเพื่อดูบันทึกของคุณ"}

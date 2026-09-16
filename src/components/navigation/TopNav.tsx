@@ -10,7 +10,7 @@ export function TopNav() {
   const links = [
     { href: "/search", label: "ค้นหา" },
     { href: "/map", label: "แผนที่" },
-    { href: "/passport", label: "แพสพอร์ต" },
+    { href: "/passport", label: "พาสปอร์ต" },
     { href: "/stats", label: "สถิติ" },
     { href: "/profile", label: "โปรไฟล์" },
   ];

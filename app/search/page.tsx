@@ -1,6 +1,5 @@
-import { Suspense } from "react";
-import { SearchBar } from "@/components/search/SearchBar";
 import { FilterSection } from "@/components/search/FilterSection";
+import { SearchHero } from "@/components/search/SearchHero";
 import { PlaceList } from "@/components/search/PlaceList";
 import { placeService } from "@/services/place.service";
 import type { PlaceType } from "@/types";
@@ -40,37 +39,25 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
-      {/* Search Header Area */}
-      <div className="card-glass relative mb-6 overflow-hidden p-4 sm:mb-8 sm:p-6 md:p-8">
-        <div className="relative z-10 flex flex-col items-center text-center">
-          <h1 className="mb-2 text-2xl font-bold text-forest md:text-3xl">
-            ค้นหาอุทยานแห่งชาติ
-          </h1>
-          <div className="w-full max-w-xl">
-            <Suspense fallback={<div className="h-[48px] glass-input animate-pulse" />}>
-              <SearchBar initialQuery={query} />
-            </Suspense>
-          </div>
-        </div>
-      </div>
+    <>
+      <SearchHero initialQuery={query} />
 
-      {/* Filter Section */}
-      <div className="mb-6 sm:mb-8">
-        <Suspense fallback={<div className="h-[96px] w-full bg-white/20 animate-pulse rounded-2xl" />}>
+      <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
+        {/* Filter Section */}
+        <div className="mb-6 sm:mb-8">
           <FilterSection currentType={type} />
-        </Suspense>
-      </div>
+        </div>
 
-      {/* Results */}
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-forest">
-          {query ? `ผลการค้นหา "${query}"` : "สถานที่แนะนำ"}
-        </h2>
-        <span className="text-slate text-sm">{places.length} แห่ง</span>
-      </div>
+        {/* Results */}
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-forest">
+            {query ? `ผลการค้นหา "${query}"` : "สถานที่แนะนำ"}
+          </h2>
+          <span className="text-slate text-sm">{places.length} แห่ง</span>
+        </div>
 
-      <PlaceList places={places} />
-    </div>
+        <PlaceList places={places} />
+      </div>
+    </>
   );
 }

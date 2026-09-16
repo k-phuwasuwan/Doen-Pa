@@ -29,16 +29,18 @@ export function FilterSection({ currentType = "all" }: { currentType?: string })
   };
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
-      {filters.map((filter) => (
-        <FilterChip
-          key={filter.type}
-          icon={filter.icon}
-          label={filter.label}
-          active={currentType === filter.type}
-          onClick={() => handleSelect(filter.type)}
-        />
-      ))}
+    <div className="overflow-x-auto pb-4 hide-scrollbar">
+      <div className="flex min-w-full w-max justify-center gap-6 px-2 sm:gap-8 md:gap-10">
+        {filters.map((filter) => (
+          <FilterChip
+            key={filter.type}
+            icon={filter.icon}
+            label={filter.label}
+            active={currentType === filter.type}
+            onClick={() => handleSelect(filter.type)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

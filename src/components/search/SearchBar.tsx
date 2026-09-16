@@ -40,7 +40,6 @@ export function SearchBar({ initialQuery = "" }: { initialQuery?: string }) {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="ค้นหาชื่อ, จังหวัด, ภูมิภาค..."
         className="glass-input block w-full pl-11 pr-4 py-3 text-forest placeholder-slate focus:outline-none focus:ring-2 focus:ring-forest transition-shadow"
       />
     </div>

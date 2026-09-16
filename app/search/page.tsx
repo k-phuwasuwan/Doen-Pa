@@ -43,14 +43,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
       {/* Search Header Area */}
       <div className="card-glass relative mb-6 overflow-hidden p-4 sm:mb-8 sm:p-6 md:p-8">
-        <div className="relative z-10">
-          <h1 className="text-2xl md:text-3xl font-bold text-forest mb-2">
-            สำรวจเส้นทางใหม่
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <h1 className="mb-2 text-2xl font-bold text-forest md:text-3xl">
+            ค้นหาอุทยานแห่งชาติ
           </h1>
-          <p className="mb-5 text-slate sm:mb-6">
-            ค้นหาสถานที่เดินป่าที่ใช่ และบันทึกเรื่องราวของคุณ
-          </p>
-          <div className="max-w-xl">
+          <div className="w-full max-w-xl">
             <Suspense fallback={<div className="h-[48px] glass-input animate-pulse" />}>
               <SearchBar initialQuery={query} />
             </Suspense>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Mountain } from "lucide-react";
+import { Mountain } from "lucide-react";
 
 export function TopNav() {
   const pathname = usePathname();
@@ -42,10 +42,11 @@ export function TopNav() {
         })}
       </div>
 
+      {/* ถ้าอยากใช้ Hamburger ใน mobile ให้เพิ่ม import { Menu, Mountain } from "lucide-react"; */}
       {/* Mobile Hamburger */}
-      <button className="flex h-11 w-11 items-center justify-center text-forest md:hidden" aria-label="เปิดเมนู">
+      {/* <button className="flex h-11 w-11 items-center justify-center text-forest md:hidden" aria-label="เปิดเมนู">
         <Menu className="w-6 h-6" />
-      </button>
+      </button> */}
     </nav>
   );
 }

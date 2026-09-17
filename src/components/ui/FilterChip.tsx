@@ -13,9 +13,7 @@ export function FilterChip({ icon, label, active = false, onClick }: FilterChipP
   return (
     <button
       onClick={onClick}
-      className={`flex min-h-11 min-w-11 flex-col items-center justify-center gap-2 transition-all duration-300 group ${
-        active ? "" : "hover:-translate-y-1"
-      }`}
+      className="group flex min-h-11 min-w-11 flex-col items-center justify-center gap-2"
     >
       <div 
         className={`h-12 w-12 rounded-full flex items-center justify-center transition-all duration-300 ${

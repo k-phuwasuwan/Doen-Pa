@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import { placeService } from "@/services/place.service";
-import { mockTravelRecords } from "@/mocks/travel-records";
-import { PlaceHero } from "@/components/place/PlaceHero";
+import { travelRecordService } from "@/services/travel-record.service";
+import { BackButton } from "@/components/place/BackButton";
+import { PlaceGallery } from "@/components/place/PlaceGallery";
 import { PlaceInfo } from "@/components/place/PlaceInfo";
 import { PlaceChips } from "@/components/place/PlaceChips";
 import { PlaceDescription } from "@/components/place/PlaceDescription";
+import { PlaceMeta } from "@/components/place/PlaceMeta";
 import { PlaceRecord } from "@/components/place/PlaceRecord";
 import { PlaceActions } from "@/components/place/PlaceActions";
 
@@ -30,30 +32,35 @@ export default async function PlacePage({ params }: PlacePageProps) {
     notFound();
   }
 
-  // Server-side: read from mock directly (localStorage is client-only)
   const CURRENT_USER_ID = "user-1";
-  const existingRecord =
-    mockTravelRecords.find(
-      (r) => r.userId === CURRENT_USER_ID && r.placeId === place.id,
-    ) ?? null;
+  const existingRecord = travelRecordService.getRecordByPlace(CURRENT_USER_ID, place.id);
+  const recordPhotos = existingRecord?.photos ?? [];
 
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
+    <div className="mx-auto max-w-6xl px-8 py-8">
+      <BackButton />
+
       {/* Desktop: 2-col grid | Mobile: stacked */}
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2 lg:gap-12">
-        {/* Left column — Hero image */}
-        <div className="lg:sticky lg:top-24">
-          <PlaceHero place={place} />
+      <div className="mt-4 grid grid-cols-1 items-start gap-10 md:grid-cols-2">
+        {/* Left column — Place gallery */}
+        <div className="md:sticky md:top-24">
+          <PlaceGallery defaultImage={place.image} recordPhotos={recordPhotos} />
         </div>
 
         {/* Right column — Info */}
-        <div className="card-glass p-6 md:p-8 flex flex-col">
+        <div className="flex flex-col gap-4">
           <PlaceInfo place={place} />
           <PlaceChips place={place} />
 
-          <hr className="border-beige/40 mb-5" />
+          <hr className="border-beige/40" />
 
           <PlaceDescription place={place} />
+
+          <hr className="border-beige/40" />
+
+          <PlaceMeta />
+
+          <hr className="border-beige/40" />
 
           {existingRecord && (
             <PlaceRecord record={existingRecord} />

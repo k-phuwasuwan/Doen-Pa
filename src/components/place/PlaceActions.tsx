@@ -28,7 +28,7 @@ export function PlaceActions({ placeId, hasRecord }: PlaceActionsProps) {
         className="glass-button flex min-h-11 min-w-0 flex-1 items-center justify-center gap-2 px-3 py-2.5 text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-95 focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 sm:flex-none sm:px-5"
       >
         <PlusCircle className="w-4 h-4" />
-        {hasRecord ? "เพิ่มบันทึกใหม่" : "+ เพิ่มบันทึก"}
+        {hasRecord ? "เพิ่มบันทึกใหม่" : " เพิ่มบันทึก"}
       </button>
 
       <button

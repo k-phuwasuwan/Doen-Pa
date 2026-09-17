@@ -4,7 +4,7 @@ import type { TravelRecord } from "@/types";
 const STORAGE_KEY = "doen-pa-travel-records";
 
 function getStorageRecords(): TravelRecord[] {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") return mockTravelRecords;
 
   try {
     const stored = localStorage.getItem(STORAGE_KEY);

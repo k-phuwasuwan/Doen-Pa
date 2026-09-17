@@ -51,4 +51,20 @@ export const mockTravelRecords: TravelRecord[] = [
     rating: 4,
     createdAt: new Date("2025-08-15"),
   },
+  {
+    id: "record-6",
+    userId: "user-1",
+    placeId: "place-doi-chiang-dao",
+    visitedAt: new Date("2025-07-12"),
+    note: "วิวภูเขาและทะเลหมอกสวยมาก คุ้มค่ากับการเดินทาง",
+    photos: [
+      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1500534623283-312aade485b7?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1464278533981-50106e6176b1?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1500534623283-312aade485b7?w=600&h=400&fit=crop&sat=-20",
+    ],
+    rating: 5,
+    createdAt: new Date("2025-07-12"),
+  },
 ];

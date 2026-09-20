@@ -2,7 +2,7 @@ import { PlaceCard } from "./PlaceCard";
 import { SearchX } from "lucide-react";
 import type { Place } from "@/types";
 
-export function PlaceList({ places }: { places: Place[] }) {
+export function PlaceList({ places, visitCounts = {} }: { places: Place[]; visitCounts?: Record<string, number> }) {
   if (places.length === 0) {
     return (
       <div className="card-glass p-12 flex flex-col items-center justify-center text-center">
@@ -18,9 +18,9 @@ export function PlaceList({ places }: { places: Place[] }) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid items-stretch grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {places.map((place) => (
-        <PlaceCard key={place.id} place={place} />
+        <PlaceCard key={place.id} place={place} visitCount={visitCounts[place.id] ?? 0} />
       ))}
     </div>
   );

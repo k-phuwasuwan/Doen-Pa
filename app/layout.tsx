@@ -25,9 +25,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="th"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-cream">
+      <body className="relative min-h-full flex flex-col bg-canvas contour-pattern">
+        <div className="ambient-glow-mesh-1 left-[-20rem] top-[-18rem]" aria-hidden="true" />
+        <div className="ambient-glow-mesh-2 right-[-18rem] top-[20rem]" aria-hidden="true" />
+        <div className="ambient-glow-mesh-3 bottom-[-22rem] left-[30%]" aria-hidden="true" />
         <TopNav />
-        <main className="flex-1 pb-16 md:pb-0">
+        <main className="relative z-10 flex-1 pb-16 md:pb-0">
           {children}
         </main>
         <BottomNav />

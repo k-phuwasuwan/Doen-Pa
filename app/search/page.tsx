@@ -1,7 +1,9 @@
-import { FilterSection } from "@/components/search/FilterSection";
+import { CategoryGrid } from "@/components/search/CategoryGrid";
 import { SearchHero } from "@/components/search/SearchHero";
 import { PlaceList } from "@/components/search/PlaceList";
 import { placeService } from "@/services/place.service";
+import { travelRecordService } from "@/services/travel-record.service";
+import { userService } from "@/services/user.service";
 import type { PlaceType } from "@/types";
 
 export const metadata = {
@@ -17,6 +19,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const query = params.q || "";
   const type = (params.type as PlaceType | "all") || "all";
+  const currentUser = userService.getCurrentUser();
 
   // Simulate network delay for skeleton to show in dev
   // await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -43,11 +46,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <SearchHero initialQuery={query} />
 
       <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
-        {/* Filter Section */}
-        <div className="mb-6 sm:mb-8">
-          <FilterSection currentType={type} />
-        </div>
-
+        <CategoryGrid currentType={type} />
         {/* Results */}
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-forest">
@@ -56,7 +55,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <span className="text-slate text-sm">{places.length} แห่ง</span>
         </div>
 
-        <PlaceList places={places} />
+        <PlaceList
+          places={places}
+          visitCounts={Object.fromEntries(
+            places.map((place) => [place.id, travelRecordService.getVisitCount(currentUser.id, place.id)]),
+          )}
+        />
       </div>
     </>
   );

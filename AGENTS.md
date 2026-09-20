@@ -6,28 +6,39 @@
 
 > "Document the journey, not plan the journey."
 
-Users record places they have visited, upload photos, write memories, and build their personal hiking passport. This is **not** a trip planner or booking system.
+Users record places they have visited, upload photos, write memories, and build their personal hiking passport. This is **not** a trip planner, booking system, or social review platform.
+
+**Working agreement:** when something is ambiguous or requires a judgment call (product scope, design direction, data modeling), ask the user first — do not decide unilaterally. This applies across sessions, not just once.
 
 ---
 
-## Design Philosophy — How to Use Figma
+## Design Philosophy — How to Use Reference Mockups
 
-Figma mockups exist for **mobile only** and were drawn as low-fidelity structural references.
+Two kinds of design references may be provided. Treat them differently:
 
-**What to take from Figma:**
-- Page structure — what sections exist, in what order
-- Content hierarchy — what information matters most on each screen
-- Component composition — e.g. "a card with thumbnail + name + location"
-- User flow between screens
+**1. Figma mockups (mobile-only, ~375px)** — structural/content reference only, for pages not yet covered by a Stitch mockup, and for the eventual mobile responsive pass. Do not copy flat colors or exact pixel layout to desktop from these.
 
-**What NOT to copy literally:**
-- Flat full-bleed color blocks (e.g. red search hero, yellow filter bar, brown stats hero) — these were quick mobile placeholders, not a final palette
-- Exact pixel layout — Figma is mobile-width (~375px); do not stretch it to desktop
-- 1:1 visual styling — desktop should look like a considered desktop product, not a scaled-up phone screen
+**2. Stitch-generated HTML/Tailwind mockups (desktop)** — **this is now the primary design system for the whole project** ("Design System v2" below), not just the page it was first shown on. Convert HTML mockups directly:
+- Map each HTML section (marked with `<!-- BEGIN: XSection -->` comments) to the matching component in `Project Structure`
+- Keep exact Tailwind utility classes and custom effect class names (`.liquid-glass`, `.liquid-glass-card`, etc.) — move raw CSS into `globals.css` and custom colors/shadows into `tailwind.config.ts`
+- Convert `<img>` → `next/image`, `<a href="#">` → Next.js `<Link>` with the real route, static counts/copy → real data from services
+- **Before wiring anything to real data, flag content that conflicts with MVP Scope Boundary** rather than implementing it silently (see resolved examples below, and ask before making a similar call on new mockups)
 
-**Desktop layout and visual design are designed fresh**, using the Liquid Glass design system below, with good judgment for larger viewports (multi-column layouts, sidebars, appropriate whitespace, hover states). Structure/content from Figma stays the same — the visual execution for desktop does not.
+### Resolved scope conflicts (apply this pattern to future mockups too)
 
-**Workflow:** build desktop first using Liquid Glass (this file is the source of truth for desktop styling) → once all desktop pages are done, do a mobile responsive pass referencing Figma's mobile structure more closely.
+A Stitch mockup for `/search` included generic travel-app elements that conflicted with Doen Pa's scope. Resolutions (already decided, apply consistently):
+
+| Mockup element | Replaced with |
+|---|---|
+| `★ 4.9 (420)` aggregate rating/review count | `"เคยไปแล้ว N ครั้ง"` — personal, computed from the current user's own `TravelRecord`s for that place. Omit the line entirely if N = 0. |
+| `"เปิดรับจองแล้ว • ไฮซีซั่น"` booking-style status badge | A plain place-type badge (e.g. "ภูเขา", "น้ำตก", "ถ้ำ", "หมู่เกาะและทะเล") — same as `place.type`, no booking language |
+| `"ยอดนิยมประจำฤดูหนาว"` / `"เปิดเส้นทางใหม่"` popularity filter pills | Real filters sourced from the user's own data: **"เคยไปแล้ว"** / **"ยังไม่เคยไป"** |
+
+Never implement an aggregate public rating/review count, a booking-style availability badge, or popularity-sorted recommendations — these are out of MVP scope regardless of what a mockup shows. Ask before making an equivalent call on new mockups rather than assuming the same resolution applies verbatim.
+
+### Images from Stitch mockups
+
+Stitch mockup image URLs (`lh3.googleusercontent.com/aida-public/...`) are design-preview placeholders — not stable for production and not to be hotlinked. Replace every such URL with a plain gray placeholder (`bg-beige-100` or similar neutral fill, no image) for now. Real photos come later (either user-uploaded via `PhotoUploader` or a proper image source to be decided).
 
 ---
 
@@ -39,7 +50,8 @@ Figma mockups exist for **mobile only** and were drawn as low-fidelity structura
 | Language | TypeScript (strict mode) |
 | Styling | Tailwind CSS |
 | State | Zustand |
-| Icons | Lucide React |
+| Icons | Lucide React (mockups may use inline SVG — convert to Lucide equivalents where a matching icon exists) |
+| Fonts | Kanit + Plus Jakarta Sans (Google Fonts, Thai-friendly pairing) |
 | Rendering | Server Components by default |
 
 ---
@@ -59,7 +71,7 @@ Every feature must serve this journey. If it doesn't help users **record hiking 
 | Route | Page | Notes |
 |-------|------|-------|
 | `/` | redirect | → `/search` |
-| `/search` | Home / Search | Search bar + type filter chips + place list |
+| `/search` | Home / Search | Search hero + category filter + recommended place list |
 | `/places/[id]` | Place Details | **Full page, NOT a dialog/modal** |
 | `/records/new` | Travel Record Form | Opened via `?placeId=[id]` query param |
 | `/map` | Map | Thailand map, provinces highlighted by visited status |
@@ -72,12 +84,12 @@ Every feature must serve this journey. If it doesn't help users **record hiking 
 ```
 /search → click PlaceCard (via <Link>, no dialog)
         → /places/[id]
-        → click "+ เพิ่มบันทึกใหม่"
+        → click "+ เพิ่มลงแพสพอร์ต" / "+ สแตมป์"
         → /records/new?placeId=[id]
         → submit → /passport
 ```
 
-`/map`, `/stats`, `/profile` are reachable anytime from TopNav (desktop) / BottomNav (mobile).
+`/map`, `/passport`, `/stats`, `/profile` are reachable anytime from the capsule TopNav.
 
 ---
 
@@ -86,7 +98,7 @@ Every feature must serve this journey. If it doesn't help users **record hiking 
 ```
 src/
 ├── app/
-│   ├── layout.tsx              # TopNav + BottomNav wrapper
+│   ├── layout.tsx              # TopNav + BottomNav wrapper, ambient background + contour pattern
 │   ├── page.tsx                # redirect('/search')
 │   ├── search/page.tsx
 │   ├── places/[id]/page.tsx    # Server Component, notFound() if missing
@@ -97,10 +109,10 @@ src/
 │   └── profile/page.tsx
 │
 ├── components/
-│   ├── ui/                     # StatCard, FilterChip, GlassCard, GlassButton, GlassInput
-│   ├── navigation/              # TopNav, BottomNav
-│   ├── search/                  # SearchBar, FilterSection, PlaceCard, PlaceList
-│   ├── place/                   # PlaceHero, PlaceInfo, PlaceChips, PlaceDescription, PlaceRecord, PlaceActions
+│   ├── ui/                     # StatCard, GlassCard, GlassButton, GlassInput
+│   ├── navigation/              # TopNav (capsule), BottomNav
+│   ├── search/                  # SearchHero, CategoryGrid, CategoryCard, PlaceList, PlaceCard, VisitedFilter
+│   ├── place/                   # BackButton, PlaceBreadcrumb, PlaceGallery, PlaceInfo, PlaceChips, PlaceDescription, PlaceMeta, PlaceRecord, PlaceGuidelines, PlaceActions
 │   ├── records/                 # TravelRecordForm, PhotoUploader
 │   ├── map/                     # ThailandMap
 │   ├── passport/                # PassportHeader, PassportFilter, TravelRecordCard
@@ -109,7 +121,7 @@ src/
 │
 ├── services/
 │   ├── place.service.ts        # searchPlaces, getPlaceById, filterByType
-│   ├── travel-record.service.ts# getRecordsByUser, getRecordByPlace, createRecord
+│   ├── travel-record.service.ts# getRecordsByUser, getRecordByPlace, getVisitCount, createRecord
 │   ├── user.service.ts         # getCurrentUser
 │   └── stats.service.ts        # calculateStats
 │
@@ -131,6 +143,7 @@ src/
 ```typescript
 type PlaceType = 'mountain' | 'waterfall' | 'cave' | 'island' | 'national_park'
 type Region = 'north' | 'central' | 'south' | 'northeast' | 'east' | 'west'
+type Difficulty = 'easy' | 'moderate' | 'challenging'
 
 interface User {
   id: string
@@ -146,11 +159,23 @@ interface Place {
   location: string        // e.g. "Uttaradit Northern"
   province: string
   region: Region
+  category: string         // breadcrumb label e.g. "อุทยาน & ป่าสงวน"
+  rankLabel?: string        // e.g. "ยอดเขาสูงลำดับที่ 3"
   description: string
-  image: string
+  image: string             // placeholder path for now — see "Images from Stitch mockups"
   type: PlaceType
-  altitude?: string        // e.g. "1663 m" — shown as a chip on Place Details
-  distance?: string        // e.g. "6.5 m" — shown as a chip on Place Details
+  difficulty?: Difficulty
+  altitude?: string         // e.g. "2,225 m"
+  distance?: string         // e.g. "5.2 km"
+  bestSeason?: string       // static copy for now, e.g. "เปิดให้บริการทุกวัน ควรหลีกเลี่ยงช่วงฤดูฝน"
+  campingInfo?: string      // static copy for now, e.g. "มีลานกางเต็นท์ให้บริการภายในพื้นที่อุทยาน"
+  guidelines?: PlaceGuideline[]
+}
+
+interface PlaceGuideline {
+  icon: string    // Lucide icon name, e.g. 'FileText', 'Leaf', 'Zap'
+  title: string
+  description: string
 }
 
 interface TravelRecord {
@@ -160,7 +185,7 @@ interface TravelRecord {
   visitedAt: Date
   note: string
   photos: string[]
-  rating: number   // 1–5, personal only (not public review)
+  rating: number   // 1–5, personal only — NEVER aggregated into a public score/count
   createdAt: Date
 }
 
@@ -174,116 +199,139 @@ interface Stats {
 }
 ```
 
-**Filter chip labels (Thai, used across Search + Passport):** ทั้งหมด, ภูเขา, น้ำตก, ถ้ำ, หมู่เกาะและทะเล
+**Category labels (Thai, used on `/search` and `/passport`):** ทั้งหมด, ภูเขา & ยอดดอย, น้ำตก & ลำธาร, ถ้ำ & ธรณีสัณฐาน, หมู่เกาะ & ทะเล — each with a real count from `placeService` (e.g. "156 อุทยาน"), not a fake/hardcoded number.
+
+**Visited-status filter (`/search`):** "เคยไปแล้ว" / "ยังไม่เคยไป" — computed by cross-referencing `placeService` results against `travelRecordService.getRecordsByUser(currentUserId)`.
 
 ---
 
-## Design System — Liquid Glass (Desktop Source of Truth)
+## Design System v2 (Stitch — current source of truth, whole project)
 
-This is the palette and visual language for **desktop**. Do not substitute Figma's mobile flat colors (red/yellow/brown full-bleed sections) for desktop layouts.
+### Colors — `tailwind.config.ts`
 
-### Color Palette
-```
-Forest Green:   #2D5F4F   primary — nav, primary buttons, headings
-Mountain Beige: #D4C5B0   neutral — borders, subtle backgrounds
-Sunrise Gold:   #FFB347   accent — badges, highlights, progress fills
-Misty Slate:    #7A8FA3   secondary text
-Cream:          #F5F1E8   page background
-```
-
-Desktop pages use a light `cream`/white background with **glass cards** floating on top — not full-bleed saturated color blocks. Color is used with restraint: forest green for structure/primary actions, gold as a sparing accent (badges, active states, progress).
-
-### Glass Effects
-```css
-/* Card */
-.card-glass {
-  backdrop-filter: blur(10px);              /* 8px on mobile */
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(45, 95, 79, 0.12);
-}
-
-/* Button */
-.glass-button {
-  backdrop-filter: blur(8px);
-  background: rgba(45, 95, 79, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: white;
-}
-
-/* Input */
-.glass-input {
-  backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.80);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 8px;
-}
-
-/* Navigation */
-.nav-glass {
-  backdrop-filter: blur(8px);
-  background: rgba(245, 241, 232, 0.90);
-  border-bottom: 1px solid rgba(212, 197, 176, 0.3);
-}
-```
-
-### Tailwind Extensions (tailwind.config.ts)
 ```typescript
 extend: {
+  fontFamily: {
+    sans: ['Kanit', 'Plus Jakarta Sans', 'sans-serif'],
+  },
   colors: {
-    forest: '#2D5F4F',
-    beige:  '#D4C5B0',
-    gold:   '#FFB347',
-    slate:  '#7A8FA3',
-    cream:  '#F5F1E8',
+    brand: {
+      50: '#f0f9f3', 100: '#dcf0e2', 200: '#b8e1c6',
+      500: '#2d6a4f', 600: '#1b4332', 700: '#153728',
+      800: '#0f291e', 900: '#081c14', 950: '#04110c',
+    },
+    canvas: '#F4F2EB',
+    beige: { 100: '#EDE8DD' },   // neutral gray-placeholder fill for missing images
   },
   boxShadow: {
-    'glass':    '0 8px 24px rgba(45, 95, 79, 0.12)',
-    'glass-md': '0 12px 32px rgba(45, 95, 79, 0.15)',
-    'glass-lg': '0 20px 48px rgba(45, 95, 79, 0.20)',
-    'glow':     '0 4px 16px rgba(45, 95, 79, 0.08)',
-  },
-  animation: {
-    'glass-in':   'glass-slide-up 0.5s ease-out',
-    'soft-scale': 'soft-scale 0.4s ease-out',
+    glass:        '0 8px 32px 0 rgba(20,48,30,0.08), inset 0 1px 1px 0 rgba(255,255,255,0.8), inset 0 -1px 1px 0 rgba(255,255,255,0.2)',
+    'glass-hover':'0 20px 48px -6px rgba(18,50,32,0.16), 0 0 20px 2px rgba(167,243,208,0.35), inset 0 1.5px 2px 0 rgba(255,255,255,0.95)',
+    'glass-card': '0 16px 40px -8px rgba(15,38,25,0.10), 0 2px 6px -1px rgba(0,0,0,0.04), inset 0 1.5px 2px 0 rgba(255,255,255,0.9), inset 0 -1px 1px 0 rgba(0,0,0,0.03)',
+    'glass-inner':'inset 0 2px 4px rgba(255,255,255,0.9), inset 0 -2px 4px rgba(0,0,0,0.06)',
+    'glow-emerald':'0 0 28px -2px rgba(45,106,79,0.5), 0 4px 16px rgba(45,106,79,0.25)',
+    'liquid-glow': '0 10px 30px -5px rgba(52,211,153,0.25), inset 0 1px 1px rgba(255,255,255,0.8)',
   },
 }
 ```
+
+**Accent colors** (icons, badges, hover states) use Tailwind's default palette directly — `emerald`, `amber`, `cyan`, `teal` — no custom tokens needed for these. `brand-500`/`brand-600` are the primary brand green; `canvas` is the page background.
+
+The earlier flat "forest/beige/gold/slate/cream" palette is retired — use the tokens above everywhere.
+
+### Glass Effect Classes — `globals.css`
+
+Copy verbatim into `globals.css`:
+
+```css
+.liquid-glass {
+  background: linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.42) 100%);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255,255,255,0.85);
+  box-shadow: 0 12px 36px 0 rgba(18,48,32,0.07), inset 0 1.5px 1.5px 0 rgba(255,255,255,0.95), inset 0 -1px 1px 0 rgba(0,0,0,0.03);
+}
+.liquid-glass-dark {
+  background: linear-gradient(135deg, rgba(15,41,30,0.78) 0%, rgba(8,28,20,0.85) 100%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.45);
+}
+.liquid-glass-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.48) 50%, rgba(240,249,244,0.45) 100%);
+  backdrop-filter: blur(26px) saturate(190%);
+  -webkit-backdrop-filter: blur(26px) saturate(190%);
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 16px 42px -6px rgba(14,42,28,0.09), 0 2px 8px -1px rgba(0,0,0,0.03), inset 0 1.5px 2px 0 rgba(255,255,255,0.95), inset 0 -1.5px 2px 0 rgba(20,60,40,0.04);
+}
+.liquid-glass-capsule {
+  background: linear-gradient(135deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.52) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 8px 30px rgba(18,48,32,0.07), inset 0 1.5px 1.5px rgba(255,255,255,0.95);
+}
+.hero-glass-console {
+  background: linear-gradient(135deg, rgba(255,255,255,0.76) 0%, rgba(245,250,247,0.48) 100%);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  border: 1.5px solid rgba(255,255,255,0.85);
+  box-shadow: 0 20px 50px -10px rgba(10,32,22,0.25), inset 0 2px 2px rgba(255,255,255,0.9), inset 0 -1px 2px rgba(0,0,0,0.05);
+}
+
+/* Ambient glow orbs — decorative, behind content, pointer-events: none */
+.ambient-glow-mesh-1 { position:absolute; width:650px; height:650px; background:radial-gradient(circle, rgba(110,231,183,0.38) 0%, rgba(52,211,153,0.18) 45%, rgba(244,242,235,0) 70%); filter:blur(75px); z-index:0; pointer-events:none; animation: floatSlow 18s ease-in-out infinite alternate; }
+.ambient-glow-mesh-2 { position:absolute; width:580px; height:580px; background:radial-gradient(circle, rgba(252,211,77,0.28) 0%, rgba(217,249,157,0.15) 45%, rgba(244,242,235,0) 70%); filter:blur(85px); z-index:0; pointer-events:none; animation: floatSlow 22s ease-in-out infinite alternate-reverse; }
+.ambient-glow-mesh-3 { position:absolute; width:700px; height:700px; background:radial-gradient(circle, rgba(167,243,208,0.32) 0%, rgba(110,231,183,0.12) 50%, rgba(244,242,235,0) 75%); filter:blur(90px); z-index:0; pointer-events:none; }
+@keyframes floatSlow { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(40px,-30px) scale(1.08); } }
+
+/* Shimmer sweep on hover, for primary buttons */
+.shimmer-glass { position:relative; overflow:hidden; }
+.shimmer-glass::after { content:''; position:absolute; top:-60%; left:-80%; width:60%; height:220%; background:linear-gradient(60deg, transparent, rgba(255,255,255,0.42), transparent); transform:rotate(25deg); transition: all 0.85s cubic-bezier(0.4,0,0.2,1); }
+.shimmer-glass:hover::after { left:140%; }
+
+/* Subtle dotted topographic background pattern */
+.contour-pattern {
+  background-image: radial-gradient(rgba(45,106,79,0.07) 1px, transparent 1px), radial-gradient(rgba(45,106,79,0.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0, 14px 14px;
+}
+```
+
+Apply `.contour-pattern` + ambient glow orb `<div>`s once in the root layout (`src/app/layout.tsx`), not per-page — they're a shared background treatment.
 
 ### Border Radius
 ```
-Cards:   16–24px (rounded-xl / rounded-2xl)
-Buttons: 8–12px  (rounded / rounded-lg)
-Inputs:  8px     (rounded)
-Modals:  20px    (rounded-2xl)
+Nav capsule:    rounded-full
+Cards:          rounded-3xl (24px)
+Buttons:        rounded-2xl (16px) primary, rounded-xl (12px) secondary
+Badges/pills:   rounded-full
 ```
 
-### Animations
-```
-Fast:   150ms ease-out   — quick feedback
-Normal: 300ms ease-out   — standard transitions
-Slow:   500ms ease-out   — emphasis
+### Image placeholders
+Anywhere a Stitch mockup used a real photo (`<img src="lh3.googleusercontent.com/...">`), render a plain neutral fill instead until real images are ready:
+```tsx
+<div className="w-full h-full bg-beige-100 flex items-center justify-center text-brand-800/30">
+  {/* no icon needed — plain placeholder */}
+</div>
 ```
 
 ---
 
-## Navigation
+## Navigation (capsule style)
 
-**Desktop (≥768px):** `TopNav` shows the logo on the left and **full horizontal nav links** on the right — no hamburger. Links: ค้นหา (`/search`), แผนที่ (`/map`), แพสพอร์ต (`/passport`), สถิติ (`/stats`), โปรไฟล์ (`/profile`). Active link is highlighted (`text-forest font-semibold` + underline/border-bottom); inactive links are `text-slate hover:text-forest`. Background is `nav-glass` (light, not solid forest green). Use `usePathname()` to detect the active route.
+**Desktop:** `TopNav` is a **floating capsule**, not an edge-to-edge bar — `sticky top-4`, wrapped in a `max-w-7xl mx-auto` container with horizontal padding, `.liquid-glass-capsule` background, `rounded-full`, `shadow-glass hover:shadow-glass-hover`.
 
-**Mobile (<768px):** `TopNav` shows only the logo + hamburger icon (nav links hidden via `hidden md:flex`). `BottomNav` (5 tabs, same routes as above) is the primary navigation on mobile — shown only below the `md` breakpoint.
-
-```tsx
-<nav className="h-16 nav-glass flex items-center justify-between px-6 sticky top-0 z-40">
-  <Logo />
-  <NavLinks className="hidden md:flex gap-6" />      {/* desktop only */}
-  <HamburgerButton className="md:hidden" />           {/* mobile only */}
-</nav>
+```
+[Logo + wordmark]   [pill nav: ค้นหา (active, filled gradient) | แผนที่ | พาสปอร์ต ● | สถิติ | โปรไฟล์]   [avatar pill: "N  นักท่องไพร"]
 ```
 
-`TopNav` must be a Client Component (`usePathname()`).
+- Nav links sit inside an inner pill (`bg-brand-900/[0.04] rounded-full p-1.5`); the active link has a filled gradient background (`from-brand-600 to-emerald-700`), inactive links are transparent with `text-brand-800/80 hover:bg-white/70`
+- A small animated ping dot next to "พาสปอร์ต" indicates unviewed activity (e.g. a new badge earned) — cosmetic only, not a notification system
+- User avatar pill on the right shows initials + display name; this is mock/local user data, not real auth
+- `TopNav` must be a Client Component (`usePathname()` for active state)
+
+**Mobile:** collapses to logo + hamburger; `BottomNav` (same 5 routes) remains the primary mobile navigation.
 
 ---
 
@@ -299,12 +347,13 @@ Slow:   500ms ease-out   — emphasis
 
 **Client Components (only when needed):**
 - `TopNav` — uses `usePathname()` to highlight the active nav link
-- `SearchBar`, `FilterSection`, `FilterChip` — interactive input/filter state
+- `SearchHero`'s search input, `CategoryGrid` filter state, `VisitedFilter` — interactive
 - `TravelRecordForm`, `PhotoUploader` — form state, FileReader API
 - `ThailandMap` — Leaflet requires the browser; also needs `dynamic(() => import(...), { ssr: false })` in the page that renders it
 - `PassportFilter` / `/passport/page.tsx` — client-side filtering by type
 - `BottomNav` — uses `usePathname()` to highlight active tab
 - `PlaceActions` — uses `useRouter()` to navigate to `/records/new`
+- `BackButton` — uses `router.back()`
 - Anything using `useState`, `useEffect`, Browser APIs
 
 ```typescript
@@ -325,59 +374,63 @@ export function PlaceCard({ place }: Props) { ... }
 ### Component Architecture
 - No Giant Components — split by responsibility
 - No API calls inside UI Components — use service layer
-- No hardcoded data inside components — use mocks or services
+- No hardcoded data inside components — use mocks or services (exception: `bestSeason`/`campingInfo` static copy, explicitly marked `// TODO` until real data exists)
 - Every component must handle: default, loading, empty, error states
 
 ---
 
-## Page Specs (Desktop)
-
-Build desktop layout first with `max-w-1280px mx-auto`, `bg-cream` page background, Liquid Glass cards for content sections. Structure/content below is informed by Figma; **visual styling (color, section backgrounds) follows the Liquid Glass system above, not Figma's flat mobile colors.**
+## Page Specs
 
 ### `/search`
-- Search section: `card-glass` container with heading + `SearchBar` (debounced 300ms) — not a full-bleed red block
-- `FilterSection`: horizontal row of circular `FilterChip`s — ทั้งหมด / ภูเขา / น้ำตก / ถ้ำ / หมู่เกาะและทะเล
-- `PlaceList`: `card-glass` `PlaceCard`s (thumbnail + name + location + province/region), desktop 3-col grid
-- Each `PlaceCard` wrapped in `<Link href={/places/[id]}>` — no dialog
+- `SearchHero` (Server, wraps a Client search input): full-width `rounded-3xl` panel with a **gray placeholder background** (not a photo — see Image placeholders), dark gradient overlay for text contrast, centered headline + subheadline, `.hero-glass-console` search bar (icon + input + submit button with `.shimmer-glass`), row of popular-search tag pills below (must link to real search queries, not decorative)
+- `CategoryGrid`: 5 `CategoryCard`s (`.liquid-glass-card`, `rounded-3xl`) — icon, label, real count from `placeService`. Active category gets `border-2 border-emerald-500/80` + `shadow-liquid-glow` + top gradient rim
+- `VisitedFilter`: pill row — "เคยไปแล้ว" / "ยังไม่เคยไป" (real filter, see Data Models)
+- `PlaceList`: section header ("สถานที่แนะนำ" + total count) + `VisitedFilter` + grid of `PlaceCard`s
+- `PlaceCard` (`.liquid-glass-card`, `rounded-3xl`):
+  - Image area: gray placeholder (see Image placeholders), gradient overlay, bookmark icon button top-right
+  - Top-left badge over image: **place type** (ภูเขา / น้ำตก / ถ้ำ / หมู่เกาะและทะเล) — not a booking status
+  - Altitude pill bottom-left over image (if `place.altitude` exists)
+  - Body: title, location, description
+  - Footer row: **"เคยไปแล้ว N ครั้ง"** (only rendered if N > 0, computed from the current user's own records — never a public count) • distance, then CTA button "+ สแตมป์" / "+ เพิ่มลงแพสพอร์ต"
+  - Whole card wrapped in `<Link href={/places/[id]}>`
 
 ### `/places/[id]`
 - Full page (not a modal). `notFound()` if place doesn't exist.
-- Desktop: two-column layout — image left (or top), info right — rather than a single narrow mobile column
-- `PlaceHero` (image) → `PlaceInfo` (name, province, region) → `PlaceChips` (altitude, distance, type) → `PlaceDescription` → `PlaceRecord` (only if user already has a TravelRecord for this place — shows date + note) → `PlaceActions` ("+ เพิ่มบันทึกใหม่" button + bookmark button)
-- Primary button navigates to `/records/new?placeId=[id]`
+- `BackButton` ("← ย้อนกลับ") above the two-column layout
+- Desktop: two columns — `PlaceGallery` left, info right (no boxed white card — content sits directly on the page background)
+- Right column, top to bottom: `PlaceBreadcrumb` (category · rankLabel) → name → location row → `PlaceChips` (distance, altitude, type, difficulty) → `<hr>` → "เกี่ยวกับสถานที่" + description → `<hr>` → `PlaceMeta` (ช่วงเวลาเปิดปิด / จุดกางเต็นท์ — static copy for now) → `<hr>` → `PlaceRecord` (only if user has a TravelRecord here) → `PlaceActions` (primary button + bookmark only — **no share button**)
+- `PlaceGallery`: main image area is a gray placeholder unless the user's own TravelRecord for this place has photos (then show the user's first uploaded photo); below it, a 3-up thumbnail row of the user's *other* uploaded photos for this place **only when they exist** — if the user has never uploaded photos here, no thumbnail row renders at all. Overflow beyond 3 thumbnails shows an empty `+N ภาพถ่าย` card (no photo behind the number)
+- Below the two-column layout: `PlaceGuidelines` — 3-card grid, only rendered if `place.guidelines` has entries
 
 ### `/records/new`
 - Reads `placeId` from `searchParams`; redirect to `/search` if place not found
-- `TravelRecordForm` (Client) inside a `card-glass` container, centered, max-w-xl: place info (read-only) → date → `PhotoUploader` (max 5 photos, 5MB each, jpg/png/webp) → note textarea → optional 1–5 star rating → submit
+- `TravelRecordForm` (Client), centered `max-w-xl`: place info (read-only) → date → `PhotoUploader` (max 5 photos, 5MB each, jpg/png/webp) → note textarea → optional 1–5 star rating (**personal only** — never displayed elsewhere as an aggregate) → submit
 - On submit: `travelRecordService.createRecord()` then redirect to `/passport`
 
 ### `/map`
 - Full-viewport Leaflet map of Thailand (`ThailandMap`, dynamic-imported with `ssr: false`)
-- Visited provinces: `fillColor #2D5F4F`; not visited: `fillColor #D4C5B0` (beige, lighter)
-- Floating `card-glass` badge pill top-center: "อุทยานที่ไปแล้ว X แห่ง"
-- Desktop: optional side panel listing visited provinces next to the map
+- Visited provinces: `fillColor` brand-600; not visited: lighter brand-100/200
+- Floating `.liquid-glass` badge pill top-center: "อุทยานที่ไปแล้ว X แห่ง"
 - GeoJSON source: Thailand provinces (e.g. `apisit/thailand.json`), stored at `public/data/thailand.json`
 
 ### `/passport`
-- `PassportHeader`: avatar + username + 3 `StatCard` in a `card-glass` container
-- `PassportFilter`: same circular chips as Search
-- Grid of `TravelRecordCard` (type badges + date + image + place name/province + note quote) as `card-glass` cards, desktop 2–3 col
+- `PassportHeader`: avatar + username + 3 `StatCard`
+- Filter row: same category pills as `/search`
+- Grid of `TravelRecordCard`, desktop 2–3 col
 - Empty state: "แพสพอร์ตของคุณยังว่างเปล่า" + CTA to `/search`
 
 ### `/stats`
-- `StatsHero`: "X การเดินทาง" + 3 `StatCard` in a `card-glass` container — provinces / regions / photos
-- `BadgeTeaser`: next badge to earn + progress bar, `card-glass` with a subtle gold accent border
-- `BadgeGrid`: "ตราสะสม (X/14)" + see-all link, circles in a grid
+- `StatsHero`: "X การเดินทาง" + 3 `StatCard` — provinces / regions / photos
+- `BadgeTeaser`: next badge to earn + progress bar
+- `BadgeGrid`: "ตราสะสม (X/14)" + see-all link
 - `ProvinceProgress`: "X/77 จังหวัด" progress bar + hint text
-- `CategoryStats`: grid — ภูเขา / น้ำตก / ถ้ำ / หมู่เกาะและทะเล, count per type
-- `RegionStats`: list per region, progress bar + visited provinces; regions with 0 visits shown at reduced opacity
-- Desktop: 2-column grid for these sections rather than a single stacked column
+- `CategoryStats`: grid — count per type
+- `RegionStats`: list per region, progress bar + visited provinces; 0-visit regions at reduced opacity
 
 ### `/profile`
-- `ProfileHeader`: cover area + "แก้ไขโปรไฟล์" button (top-right) + avatar overlapping cover + name + bio
-- `ProfileStats`: 3 `StatCard` — places / provinces / badges
-- `PostGallery`: "Post Gallery" grid of all photos across the user's TravelRecords, each tile links to `/places/[placeId]`
-- Desktop: left column for profile info, right column (wider) for the gallery grid
+- `ProfileHeader`: cover + "แก้ไขโปรไฟล์" button + avatar + name + bio
+- `ProfileStats`: 3 `StatCard`
+- `PostGallery`: grid of all photos across the user's TravelRecords, tiles link to `/places/[placeId]`
 
 ---
 
@@ -389,7 +442,7 @@ npm install -D @types/leaflet
 ```
 
 - GeoJSON: download Thailand provinces boundary data, save to `public/data/thailand.json`
-- `ThailandMap` must be dynamically imported with `{ ssr: false }` — Leaflet does not support SSR:
+- `ThailandMap` must be dynamically imported with `{ ssr: false }`:
 
 ```typescript
 const ThailandMap = dynamic(() => import('@/components/map/ThailandMap'), { ssr: false })
@@ -403,41 +456,32 @@ const ThailandMap = dynamic(() => import('@/components/map/ThailandMap'), { ssr:
 
 ### Do
 ```typescript
-// Typed interfaces
 interface PassportEntryProps {
   record: TravelRecord
   place: Place
 }
 
-// Meaningful naming
 const getVisitedProvinces = (records: TravelRecord[]) => { ... }
 
-// Service layer abstraction
 const places = await placeService.search(query)
 ```
 
 ### Don't
 ```typescript
-// No any
-const data: any = await fetch(...)
+const data: any = await fetch(...)          // no any
 
-// No magic numbers
-const blur = 10    // ❌
-const GLASS_BLUR_DESKTOP = 10   // ✅
+const blur = 10                               // ❌ magic number
+const GLASS_BLUR_DESKTOP = 10                 // ✅
 
-// No arbitrary Tailwind values (unless design-justified)
-className="text-[13px] mt-[17px] w-[437px]"   // ❌
-className="text-sm mt-4 w-full"                 // ✅
+className="text-[13px] mt-[17px] w-[437px]"   // ❌ arbitrary values
+className="text-sm mt-4 w-full"               // ✅
 
-// No "use client" everywhere
 'use client'   // only when actually needed
 ```
 
 ---
 
 ## Before Writing Any Code
-
-Follow this order every time:
 
 ```
 1. User Goal      — What is the user trying to do?
@@ -450,21 +494,23 @@ Follow this order every time:
 8. Implementation — Write the code
 ```
 
+If any step surfaces a genuine ambiguity (scope, data shape, design intent), ask before proceeding rather than picking an assumption silently.
+
 ---
 
 ## Responsive Breakpoints
 
 ```
-Mobile:        320–767px   → 1 column, 16px padding, blur 8px
-Tablet:        768–1023px  → 2 columns, 20px padding, blur 10px
-Desktop:       1024px+     → 3–4 columns, 24px padding, blur 10–12px
-Large Desktop: 1440px+     → max-width 1280px, centered
+Mobile:        320–767px   → 1 column, 16px padding, blur 8-12px
+Tablet:        768–1023px  → 2 columns, 20px padding, blur 12-16px
+Desktop:       1024px+     → 3–4 columns, 24px padding, blur 20-30px (full glass effect)
+Large Desktop: 1440px+     → max-width 1280–1440px, centered
 ```
 
-Mobile responsive pass references Figma's mobile structure more literally (section order, content grouping). Desktop is built first and is the primary target for initial development.
+Desktop is built first. Mobile responsive pass references Figma's mobile structure for pages without a Stitch mockup; for pages with a Stitch mockup, reduce blur/effect intensity for mobile performance but keep the same visual language.
 
 Mobile performance:
-- Reduce `backdrop-filter` blur to `8px`
+- Reduce `backdrop-filter` blur (e.g. 24px → 12px) and disable ambient glow orb animation
 - Touch targets minimum `44×44px`
 - No hover-only interactions
 
@@ -472,20 +518,16 @@ Mobile performance:
 
 ## Accessibility Requirements
 
-Every component must have:
 - Semantic HTML (`<nav>`, `<main>`, `<article>`, `<button>`, etc.)
 - `aria-label` on icon-only buttons
-- `alt` text on all images
-- Visible focus states (`focus:ring-2 ring-forest`)
-- Color contrast WCAG AA minimum
-- `prefers-reduced-motion` support — disable blur animations
+- `alt` text on all meaningful images; empty `alt=""` for decorative backgrounds/glow orbs/placeholders
+- Visible focus states
+- Color contrast WCAG AA minimum — verify white text over dark overlays has sufficient contrast
+- `prefers-reduced-motion` support — disable `ambient-glow-mesh` animation, `shimmer-glass`, and the nav ping dot
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 ```
 
@@ -495,17 +537,9 @@ Every component must have:
 
 | State | Required |
 |-------|----------|
-| Default | ✅ |
-| Hover | ✅ |
-| Active / Pressed | ✅ |
-| Focus | ✅ |
-| Disabled | ✅ |
-| Loading | ✅ |
-| Empty | ✅ |
-| Error | ✅ |
-| Success | ✅ |
+| Default / Hover / Active / Focus / Disabled | ✅ |
+| Loading / Empty / Error / Success | ✅ |
 
-Empty state example:
 ```tsx
 <EmptyState
   icon={<BookOpen />}
@@ -519,48 +553,35 @@ Empty state example:
 
 ## Image Upload Rules
 
-PhotoUploader must support:
-- File type validation: `jpg`, `png`, `webp` only
-- Max size: 5MB per image
-- Max count: 5 images per TravelRecord
-- Preview before save
-- Remove / Replace per image
-- Accessible `alt` text input
-- Upload progress state
-- Error state with message
-
-For MVP (no backend): use `FileReader` API + localStorage
+- File types: `jpg`, `png`, `webp` only
+- Max size: 5MB per image, max 5 images per TravelRecord
+- Preview before save, remove/replace per image, accessible `alt` text input, upload progress + error states
+- MVP (no backend): `FileReader` API + localStorage
 
 ---
 
 ## Performance Checklist
 
-Before shipping any page:
-- [ ] Is this a Server Component where possible?
-- [ ] Images use `next/image` with proper `width`, `height`, `alt`
-- [ ] Heavy components use `React.lazy` or `dynamic()`
-- [ ] Suspense boundaries in place for async data
-- [ ] No unnecessary `useEffect` or client-side fetching
-- [ ] Bundle size checked with `@next/bundle-analyzer`
-- [ ] Lighthouse mobile score ≥ 90
+- [ ] Server Component where possible
+- [ ] Images via `next/image` with proper `width`/`height`/`fill`, `alt` (once real images replace placeholders)
+- [ ] Heavy components via `dynamic()`
+- [ ] Suspense boundaries for async data
+- [ ] No unnecessary client-side fetching
+- [ ] Bundle size checked
+- [ ] Lighthouse mobile score ≥ 90 (glass effects are blur-heavy — profile carefully)
 
 ---
 
 ## Design Review Checklist
 
-When reviewing a screenshot or existing UI:
+- [ ] Layout, spacing, typography, contrast
+- [ ] Design System v2 tokens used correctly (not legacy forest/beige/gold, not ad-hoc colors)
+- [ ] Glass effects match the reference mockup's class names/values
+- [ ] Component consistency across pages
+- [ ] Responsive, accessible, all UI states handled
+- [ ] **No public rating/review counts, no booking-style badges, no popularity-ranked recommendations** — flag and ask before implementing if a new mockup includes these
 
-- [ ] Layout — alignment, grid, hierarchy
-- [ ] Spacing — padding, margins, gaps consistent?
-- [ ] Typography — size, weight, line-height, contrast
-- [ ] Color — Liquid Glass palette used correctly (desktop), not raw Figma mobile colors
-- [ ] Liquid Glass — blur, border, shadow correct?
-- [ ] Component consistency — same components used throughout?
-- [ ] Responsive — works on mobile?
-- [ ] Accessibility — readable, navigable by keyboard?
-- [ ] Empty / Error / Loading states — handled?
-
-Be direct. Identify problems and propose fixes.
+Be direct. Identify problems and propose fixes rather than silently implementing scope-conflicting content or making the call alone.
 
 ---
 
@@ -573,7 +594,7 @@ Always ask: **"Does this help users record their hiking memories?"**
    Search & Discovery
    Place Details
    Add to Passport
-   Travel Record (date, photos, note, rating)
+   Travel Record (date, photos, note, personal rating)
    Passport View
    Map — visited-provinces overview (Leaflet, no GPS/routing)
    Stats + Badge Collection
@@ -581,24 +602,22 @@ Always ask: **"Does this help users record their hiking memories?"**
 
 ❌ NOT IN MVP:
    Social features (follow, like, comment, share)
-   Public profiles
-   Booking or payment
+   Public profiles, public review system, aggregate ratings/review counts
+   Booking or payment, booking-style availability badges
    Trip planning / route navigation / turn-by-turn directions
    Live GPS tracking
    Weather data
    Gear management
-   Recommendation engine
+   Recommendation engine / popularity-based sorting
    Activity feed
    Messaging
 ```
 
-**Note:** `/map` is a *visited-provinces overview*, not a trip planner or GPS navigator — it stays within "document the journey" (see Core Product Principle above). Do not add routing, directions, or live location features to it.
+**Note:** `/map` is a *visited-provinces overview*, not a trip planner or GPS navigator. A visually appealing mockup (e.g. from Stitch) may include elements from the "NOT IN MVP" list purely because it's a generic template — always flag and ask before wiring such content to real data, even if a similar case was resolved before.
 
 ---
 
 ## Architecture Scalability
-
-Build MVP cleanly so Phase 2 social features can be added without refactoring:
 
 ```
 Phase 1 (MVP)
@@ -613,23 +632,16 @@ Phase 2 (Future)
 └── Hiking Community
 ```
 
-Service layer must be abstracted so switching from mock data to real API requires only changing the service file, not the UI components.
+Service layer must be abstracted so switching from mock data to a real API requires only changing the service file, not the UI components.
 
 ---
 
 ## Quick Reference
 
 ```bash
-# Run dev
 pnpm dev
-
-# Type check
 pnpm type-check
-
-# Lint
 pnpm lint
-
-# Build
 pnpm build
 ```
 

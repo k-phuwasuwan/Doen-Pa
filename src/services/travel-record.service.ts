@@ -48,6 +48,12 @@ export const travelRecordService = {
     );
   },
 
+  getVisitCount(userId: string, placeId: string): number {
+    return getStorageRecords().filter(
+      (record) => record.userId === userId && record.placeId === placeId,
+    ).length;
+  },
+
   createRecord(record: Omit<TravelRecord, "id" | "createdAt">): TravelRecord {
     const records = getStorageRecords();
     const newRecord: TravelRecord = {

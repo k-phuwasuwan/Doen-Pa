@@ -9,11 +9,11 @@ export const metadata = {
 };
 
 interface RecordsNewPageProps {
-  searchParams: Promise<{ placeId?: string }>;
+  searchParams: Promise<{ placeId?: string; returnTo?: string }>;
 }
 
 export default async function RecordsNewPage({ searchParams }: RecordsNewPageProps) {
-  const { placeId } = await searchParams;
+  const { placeId, returnTo } = await searchParams;
 
   if (!placeId) {
     redirect("/search");
@@ -24,15 +24,18 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
     redirect("/search");
   }
 
+  const backHref = returnTo === "search" ? "/search" : `/places/${place.id}`;
+  const backLabel = returnTo === "search" ? "กลับหน้าค้นหา" : `กลับไปหน้า ${place.name}`;
+
   return (
     <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
       {/* Back link */}
       <Link
-        href={`/places/${place.id}`}
+        href={backHref}
         className="inline-flex items-center gap-1.5 text-sm text-slate hover:text-forest transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
-        กลับไปหน้า {place.name}
+        {backLabel}
       </Link>
 
       {/* Centered card */}

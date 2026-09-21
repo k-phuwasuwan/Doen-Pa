@@ -29,7 +29,7 @@ export function PlaceCard({ place, visitCount = 0 }: { place: Place; visitCount?
           </div>
           <div className="mt-auto flex min-h-14 items-center justify-end gap-3 border-t border-brand-800/10 pt-3 text-xs text-brand-800/60">
             {visitCount > 0 && <span className="mr-auto">เคยไปแล้ว {visitCount} ครั้ง</span>}
-            <StampButton />
+            <StampButton placeId={place.id} />
           </div>
         </div>
       </div>

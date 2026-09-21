@@ -112,7 +112,8 @@ src/
 │   ├── ui/                     # StatCard, GlassCard, GlassButton, GlassInput
 │   ├── navigation/              # TopNav (capsule), BottomNav
 │   ├── search/                  # SearchHero, CategoryGrid, CategoryCard, PlaceList, PlaceCard, VisitedFilter
-│   ├── place/                   # BackButton, PlaceBreadcrumb, PlaceGallery, PlaceInfo, PlaceChips, PlaceDescription, PlaceMeta, PlaceRecord, PlaceGuidelines, PlaceActions
+│   ├── place/                   # BackButton, PlaceGallery, PlaceInfoPanel, PlaceChips, PlaceDescription, PlaceMeta, PlaceRecord, PlaceGuidelines, PlaceActions
+│   │                             # (PlaceBreadcrumb from an earlier design is unused — no category/rank line on this page anymore)
 │   ├── records/                 # TravelRecordForm, PhotoUploader
 │   ├── map/                     # ThailandMap
 │   ├── passport/                # PassportHeader, PassportFilter, TravelRecordCard
@@ -394,13 +395,18 @@ export function PlaceCard({ place }: Props) { ... }
   - Footer row: **"เคยไปแล้ว N ครั้ง"** (only rendered if N > 0, computed from the current user's own records — never a public count) • distance, then CTA button "+ สแตมป์" / "+ เพิ่มลงแพสพอร์ต"
   - Whole card wrapped in `<Link href={/places/[id]}>`
 
-### `/places/[id]`
+### `/places/[id]` (v2 — redesigned per Stitch mockup, decisions locked below)
 - Full page (not a modal). `notFound()` if place doesn't exist.
-- `BackButton` ("← ย้อนกลับ") above the two-column layout
-- Desktop: two columns — `PlaceGallery` left, info right (no boxed white card — content sits directly on the page background)
-- Right column, top to bottom: `PlaceBreadcrumb` (category · rankLabel) → name → location row → `PlaceChips` (distance, altitude, type, difficulty) → `<hr>` → "เกี่ยวกับสถานที่" + description → `<hr>` → `PlaceMeta` (ช่วงเวลาเปิดปิด / จุดกางเต็นท์ — static copy for now) → `<hr>` → `PlaceRecord` (only if user has a TravelRecord here) → `PlaceActions` (primary button + bookmark only — **no share button**)
-- `PlaceGallery`: main image area is a gray placeholder unless the user's own TravelRecord for this place has photos (then show the user's first uploaded photo); below it, a 3-up thumbnail row of the user's *other* uploaded photos for this place **only when they exist** — if the user has never uploaded photos here, no thumbnail row renders at all. Overflow beyond 3 thumbnails shows an empty `+N ภาพถ่าย` card (no photo behind the number)
+- `BackButton` ("← ย้อนกลับ") above the two-column layout — pill shape (`.liquid-glass-capsule` or `.liquid-glass`), arrow icon slides left on hover
+- Desktop: two columns, `gap-8` to `gap-12` —
+  - **Left:** `PlaceGallery` (no box — image sits directly on page background, matching the gallery-only side)
+  - **Right:** `PlaceInfoPanel` — **wrapped in a `.liquid-glass-card` box** (`rounded-3xl`, generous padding `p-6` to `p-9`, `shadow-glass-card`) — *this reverses an earlier "no boxed card" decision; the box is back, styled with Design System v2 classes, not the mockup's own `.ultra-glass-panel`*
+- Inside `PlaceInfoPanel`, top to bottom: name → location row (province chip + region chip, each as a small `.liquid-glass` pill) → `PlaceChips` → `<hr>` → "เกี่ยวกับสถานที่" + description → `PlaceMeta` (two `.liquid-glass-card` tiles side by side: ช่วงเวลาเปิดปิด / จุดกางเต็นท์ — static copy for now) → `PlaceRecord` (only if user has a TravelRecord here) → `PlaceActions` (primary button + bookmark only — **no share button**)
+- `PlaceChips` order (locked): **ประเภท → ความสูง → ระยะทาง** (type → altitude → distance) — each chip is a small icon-in-rounded-square + label, `.liquid-glass` pill background
+- `PlaceRecord` (only if visited): pulsing green status dot + "คุณเคยไปที่นี่แล้ว" + date pill (right-aligned) → star rating (personal, read-only) → quote with a left accent border — no aggregate score anywhere
+- `PlaceGallery`: main image area is a gray placeholder unless the user's own TravelRecord for this place has photos (then show the user's first uploaded photo); below it, a 3-up thumbnail row of the user's *other* uploaded photos for this place **only when they exist** — if the user has never uploaded photos here, no thumbnail row renders at all. Overflow beyond 3 thumbnails shows an empty `+N ภาพถ่าย` card (no photo behind the number, just the count)
 - Below the two-column layout: `PlaceGuidelines` — 3-card grid, only rendered if `place.guidelines` has entries
+- **Dropped from this page** (per redesign): trail-route breakdown section, "เกี่ยวกับสถานที่ & ข้อปฏิบัติ" regulations block, emergency contact card, aggregate rating display, booking-status breadcrumb badge, "Doen Pa Passport" digital stamp graphic widget — none of these are implemented
 
 ### `/records/new`
 - Reads `placeId` from `searchParams`; redirect to `/search` if place not found

@@ -16,23 +16,20 @@ interface PlaceInfoProps {
 
 export function PlaceInfo({ place }: PlaceInfoProps) {
   return (
-    <div className="mb-4">
-      <h1 className="text-3xl font-bold text-forest mb-3 leading-tight">
+    <div className="space-y-3 mb-5">
+      <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-brand-700 tracking-tight leading-tight">
         {place.name}
       </h1>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-slate">
-          <MapPin className="w-4 h-4 shrink-0 text-forest/60" />
-          <span className="text-sm">
-            {place.location}, {place.province}
-          </span>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="liquid-glass inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs sm:text-sm font-medium text-brand-700">
+          <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <span>{place.location}, {place.province}</span>
         </div>
-        <div className="flex items-center gap-2 text-slate">
-          <Globe className="w-4 h-4 shrink-0 text-forest/60" />
-          <span className="text-sm">{regionLabel[place.region] ?? place.region}</span>
+        <div className="liquid-glass inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs sm:text-sm font-medium text-brand-700">
+          <Globe className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <span>{regionLabel[place.region] ?? place.region}</span>
         </div>
       </div>
     </div>
   );
 }
-

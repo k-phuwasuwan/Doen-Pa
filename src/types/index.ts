@@ -20,6 +20,10 @@ export interface Place {
   type: PlaceType;
   altitude?: string;
   distance?: string;
+  /** Static copy for now — TODO: replace with real data */
+  bestSeason?: string;
+  /** Static copy for now — TODO: replace with real data */
+  campingInfo?: string;
 }
 
 export interface TravelRecord {

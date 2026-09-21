@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { placeService } from "@/services/place.service";
-import { travelRecordService } from "@/services/travel-record.service";
+import { mockTravelRecords } from "@/mocks/travel-records";
 import { BackButton } from "@/components/place/BackButton";
 import { PlaceGallery } from "@/components/place/PlaceGallery";
 import { PlaceInfo } from "@/components/place/PlaceInfo";
@@ -32,42 +32,50 @@ export default async function PlacePage({ params }: PlacePageProps) {
     notFound();
   }
 
+  // Server-side record lookup (localStorage is client-only, read mock directly)
   const CURRENT_USER_ID = "user-1";
-  const existingRecord = travelRecordService.getRecordByPlace(CURRENT_USER_ID, place.id);
-  const recordPhotos = existingRecord?.photos ?? [];
+  const existingRecord =
+    mockTravelRecords.find(
+      (r) => r.userId === CURRENT_USER_ID && r.placeId === place.id,
+    ) ?? null;
+
+  // Gallery: only show user's own uploaded photos from their TravelRecord
+  const userPhotos = existingRecord?.photos ?? [];
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-8">
-      <BackButton />
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
+      {/* Back button */}
+      <div className="mb-6">
+        <BackButton />
+      </div>
 
       {/* Desktop: 2-col grid | Mobile: stacked */}
-      <div className="mt-4 grid grid-cols-1 items-start gap-10 md:grid-cols-2">
-        {/* Left column — Place gallery */}
-        <div className="md:sticky md:top-24">
-          <PlaceGallery defaultImage={place.image} recordPhotos={recordPhotos} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-14 items-start">
+        {/* Left — Gallery (no box, sits directly on page background) */}
+        <div className="lg:sticky lg:top-24">
+          <PlaceGallery recordPhotos={userPhotos} />
         </div>
 
-        {/* Right column — Info */}
-        <div className="flex flex-col gap-4">
-          <PlaceInfo place={place} />
-          <PlaceChips place={place} />
+        {/* Right — Info panel (liquid-glass-card box) */}
+        <section className="liquid-glass-card rounded-3xl p-6 sm:p-8 lg:p-9 relative overflow-hidden">
+          {/* Specular rim at top */}
+          <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent pointer-events-none" />
 
-          <hr className="border-beige/40" />
+          <div className="space-y-0">
+            <PlaceInfo place={place} />
+            <PlaceChips place={place} />
 
-          <PlaceDescription place={place} />
+            {/* Divider */}
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-brand-700/15 to-transparent mb-5" />
 
-          <hr className="border-beige/40" />
+            <PlaceDescription place={place} />
+            <PlaceMeta place={place} />
 
-          <PlaceMeta />
+            {existingRecord && <PlaceRecord record={existingRecord} />}
 
-          <hr className="border-beige/40" />
-
-          {existingRecord && (
-            <PlaceRecord record={existingRecord} />
-          )}
-
-          <PlaceActions placeId={place.id} hasRecord={!!existingRecord} />
-        </div>
+            <PlaceActions placeId={place.id} hasRecord={!!existingRecord} />
+          </div>
+        </section>
       </div>
     </div>
   );

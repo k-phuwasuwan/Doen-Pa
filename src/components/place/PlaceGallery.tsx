@@ -11,12 +11,12 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
 
   // Show thumbnail row only when user has uploaded > 1 photo
   const thumbnailPhotos = hasPhotos ? recordPhotos.slice(1, 3) : [];
-  const overflowCount = hasPhotos ? recordPhotos.length - 3 : 0; // photos beyond first 3
+  const overflowCount = hasPhotos ? recordPhotos.length - 3 : 0; // photos beyond 3
   const showOverflowCard = overflowCount > 0;
-  const showThumbnailRow = thumbnailPhotos.length > 0;
+  const showThumbnailRow = thumbnailPhotos.length > 0 || showOverflowCard;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 overflow-hidden">
       {/* Main image — gray placeholder until user uploads */}
       <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-glass-md group">
         {mainPhoto ? (
@@ -39,7 +39,7 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
 
       {/* Thumbnail row — only when user has uploaded multiple photos */}
       {showThumbnailRow && (
-        <div className="grid grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-3 gap-3.5 overflow-hidden">
           {thumbnailPhotos.map((photo, idx) => (
             <div
               key={`${photo}-${idx}`}

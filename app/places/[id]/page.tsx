@@ -28,9 +28,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
   const { id } = await params;
   const place = placeService.getPlaceById(id);
 
-  if (!place) {
-    notFound();
-  }
+  if (!place) notFound();
 
   // Server-side record lookup (localStorage is client-only, read mock directly)
   const CURRENT_USER_ID = "user-1";
@@ -43,16 +41,16 @@ export default async function PlacePage({ params }: PlacePageProps) {
   const userPhotos = existingRecord?.photos ?? [];
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 overflow-x-hidden">
       {/* Back button */}
       <div className="mb-6">
         <BackButton />
       </div>
 
       {/* Desktop: 2-col grid | Mobile: stacked */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-14 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-14 items-start overflow-hidden">
         {/* Left — Gallery (no box, sits directly on page background) */}
-        <div className="lg:sticky lg:top-24">
+        <div className="lg:sticky lg:top-24 overflow-hidden">
           <PlaceGallery recordPhotos={userPhotos} />
         </div>
 

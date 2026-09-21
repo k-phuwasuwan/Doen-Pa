@@ -34,7 +34,7 @@ export function PlaceRecord({ record }: PlaceRecordProps) {
         {/* Date pill */}
         <div className="liquid-glass inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs sm:text-sm text-slate font-medium">
           <CalendarDays className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-          <span>{formatThaiDate(record.visitedAt)}</span>
+          {formatThaiDate(record.visitedAt)}
         </div>
       </div>
 

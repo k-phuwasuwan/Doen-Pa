@@ -3,8 +3,7 @@ import { placeService } from "./place.service";
 import type { Stats, PlaceType, Region } from "@/types";
 
 export const statsService = {
-  calculateStats(userId: string): Stats {
-    const records = travelRecordService.getRecordsByUser(userId);
+  calculateStats(userId: string, records = travelRecordService.getRecordsByUser(userId)): Stats {
     const allPlaces = placeService.getAll();
     
     // Get unique places visited

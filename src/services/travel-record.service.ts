@@ -1,46 +1,83 @@
 import { mockTravelRecords } from "@/mocks/travel-records";
+import { placeService } from "@/services/place.service";
 import type { TravelRecord } from "@/types";
 
 const STORAGE_KEY = "doen-pa-travel-records";
+const RECORDS_CHANGED_EVENT = "doen-pa-records-changed";
+const SERVER_SNAPSHOT = "__server_snapshot__";
+
+function getMockRecords(): TravelRecord[] {
+  return mockTravelRecords.map((record) => ({ ...record, photos: [...record.photos] }));
+}
+
+function parseRecords(raw: string | null): TravelRecord[] {
+  if (!raw) return getMockRecords();
+
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return getMockRecords();
+    return parsed.map((record: TravelRecord) => ({
+      ...record,
+      visitedAt: new Date(record.visitedAt),
+      createdAt: new Date(record.createdAt),
+    }));
+  } catch (error) {
+    console.error("Failed to parse travel records from storage:", error);
+    return getMockRecords();
+  }
+}
 
 function getStorageRecords(): TravelRecord[] {
   if (typeof window === "undefined") return mockTravelRecords;
+  return parseRecords(travelRecordService.getSnapshot());
+}
 
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return parsed.map((record: Record<string, unknown>) => ({
-        ...record,
-        visitedAt: new Date(record.visitedAt as string),
-        createdAt: new Date(record.createdAt as string),
-      })) as TravelRecord[];
-    }
-  } catch (error) {
-    console.error("Failed to parse travel records from storage:", error);
-  }
-
-  return mockTravelRecords;
+function getVisibleRecords(records: TravelRecord[]): TravelRecord[] {
+  return records.filter((record) => placeService.getPlaceById(record.placeId) !== null);
 }
 
 function setStorageRecords(records: TravelRecord[]): void {
   if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-  } catch (error) {
-    console.error("Failed to save travel records to storage:", error);
-  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  window.dispatchEvent(new Event(RECORDS_CHANGED_EVENT));
 }
 
 export const travelRecordService = {
+  subscribe(listener: () => void): () => void {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === STORAGE_KEY) listener();
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener(RECORDS_CHANGED_EVENT, listener);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(RECORDS_CHANGED_EVENT, listener);
+    };
+  },
+
+  getSnapshot(): string {
+    try {
+      return localStorage.getItem(STORAGE_KEY) ?? "";
+    } catch {
+      return "";
+    }
+  },
+
+  getServerSnapshot(): string {
+    return SERVER_SNAPSHOT;
+  },
+
+  getRecordsFromSnapshot(snapshot: string): TravelRecord[] {
+    return getVisibleRecords(snapshot === SERVER_SNAPSHOT ? mockTravelRecords : parseRecords(snapshot));
+  },
+
   getRecordsByUser(userId: string): TravelRecord[] {
     const records = getStorageRecords();
-    return records.filter((record) => record.userId === userId);
+    return getVisibleRecords(records).filter((record) => record.userId === userId);
   },
 
   getRecordByPlace(userId: string, placeId: string): TravelRecord | null {
-    const records = getStorageRecords();
+    const records = getVisibleRecords(getStorageRecords());
     return (
       records.find(
         (record) => record.userId === userId && record.placeId === placeId,
@@ -49,7 +86,7 @@ export const travelRecordService = {
   },
 
   getVisitCount(userId: string, placeId: string): number {
-    return getStorageRecords().filter(
+    return getVisibleRecords(getStorageRecords()).filter(
       (record) => record.userId === userId && record.placeId === placeId,
     ).length;
   },

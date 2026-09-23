@@ -1,3 +1,7 @@
+"use client";
+
+import { useMemo } from "react";
+import { useTravelRecords } from "@/lib/use-travel-records";
 import { BadgeGrid } from "@/components/stats/BadgeGrid";
 import { BadgeTeaser } from "@/components/stats/BadgeTeaser";
 import { CategoryStats } from "@/components/stats/CategoryStats";
@@ -9,12 +13,13 @@ import { userService } from "@/services/user.service";
 
 export default function StatsPage() {
   const currentUser = userService.getCurrentUser();
-  const stats = statsService.calculateStats(currentUser.id);
+  const records = useTravelRecords(currentUser.id);
+  const stats = useMemo(() => statsService.calculateStats(currentUser.id, records), [currentUser.id, records]);
 
   return (
-    <main className="min-h-screen bg-cream">
+    <main className="min-h-screen bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <StatsHero stats={stats} />
+        <StatsHero stats={stats} journeyCount={records.length} />
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <BadgeTeaser stats={stats} />

@@ -18,18 +18,17 @@ export function FilterChip({ icon, label, active = false, onClick }: FilterChipP
       <div 
         className={`h-12 w-12 rounded-full flex items-center justify-center transition-all duration-300 ${
           active 
-            ? "bg-forest text-white shadow-glow" 
-            : "bg-white/80 backdrop-blur-[10px] border border-white/50 text-forest shadow-sm group-hover:shadow-md"
+            ? "bg-brand-600 text-white shadow-glow-emerald"
+            : "bg-white/80 backdrop-blur-[10px] border border-white/50 text-brand-800 shadow-sm group-hover:shadow-md"
         }`}
       >
         {icon}
       </div>
       <span className={`text-xs whitespace-nowrap ${
-        active ? "text-forest font-semibold" : "text-slate"
+        active ? "text-brand-800 font-semibold" : "text-brand-800/65"
       }`}>
         {label}
       </span>
     </button>
   );
 }
-

@@ -23,10 +23,6 @@ const config: Config = {
         beige: {
           100: "#EDE8DD",
         },
-        forest: "#2D5F4F",
-        gold: "#FFB347",
-        slate: "#7A8FA3",
-        cream: "#F5F1E8",
       },
       boxShadow: {
         glass:
@@ -41,9 +37,6 @@ const config: Config = {
           "0 0 28px -2px rgba(45,106,79,0.5), 0 4px 16px rgba(45,106,79,0.25)",
         "liquid-glow":
           "0 10px 30px -5px rgba(52,211,153,0.25), inset 0 1px 1px rgba(255,255,255,0.8)",
-        "glass-md": "0 12px 32px rgba(45, 95, 79, 0.15)",
-        "glass-lg": "0 20px 48px rgba(45, 95, 79, 0.20)",
-        glow: "0 4px 16px rgba(45, 95, 79, 0.08)",
       },
       animation: {
         "glass-in": "glass-slide-up 0.5s ease-out",

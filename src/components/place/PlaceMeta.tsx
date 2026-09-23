@@ -20,7 +20,7 @@ export function PlaceMeta({ place }: PlaceMetaProps) {
             <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
             ช่วงเวลาเปิดปิด
           </h3>
-          <p className="text-xs sm:text-sm text-slate leading-relaxed">
+          <p className="text-xs sm:text-sm text-brand-800/65 leading-relaxed">
             {place.bestSeason}
           </p>
         </div>
@@ -32,7 +32,7 @@ export function PlaceMeta({ place }: PlaceMetaProps) {
             <Tent className="w-4 h-4 text-emerald-600 shrink-0" />
             จุดกางเต็นท์
           </h3>
-          <p className="text-xs sm:text-sm text-slate leading-relaxed">
+          <p className="text-xs sm:text-sm text-brand-800/65 leading-relaxed">
             {place.campingInfo}
           </p>
         </div>

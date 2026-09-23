@@ -136,14 +136,14 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-forest">
+        <label className="text-sm font-medium text-brand-800">
           รูปภาพ
-          <span className="ml-1 text-slate font-normal">
+          <span className="ml-1 text-brand-800/65 font-normal">
             ({value.length}/{MAX_FILES})
           </span>
         </label>
         {value.length === MAX_FILES && (
-          <span className="flex items-center gap-1 text-xs text-forest">
+          <span className="flex items-center gap-1 text-xs text-brand-800">
             <CheckCircle2 className="w-3.5 h-3.5" />
             ครบ {MAX_FILES} รูปแล้ว
           </span>
@@ -157,8 +157,8 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
           tabIndex={0}
           aria-label="อัปโหลดรูปภาพ"
           className={`relative flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200
-            ${dragging ? "border-forest bg-forest/5" : "border-beige hover:border-forest/50 hover:bg-forest/[0.02]"}
-            focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2
+            ${dragging ? "border-brand-600 bg-brand-600/5" : "border-brand-800/10 hover:border-brand-600/50 hover:bg-brand-600/[0.02]"}
+            focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
             ${loading ? "opacity-60 pointer-events-none" : ""}`}
           onClick={() => inputRef.current?.click()}
           onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
@@ -166,12 +166,12 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
         >
-          <Upload className={`w-8 h-8 ${dragging ? "text-forest" : "text-slate"}`} />
+          <Upload className={`w-8 h-8 ${dragging ? "text-brand-800" : "text-brand-800/65"}`} />
           <div className="text-center">
-            <p className="text-sm font-medium text-forest">
+            <p className="text-sm font-medium text-brand-800">
               {loading ? "กำลังโหลด..." : "คลิกหรือลากไฟล์มาวางที่นี่"}
             </p>
-            <p className="text-xs text-slate mt-0.5">JPG, PNG, WebP · สูงสุด 5 MB ต่อรูป</p>
+            <p className="text-xs text-brand-800/65 mt-0.5">JPG, PNG, WebP · สูงสุด 5 MB ต่อรูป</p>
           </div>
 
           <input
@@ -206,7 +206,7 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
       {value.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {value.map((photo, index) => (
-            <div key={index} className="group relative rounded-xl overflow-hidden bg-beige/20">
+            <div key={index} className="group relative rounded-xl overflow-hidden bg-beige-100/20">
               <div className="relative aspect-square">
                 <Image
                   src={photo.dataUrl}
@@ -234,7 +234,7 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
                   onChange={(e) => handleAltChange(index, e.target.value)}
                   placeholder="คำอธิบายรูป (alt)"
                   aria-label={`คำอธิบายสำหรับรูปที่ ${index + 1}`}
-                  className="w-full text-xs px-2 py-1 glass-input placeholder-slate/60 text-forest focus:outline-none focus:ring-1 focus:ring-forest"
+                  className="w-full text-xs px-2 py-1 glass-input placeholder-brand-800/50 text-brand-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
             </div>

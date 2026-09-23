@@ -18,7 +18,7 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
   return (
     <div className="flex flex-col gap-4 overflow-hidden">
       {/* Main image — gray placeholder until user uploads */}
-      <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-glass-md group">
+      <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-glass-card group">
         {mainPhoto ? (
           <Image
             src={mainPhoto}
@@ -43,7 +43,7 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
           {thumbnailPhotos.map((photo, idx) => (
             <div
               key={`${photo}-${idx}`}
-              className="aspect-square rounded-2xl overflow-hidden group cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glass-md"
+              className="aspect-square rounded-2xl overflow-hidden group cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glass-card"
             >
               <div className="relative w-full h-full">
                 <Image
@@ -58,11 +58,11 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
           ))}
 
           {showOverflowCard && (
-            <div className="aspect-square rounded-2xl liquid-glass flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glass-md">
+            <div className="aspect-square rounded-2xl liquid-glass flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glass-card">
               <span className="text-2xl font-bold text-brand-700 leading-none">
                 +{overflowCount}
               </span>
-              <span className="text-xs text-slate mt-1">ภาพถ่าย</span>
+              <span className="text-xs text-brand-800/65 mt-1">ภาพถ่าย</span>
             </div>
           )}
         </div>

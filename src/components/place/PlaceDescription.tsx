@@ -10,7 +10,7 @@ export function PlaceDescription({ place }: PlaceDescriptionProps) {
       <h2 className="text-base sm:text-lg font-bold text-brand-700 tracking-tight">
         เกี่ยวกับสถานที่
       </h2>
-      <p className="text-sm sm:text-base text-slate leading-relaxed">
+      <p className="text-sm sm:text-base text-brand-800/65 leading-relaxed">
         {place.description}
       </p>
     </div>

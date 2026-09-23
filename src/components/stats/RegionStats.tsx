@@ -15,8 +15,8 @@ const regions: { key: Region; label: string }[] = [
 
 export function RegionStats({ stats }: RegionStatsProps) {
   return (
-    <section className="card-glass p-6" aria-labelledby="region-heading">
-      <h2 id="region-heading" className="text-xl font-bold text-forest">ภูมิภาคที่ไปเยือน</h2>
+    <section className="liquid-glass-card p-6" aria-labelledby="region-heading">
+      <h2 id="region-heading" className="text-xl font-bold text-brand-800">ภูมิภาคที่ไปเยือน</h2>
       <div className="mt-5 space-y-5">
         {regions.map(({ key, label }) => {
           const region = stats.byRegion[key];
@@ -24,13 +24,13 @@ export function RegionStats({ stats }: RegionStatsProps) {
           return (
             <div key={key} className={region.count === 0 ? "opacity-45" : ""}>
               <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="font-medium text-forest">{label}</span>
-                <span className="shrink-0 text-slate">{region.count} แห่ง</span>
+                <span className="font-medium text-brand-800">{label}</span>
+                <span className="shrink-0 text-brand-800/65">{region.count} แห่ง</span>
               </div>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-beige/40">
-                <div className="h-full rounded-full bg-gold" style={{ width: `${progress}%` }} />
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-beige-100/40">
+                <div className="h-full rounded-full bg-amber-400" style={{ width: `${progress}%` }} />
               </div>
-              <p className="mt-1 text-xs text-slate">{region.provinces.length ? region.provinces.join(" · ") : "ยังไม่มีจังหวัดที่บันทึก"}</p>
+              <p className="mt-1 text-xs text-brand-800/65">{region.provinces.length ? region.provinces.join(" · ") : "ยังไม่มีจังหวัดที่บันทึก"}</p>
             </div>
           );
         })}

@@ -18,10 +18,10 @@ export function PassportHeader({
   const initials = user.name.slice(0, 1);
 
   return (
-    <section className="card-glass p-6 md:p-8" aria-labelledby="passport-heading">
+    <section className="liquid-glass-card p-6 md:p-8" aria-labelledby="passport-heading">
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
-          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-forest text-2xl font-bold text-white ring-4 ring-white/70">
+          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600 text-2xl font-bold text-white ring-4 ring-white/70">
             {user.avatar ? (
               <Image src={user.avatar} alt={user.name} fill className="object-cover" />
             ) : (
@@ -29,11 +29,11 @@ export function PassportHeader({
             )}
           </div>
           <div>
-            <p className="text-sm font-medium text-slate">บันทึกการเดินทางของ</p>
-            <h1 id="passport-heading" className="text-2xl font-bold text-forest">
+            <p className="text-sm font-medium text-brand-800/65">บันทึกการเดินทางของ</p>
+            <h1 id="passport-heading" className="text-2xl font-bold text-brand-800">
               {user.name}
             </h1>
-            <p className="text-sm text-slate">@{user.username}</p>
+            <p className="text-sm text-brand-800/65">@{user.username}</p>
           </div>
         </div>
 

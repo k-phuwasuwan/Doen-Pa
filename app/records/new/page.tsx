@@ -32,7 +32,7 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
       {/* Back link */}
       <Link
         href={backHref}
-        className="inline-flex items-center gap-1.5 text-sm text-slate hover:text-forest transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-sm text-brand-800/65 hover:text-brand-800 transition-colors mb-6"
       >
         <ArrowLeft className="w-4 h-4" />
         {backLabel}
@@ -40,10 +40,10 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
 
       {/* Centered card */}
       <div className="max-w-xl mx-auto">
-        <div className="card-glass p-4 sm:p-6 md:p-8">
+        <div className="liquid-glass-card p-4 sm:p-6 md:p-8">
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-forest">บันทึกการเดินทาง</h1>
-            <p className="text-slate text-sm mt-1">
+            <h1 className="text-2xl font-bold text-brand-800">บันทึกการเดินทาง</h1>
+            <p className="text-brand-800/65 text-sm mt-1">
               บันทึกความทรงจำและรูปภาพของทริปนี้ลงแพสพอร์ต
             </p>
           </div>

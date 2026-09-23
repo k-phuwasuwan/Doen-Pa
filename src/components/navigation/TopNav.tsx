@@ -33,7 +33,7 @@ export function TopNav() {
               href={link.href}
                 className={`flex items-center rounded-full px-6 py-2 text-sm transition-colors ${
                 isActive
-                  ? "bg-gradient-to-r from-brand-600 to-emerald-700 text-white font-semibold shadow-glow"
+                  ? "bg-gradient-to-r from-brand-600 to-emerald-700 text-white font-semibold shadow-glow-emerald"
                   : "text-brand-800/80 hover:bg-white/70"
               }`}
             >

@@ -64,12 +64,12 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
   if (success) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
-        <div className="w-14 h-14 rounded-full bg-forest/10 flex items-center justify-center">
-          <CheckCircle2 className="w-8 h-8 text-forest" />
+        <div className="w-14 h-14 rounded-full bg-brand-600/10 flex items-center justify-center">
+          <CheckCircle2 className="w-8 h-8 text-brand-800" />
         </div>
         <div>
-          <p className="font-bold text-forest text-lg">บันทึกสำเร็จ!</p>
-          <p className="text-slate text-sm mt-1">กำลังพาไปที่แพสพอร์ต…</p>
+          <p className="font-bold text-brand-800 text-lg">บันทึกสำเร็จ!</p>
+          <p className="text-brand-800/65 text-sm mt-1">กำลังพาไปที่แพสพอร์ต…</p>
         </div>
       </div>
     );
@@ -78,17 +78,17 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
       {/* Place info — read-only */}
-      <div className="flex items-center gap-3 p-4 rounded-xl bg-forest/5 border border-forest/10">
+      <div className="flex items-center gap-3 p-4 rounded-xl bg-brand-600/5 border border-brand-600/10">
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-slate mb-0.5">สถานที่</p>
-          <p className="font-semibold text-forest truncate">{place.name}</p>
-          <p className="text-xs text-slate">{place.location}, {place.province}</p>
+          <p className="text-xs text-brand-800/65 mb-0.5">สถานที่</p>
+          <p className="font-semibold text-brand-800 truncate">{place.name}</p>
+          <p className="text-xs text-brand-800/65">{place.location}, {place.province}</p>
         </div>
       </div>
 
       {/* Date */}
       <div>
-        <label htmlFor="visitedAt" className="block text-sm font-medium text-forest mb-1.5">
+        <label htmlFor="visitedAt" className="block text-sm font-medium text-brand-800 mb-1.5">
           <span className="flex items-center gap-1.5">
             <CalendarDays className="w-4 h-4" />
             วันที่ไป <span className="text-red-500">*</span>
@@ -106,7 +106,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
           required
           aria-invalid={!!errors.visitedAt}
           aria-describedby={errors.visitedAt ? "visitedAt-error" : undefined}
-          className="glass-input block w-full px-3 py-2.5 text-forest focus:outline-none focus:ring-2 focus:ring-forest transition-shadow"
+          className="glass-input block w-full px-3 py-2.5 text-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-shadow"
         />
         {errors.visitedAt && (
           <p id="visitedAt-error" role="alert" className="mt-1 text-xs text-red-600">
@@ -120,7 +120,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
 
       {/* Note */}
       <div>
-        <label htmlFor="note" className="block text-sm font-medium text-forest mb-1.5">
+        <label htmlFor="note" className="block text-sm font-medium text-brand-800 mb-1.5">
           <span className="flex items-center gap-1.5">
             <FileText className="w-4 h-4" />
             บันทึกความทรงจำ
@@ -132,13 +132,13 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
           onChange={(e) => setNote(e.target.value)}
           rows={4}
           placeholder="เล่าประสบการณ์การเดินทาง สิ่งที่ประทับใจ หรือเคล็ดลับสำหรับการไปครั้งหน้า..."
-          className="glass-input block w-full px-3 py-2.5 text-forest placeholder-slate/60 resize-none focus:outline-none focus:ring-2 focus:ring-forest transition-shadow"
+          className="glass-input block w-full px-3 py-2.5 text-brand-800 placeholder-brand-800/50 resize-none focus:outline-none focus:ring-2 focus:ring-brand-500 transition-shadow"
         />
       </div>
 
       {/* Star rating */}
       <div>
-        <p className="text-sm font-medium text-forest mb-2">คะแนนส่วนตัว (ไม่บังคับ)</p>
+        <p className="text-sm font-medium text-brand-800 mb-2">คะแนนส่วนตัว (ไม่บังคับ)</p>
         <div
           role="radiogroup"
           aria-label="คะแนนส่วนตัว 1 ถึง 5 ดาว"
@@ -154,13 +154,13 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
               aria-label={`${star} ดาว`}
               onClick={() => setRating(rating === star ? 0 : star)}
               onMouseEnter={() => setHoverRating(star)}
-              className="p-0.5 focus:outline-none focus:ring-2 focus:ring-forest rounded transition-transform active:scale-90"
+              className="p-0.5 focus:outline-none focus:ring-2 focus:ring-brand-500 rounded transition-transform active:scale-90"
             >
               <Star
                 className={`w-7 h-7 transition-colors duration-100 ${
                   star <= (hoverRating || rating)
-                    ? "fill-gold text-gold"
-                    : "text-beige"
+                    ? "fill-amber-400 text-amber-400"
+                    : "text-brand-800/30"
                 }`}
               />
             </button>
@@ -169,7 +169,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
             <button
               type="button"
               onClick={() => setRating(0)}
-              className="ml-2 text-xs text-slate hover:text-forest underline"
+              className="ml-2 text-xs text-brand-800/65 hover:text-brand-800 underline"
             >
               ล้าง
             </button>
@@ -188,7 +188,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
       <button
         type="submit"
         disabled={submitting}
-        className="glass-button w-full py-3 text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
+        className="glass-button w-full py-3 text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {submitting ? "กำลังบันทึก…" : "บันทึกลงแพสพอร์ต"}
       </button>

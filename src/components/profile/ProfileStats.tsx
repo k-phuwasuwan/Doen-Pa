@@ -8,7 +8,7 @@ interface ProfileStatsProps {
 
 export function ProfileStats({ placeCount, provinceCount, badgeCount }: ProfileStatsProps) {
   return (
-    <section className="card-glass p-5" aria-label="สถิติโปรไฟล์">
+    <section className="liquid-glass-card p-5" aria-label="สถิติโปรไฟล์">
       <div className="grid grid-cols-3 gap-3">
         <StatCard value={placeCount} label="สถานที่" />
         <StatCard value={provinceCount} label="จังหวัด" />

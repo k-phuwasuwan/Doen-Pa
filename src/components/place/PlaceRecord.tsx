@@ -32,7 +32,7 @@ export function PlaceRecord({ record }: PlaceRecordProps) {
         </div>
 
         {/* Date pill */}
-        <div className="liquid-glass inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs sm:text-sm text-slate font-medium">
+        <div className="liquid-glass inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs sm:text-sm text-brand-800/65 font-medium">
           <CalendarDays className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
           {formatThaiDate(record.visitedAt)}
         </div>
@@ -48,7 +48,7 @@ export function PlaceRecord({ record }: PlaceRecordProps) {
             <Star
               key={i}
               className={`w-4 h-4 drop-shadow-sm ${
-                i < record.rating ? "fill-gold text-gold" : "fill-beige-100 text-beige-100"
+                i < record.rating ? "fill-amber-400 text-amber-400" : "fill-beige-100 text-beige-100"
               }`}
             />
           ))}

@@ -2,86 +2,114 @@
 
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import type { GeoJsonObject, Feature } from "geojson";
-import { PROVINCE_TH_TO_EN } from "./constants";
-
-// Leaflet CSS
+import type { GeoJsonObject } from "geojson";
+import type { Place } from "@/types";
 import "leaflet/dist/leaflet.css";
 
-const BRAND_GREEN = "#1b4332";
-const BRAND_LIGHT = "#dcf0e2";
+const THAILAND_BOUNDS: L.LatLngBoundsExpression = [[5.5, 97.5], [20.5, 105.7]];
 
 interface ThailandMapProps {
-  visitedProvinces: string[];
+  places: Place[];
+  selectedPlaceId: string | null;
+  onSelectPlace: (placeId: string | null) => void;
 }
 
-export default function ThailandMap({ visitedProvinces }: ThailandMapProps) {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<L.Map | null>(null);
+function pinIcon(selected: boolean): L.DivIcon {
+  return L.divIcon({
+    className: "visited-map-pin-wrapper",
+    html: `<span class="visited-map-pin${selected ? " visited-map-pin--selected" : ""}"><span class="visited-map-pin__center"></span></span>`,
+    iconSize: [44, 44],
+    iconAnchor: [22, 42],
+  });
+}
 
-  const visitedKey = visitedProvinces.join("|");
+export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: ThailandMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.LayerGroup | null>(null);
+  const onSelectRef = useRef(onSelectPlace);
 
   useEffect(() => {
-    if (!mapContainerRef.current || mapRef.current) return;
-    const visitedSet = new Set(
-      visitedKey.split("|").filter(Boolean).map((p) => PROVINCE_TH_TO_EN[p] ?? p),
-    );
+    onSelectRef.current = onSelectPlace;
+  }, [onSelectPlace]);
 
-    const map = L.map(mapContainerRef.current, {
-      center: [13.0, 101.0],
-      zoom: 5.5,
-      zoomControl: true,
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
+
+    const map = L.map(containerRef.current, {
+      center: [13, 101],
+      zoom: 6,
+      zoomControl: false,
       scrollWheelZoom: true,
-      attributionControl: false,
+      attributionControl: true,
     });
-
     mapRef.current = map;
+    map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24] });
 
-    let isMounted = true;
+    L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+      subdomains: "abc",
+      maxZoom: 17,
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM · © <a href="https://opentopomap.org/">OpenTopoMap</a> (CC-BY-SA)',
+    }).addTo(map);
 
-    fetch("/data/thailand.json")
-      .then((res) => res.json())
-      .then((geojson: GeoJsonObject) => {
-        if (!isMounted) return;
+    L.control.zoom({ position: "topright" }).addTo(map);
+    markersRef.current = L.layerGroup().addTo(map);
+    map.on("click", () => onSelectRef.current(null));
 
+    const controller = new AbortController();
+    fetch("/data/thailand.json", { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error("Province boundaries unavailable");
+        return response.json() as Promise<GeoJsonObject>;
+      })
+      .then((geojson) => {
+        if (controller.signal.aborted) return;
         L.geoJSON(geojson, {
-          style: (feature?: Feature) => {
-            const name = (feature?.properties as { name: string } | undefined)?.name ?? "";
-            const visited = visitedSet.has(name);
-            return {
-              fillColor: visited ? BRAND_GREEN : BRAND_LIGHT,
-              fillOpacity: visited ? 0.75 : 0.45,
-              color: "rgba(255,255,255,0.6)",
-              weight: 1,
-            };
-          },
-          onEachFeature: (feature, layer) => {
-            const name = (feature.properties as { name: string }).name;
-            const visited = visitedSet.has(name);
-            layer.bindTooltip(
-              `<span style="font-size:13px;font-weight:600;color:${visited ? BRAND_GREEN : "#0f291e"}">${name}</span>`,
-              { sticky: true, opacity: 0.95 },
-            );
-          },
+          interactive: false,
+          style: { fillOpacity: 0, color: "#345344", opacity: 0.45, weight: 1 },
         }).addTo(map);
-
-        // Fit to Thailand bounds
-        const bounds = L.latLngBounds([5.5, 97.5], [20.5, 105.7]);
-        map.fitBounds(bounds, { padding: [16, 16] });
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) console.error("Failed to load province boundaries:", error);
       });
 
     return () => {
-      isMounted = false;
+      controller.abort();
       map.remove();
       mapRef.current = null;
+      markersRef.current = null;
     };
-  }, [visitedKey]);
+  }, []);
+
+  useEffect(() => {
+    const layer = markersRef.current;
+    if (!layer) return;
+
+    layer.clearLayers();
+    for (const place of places) {
+      if (place.latitude === undefined || place.longitude === undefined) continue;
+      L.marker([place.latitude, place.longitude], {
+        icon: pinIcon(place.id === selectedPlaceId),
+        title: place.name,
+        alt: `สถานที่ที่เคยไป ${place.name}`,
+        keyboard: true,
+        riseOnHover: true,
+      })
+        .on("click", (event: L.LeafletMouseEvent) => {
+          L.DomEvent.stopPropagation(event);
+          onSelectRef.current(place.id);
+        })
+        .addTo(layer);
+    }
+  }, [places, selectedPlaceId]);
 
   return (
     <div
-      ref={mapContainerRef}
-      className="w-full h-full min-h-[500px] rounded-2xl overflow-hidden"
-      aria-label="แผนที่จังหวัดที่เคยไปในประเทศไทย"
+      ref={containerRef}
+      className="h-full w-full bg-brand-100"
+      role="application"
+      aria-label="แผนที่ภูมิประเทศประเทศไทย แสดงหมุดสถานที่ที่เคยไป"
     />
   );
 }

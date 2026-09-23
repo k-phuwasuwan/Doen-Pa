@@ -74,7 +74,7 @@ Every feature must serve this journey. If it doesn't help users **record hiking 
 | `/search` | Home / Search | Search hero + category filter + recommended place list |
 | `/places/[id]` | Place Details | **Full page, NOT a dialog/modal** |
 | `/records/new` | Travel Record Form | Opened via `?placeId=[id]` query param |
-| `/map` | Map | Thailand map, provinces highlighted by visited status |
+| `/map` | Map | Full-page terrain map with pins for unique visited places |
 | `/passport` | Passport | Filterable grid of TravelRecordCards |
 | `/stats` | Stats | Hero stats, badges, province/category/region breakdown |
 | `/profile` | Profile | Cover + avatar + stats + Post Gallery |
@@ -414,10 +414,11 @@ export function PlaceCard({ place }: Props) { ... }
 - On submit: `travelRecordService.createRecord()` then redirect to `/passport`
 
 ### `/map`
-- Full-viewport Leaflet map of Thailand (`ThailandMap`, dynamic-imported with `ssr: false`)
-- Visited provinces: `fillColor` brand-600; not visited: lighter brand-100/200
-- Floating `.liquid-glass` badge pill top-center: "อุทยานที่ไปแล้ว X แห่ง"
-- GeoJSON source: Thailand provinces (e.g. `apisit/thailand.json`), stored at `public/data/thailand.json`
+- Full-page Leaflet terrain map of Thailand (`ThailandMap`, dynamic-imported with `ssr: false`)
+- Pins only for unique visited places with valid `latitude`/`longitude`; do not shade provinces by visited status
+- Floating `.liquid-glass` badge pill top-center: "สถานที่ที่ไปแล้ว X แห่ง" (unique places)
+- Selecting a pin opens a display-only place card at the bottom on mobile and desktop: user's record photo when available, name, distance, altitude. The card does not navigate.
+- GeoJSON at `public/data/thailand.json` may show neutral province outlines as map context
 
 ### `/passport`
 - `PassportHeader`: avatar + username + 3 `StatCard`
@@ -448,13 +449,13 @@ npm install -D @types/leaflet
 ```
 
 - GeoJSON: download Thailand provinces boundary data, save to `public/data/thailand.json`
-- `ThailandMap` must be dynamically imported with `{ ssr: false }`:
+- `ThailandMap` is dynamically imported by `DynamicThailandMap` with `{ ssr: false }`:
 
 ```typescript
 const ThailandMap = dynamic(() => import('@/components/map/ThailandMap'), { ssr: false })
 ```
 
-- Province styling is driven by `visitedProvinces: string[]`, derived server-side from `travelRecordService.getRecordsByUser()` joined with `placeService` to resolve `placeId → province`.
+- Pins are driven by the current user's valid TravelRecords joined with Places and deduplicated by `placeId`. Records with no matching Place do not count.
 
 ---
 
@@ -602,7 +603,7 @@ Always ask: **"Does this help users record their hiking memories?"**
    Add to Passport
    Travel Record (date, photos, note, personal rating)
    Passport View
-   Map — visited-provinces overview (Leaflet, no GPS/routing)
+   Map — visited-place pins on a terrain map (Leaflet, no GPS/routing)
    Stats + Badge Collection
    Profile
 
@@ -619,7 +620,7 @@ Always ask: **"Does this help users record their hiking memories?"**
    Messaging
 ```
 
-**Note:** `/map` is a *visited-provinces overview*, not a trip planner or GPS navigator. A visually appealing mockup (e.g. from Stitch) may include elements from the "NOT IN MVP" list purely because it's a generic template — always flag and ask before wiring such content to real data, even if a similar case was resolved before.
+**Note:** `/map` shows the user's visited places as pins, not a trip planner or GPS navigator. A visually appealing mockup (e.g. from Stitch) may include elements from the "NOT IN MVP" list purely because it's a generic template — always flag and ask before wiring such content to real data, even if a similar case was resolved before.
 
 ---
 

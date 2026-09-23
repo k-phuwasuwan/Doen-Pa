@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import type { Place } from "@/types";
-import { BookmarkButton, StampButton } from "./PlaceCardActions";
+import { StampButton } from "./PlaceCardActions";
 
 const placeTypeLabels: Record<Place["type"], string> = {
   mountain: "ภูเขา",
@@ -18,7 +18,6 @@ export function PlaceCard({ place, visitCount = 0 }: { place: Place; visitCount?
         <div className="relative h-52 w-full shrink-0 bg-beige-100">
           <div className="absolute inset-0 bg-gradient-to-t from-brand-950/70 via-transparent to-transparent" />
           <span className="absolute left-4 top-4 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-brand-800 backdrop-blur">{placeTypeLabels[place.type]}</span>
-          <BookmarkButton />
         </div>
         <div className="flex min-h-52 flex-1 flex-col p-4">
           <h3 className="mb-1 text-lg font-bold text-brand-800">{place.name}</h3>

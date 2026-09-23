@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MapPin } from "lucide-react";
 import type { Place } from "@/types";
 import { StampButton } from "./PlaceCardActions";
+import { VisitCount } from "./VisitCount";
 
 const placeTypeLabels: Record<Place["type"], string> = {
   mountain: "ภูเขา",
@@ -11,7 +12,7 @@ const placeTypeLabels: Record<Place["type"], string> = {
   national_park: "อุทยานแห่งชาติ",
 };
 
-export function PlaceCard({ place, visitCount = 0 }: { place: Place; visitCount?: number }) {
+export function PlaceCard({ place, userId }: { place: Place; userId: string }) {
   return (
     <Link href={`/places/${place.id}`} className="block group h-full">
       <div className="liquid-glass-card h-full flex flex-col overflow-hidden rounded-3xl">
@@ -27,7 +28,7 @@ export function PlaceCard({ place, visitCount = 0 }: { place: Place; visitCount?
             <span className="truncate">{place.location}, {place.province}</span>
           </div>
           <div className="mt-auto flex min-h-14 items-center justify-end gap-3 border-t border-brand-800/10 pt-3 text-xs text-brand-800/60">
-            {visitCount > 0 && <span className="mr-auto">เคยไปแล้ว {visitCount} ครั้ง</span>}
+            <VisitCount placeId={place.id} userId={userId} />
             <StampButton placeId={place.id} />
           </div>
         </div>

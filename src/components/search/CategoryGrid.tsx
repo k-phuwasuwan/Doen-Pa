@@ -11,7 +11,11 @@ const categories: { label: string; type: PlaceType | "all"; icon: typeof Compass
   { label: "หมู่เกาะ & ทะเล", type: "island", icon: Umbrella },
 ];
 
-export function CategoryGrid({ currentType = "all" }: { currentType?: PlaceType | "all" }) {
+export function CategoryGrid({ currentType = "all", query = "", visited = "all" }: {
+  currentType?: PlaceType | "all";
+  query?: string;
+  visited?: "all" | "visited" | "unvisited";
+}) {
   return (
     <section aria-labelledby="category-title" className="py-8">
       <div className="mb-5 flex items-end justify-center text-center">
@@ -27,6 +31,8 @@ export function CategoryGrid({ currentType = "all" }: { currentType?: PlaceType 
             {...category}
             count={placeService.filterByType(category.type).length}
             active={currentType === category.type}
+            query={query}
+            visited={visited}
           />
         ))}
       </div>

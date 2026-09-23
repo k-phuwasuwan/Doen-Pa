@@ -15,8 +15,12 @@ export const mockPlaces: Place[] = [
     type: "mountain",
     altitude: "2565 m",
     distance: "8.5 km",
-    bestSeason: "เปิดให้บริการทุกวัน ช่วงที่ดีที่สุดคือ ต.ค. – ก.พ. (อากาศเย็น ทะเลหมอกสวย)",
+    bestSeason:
+      "เปิดให้บริการทุกวัน ช่วงที่ดีที่สุดคือ ต.ค. – ก.พ. (อากาศเย็น ทะเลหมอกสวย)",
     campingInfo: "มีลานกางเต็นท์ให้บริการภายในพื้นที่อุทยาน ต้องจองล่วงหน้า",
+
+    latitude: 18.5327878,
+    longitude: 98.5461701,
   },
   {
     id: "place-doi-chiang-dao",
@@ -33,34 +37,9 @@ export const mockPlaces: Place[] = [
     distance: "5.2 km",
     bestSeason: "เปิดให้บริการทุกวัน ควรหลีกเลี่ยงช่วงฤดูฝน (มิ.ย. – ต.ค.)",
     campingInfo: "มีลานกางเต็นท์ให้บริการภายในพื้นที่อุทยาน",
-  },
-  {
-    id: "place-huay-tung-tao",
-    name: "ห้วยตึงเฒ่า",
-    location: "อำเภอเมือง",
-    province: "เชียงใหม่",
-    region: "north",
-    description:
-      "อ่างเก็บน้ำห้วยตึงเฒ่า บริเวณทิวเขาดอยสุเทพ จุดชมวิวและกิจกรรมพักผ่อน",
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
-    type: "national_park",
-    altitude: "400 m",
-    distance: "3.0 km",
-  },
-  {
-    id: "place-mae-sa-waterfall",
-    name: "น้ำตกแม่สา",
-    location: "อำเภอแม่ริม",
-    province: "เชียงใหม่",
-    region: "north",
-    description:
-      "น้ำตกแม่สา ชั้นน้ำตกหลายชั้น บริเวณดอยสุเทพ เดินทางสะดวก นิยมเดินป่า",
-    image:
-      "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=1200&h=800&fit=crop",
-    type: "waterfall",
-    altitude: "500 m",
-    distance: "2.5 km",
+
+    latitude: 19.3777134,
+    longitude: 99.661175,
   },
 
   // Central Region
@@ -77,19 +56,9 @@ export const mockPlaces: Place[] = [
     type: "national_park",
     altitude: "1350 m",
     distance: "15.0 km",
-  },
-  {
-    id: "place-hin-luong-waterfall",
-    name: "น้ำตกหินลอด",
-    location: "อำเภอเมือง",
-    province: "นครนายก",
-    region: "central",
-    description: "น้ำตกหินลอด ภูเขาหินลอด สวยงาม จุดชมวิวและอากาศดี",
-    image:
-      "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=800&fit=crop",
-    type: "waterfall",
-    altitude: "300 m",
-    distance: "3.5 km",
+
+    latitude: 14.3259751,
+    longitude: 101.5113421,
   },
   {
     id: "place-khao-sam-rok",
@@ -103,6 +72,9 @@ export const mockPlaces: Place[] = [
     type: "mountain",
     altitude: "604 m",
     distance: "6.0 km",
+
+    latitude: 12.2013677,
+    longitude: 99.961136,
   },
 
   // South Region
@@ -119,20 +91,9 @@ export const mockPlaces: Place[] = [
     type: "national_park",
     altitude: "960 m",
     distance: "12.0 km",
-  },
-  {
-    id: "place-emerald-cave",
-    name: "ถ้ำมรกต",
-    location: "อำเภอเมือง",
-    province: "ตรัง",
-    region: "south",
-    description:
-      "ถ้ำมรกต ถ้ำทะเลสวยงาม ต้องลอดผ่านหินและหาดทรายขาว จุดท่องเที่ยวยอดนิยม",
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
-    type: "cave",
-    altitude: "0 m",
-    distance: "1.0 km",
+
+    latitude: 9.0686887,
+    longitude: 98.637592,
   },
   {
     id: "place-phi-phi",
@@ -146,19 +107,9 @@ export const mockPlaces: Place[] = [
     type: "island",
     altitude: "0 m",
     distance: "0.5 km",
-  },
-  {
-    id: "place-khao-phing-kan",
-    name: "เขาพิงกัน",
-    location: "อำเภอเมือง",
-    province: "พังงา",
-    region: "south",
-    description: "เขาพิงกัน หรือเกาะเจมส์บอนด์ ก้อนหินที่สมดุล วิวสวยงาม",
-    image:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=800&fit=crop",
-    type: "island",
-    altitude: "0 m",
-    distance: "0.8 km",
+
+    latitude: 7.8925193,
+    longitude: 98.8267127,
   },
 
   // Northeast Region
@@ -175,6 +126,9 @@ export const mockPlaces: Place[] = [
     type: "mountain",
     altitude: "1316 m",
     distance: "9.0 km",
+
+    latitude: 16.888506,
+    longitude: 101.7667183,
   },
   {
     id: "place-phu-reua",
@@ -188,6 +142,9 @@ export const mockPlaces: Place[] = [
     type: "mountain",
     altitude: "1365 m",
     distance: "7.5 km",
+
+    latitude: 17.4938327,
+    longitude: 101.3413007,
   },
   {
     id: "place-phu-wieng",
@@ -201,6 +158,9 @@ export const mockPlaces: Place[] = [
     type: "mountain",
     altitude: "1279 m",
     distance: "8.0 km",
+
+    latitude: 16.702482,
+    longitude: 102.2520099,
   },
   {
     id: "place-tat-ton",
@@ -214,36 +174,12 @@ export const mockPlaces: Place[] = [
     type: "waterfall",
     altitude: "300 m",
     distance: "2.0 km",
+
+    latitude: 15.9817656,
+    longitude: 102.0280442,
   },
 
   // East Region
-  {
-    id: "place-khao-khieo",
-    name: "อุทยานแห่งชาติเขาเขียว",
-    location: "อำเภอเขาค้อ",
-    province: "ชลบุรี",
-    region: "east",
-    description:
-      "อุทยานแห่งชาติเขาเขียว ป่าเขา น้ำตก และสวนสัตว์ จุดท่องเที่ยวครบวงจร",
-    image:
-      "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=800&fit=crop",
-    type: "national_park",
-    altitude: "800 m",
-    distance: "10.0 km",
-  },
-  {
-    id: "place-bang-sare",
-    name: "หาดบางแสร",
-    location: "อำเภอสัตหีบ",
-    province: "ชลบุรี",
-    region: "east",
-    description: "หาดบางแสร หาดทรายสวยงาม ชายหาดยาว และแหล่งท่องเที่ยวชายทะเล",
-    image:
-      "https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&h=800&fit=crop",
-    type: "island",
-    altitude: "0 m",
-    distance: "2.0 km",
-  },
   {
     id: "place-khao-sam-roi-yod",
     name: "อุทยานแห่งชาติเขาสามร้อยยอด",
@@ -256,35 +192,10 @@ export const mockPlaces: Place[] = [
     type: "national_park",
     altitude: "605 m",
     distance: "8.0 km",
+
+    latitude: 12.2013677,
+    longitude: 99.961136,
   },
 
   // West Region
-  {
-    id: "place-thi-lo-su",
-    name: "น้ำตกทีลอซู",
-    location: "อำเภออุ้มผาง",
-    province: "ตาก",
-    region: "west",
-    description:
-      "หนึ่งในน้ำตกที่ใหญ่ที่สุดของไทย ในอุทยานแห่งชาติอุ้มผาง ต้องวางแผนเดินทางล่วงหน้า",
-    image:
-      "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=1200&h=800&fit=crop",
-    type: "waterfall",
-    altitude: "900 m",
-    distance: "15.0 km",
-  },
-  {
-    id: "place-tham-lot",
-    name: "ถ้ำลอด",
-    location: "อำเภอปางมะผ้า",
-    province: "แม่ฮ่องสอน",
-    region: "west",
-    description:
-      "ถ้ำหินปูนมีลำน้ำไหลผ่าน นั่งแพไม้ไผ่ลอดถ้ำ ชมหินงอกหินย้อยและโบราณคดีในถ้ำ",
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
-    type: "cave",
-    altitude: "400 m",
-    distance: "1.5 km",
-  },
 ];

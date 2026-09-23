@@ -1,5 +1,16 @@
-export type PlaceType = 'mountain' | 'waterfall' | 'cave' | 'island' | 'national_park';
-export type Region = 'north' | 'central' | 'south' | 'northeast' | 'east' | 'west';
+export type PlaceType =
+  | "mountain"
+  | "waterfall"
+  | "cave"
+  | "island"
+  | "national_park";
+export type Region =
+  | "north"
+  | "central"
+  | "south"
+  | "northeast"
+  | "east"
+  | "west";
 
 export interface User {
   id: string;
@@ -18,6 +29,8 @@ export interface Place {
   description: string;
   image: string;
   type: PlaceType;
+  latitude?: number;
+  longitude?: number;
   altitude?: string;
   distance?: string;
   /** Static copy for now — TODO: replace with real data */

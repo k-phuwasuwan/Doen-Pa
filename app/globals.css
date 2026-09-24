@@ -165,9 +165,23 @@ body {
 }
 .visited-map-pin-wrapper:focus-visible { outline: 3px solid #1b4332; outline-offset: 2px; border-radius: 50%; }
 .leaflet-control-attribution { font-family: var(--font-plus-jakarta), sans-serif; }
+.map-fullscreen .leaflet-tile-pane { filter: saturate(0.58) sepia(0.08) brightness(1.08) contrast(0.9); }
+.map-country-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f291e;
+  font-family: var(--font-kanit), sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 4px #f4f2eb, 0 -1px 4px #f4f2eb, 1px 0 4px #f4f2eb, -1px 0 4px #f4f2eb;
+  pointer-events: none;
+}
 .map-fullscreen .leaflet-top.leaflet-right { top: 6rem; }
 @media (max-width: 767px) {
   .map-fullscreen .leaflet-bottom .leaflet-control-attribution { margin-bottom: 4rem; }
+  .map-fullscreen--place-selected .leaflet-bottom .leaflet-control-attribution { margin-bottom: 20rem; }
 }
 
 @media (max-width: 767px) {

@@ -415,6 +415,7 @@ export function PlaceCard({ place }: Props) { ... }
 
 ### `/map`
 - Full-viewport Leaflet map of Thailand (`ThailandMap`, dynamic-imported with `ssr: false`); the map extends behind the floating TopNav and mobile BottomNav
+- Use a light, simple terrain background matching Design System v2. Hide the base map's city/road labels and display only the neighboring country names in Thai as noninteractive labels.
 - Pins only for unique visited places with valid `latitude`/`longitude`; do not shade provinces by visited status
 - Floating `.liquid-glass` badge pill top-center: "สถานที่ที่ไปแล้ว X แห่ง" (unique places)
 - Selecting a pin opens a display-only place card at the bottom on mobile and desktop: user's record photo when available, name, distance, altitude. The card does not navigate.
@@ -456,6 +457,7 @@ const ThailandMap = dynamic(() => import('@/components/map/ThailandMap'), { ssr:
 ```
 
 - Pins are driven by the current user's valid TravelRecords joined with Places and deduplicated by `placeId`. Records with no matching Place do not count.
+- Terrain tiles use Stadia Maps' Stamen Terrain Background layer. Localhost works without a key; deployed domains need `NEXT_PUBLIC_STADIA_MAPS_API_KEY` or Stadia domain authentication.
 
 ---
 

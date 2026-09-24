@@ -7,6 +7,17 @@ import type { Place } from "@/types";
 import "leaflet/dist/leaflet.css";
 
 const THAILAND_BOUNDS: L.LatLngBoundsExpression = [[5.5, 97.5], [20.5, 105.7]];
+const COUNTRY_LABELS = [
+  { name: "เมียนมา", position: [17.1, 97.1] },
+  { name: "ลาว", position: [18.1, 103.1] },
+  { name: "กัมพูชา", position: [12.6, 104.6] },
+  { name: "เวียดนาม", position: [16.4, 107.2] },
+  { name: "มาเลเซีย", position: [6.1, 101.1] },
+] as const;
+const STADIA_API_KEY = process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY;
+const TERRAIN_URL =
+  "https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}.png" +
+  (STADIA_API_KEY ? `?api_key=${encodeURIComponent(STADIA_API_KEY)}` : "");
 
 interface ThailandMapProps {
   places: Place[];
@@ -39,6 +50,7 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
     const map = L.map(containerRef.current, {
       center: [13, 101],
       zoom: 6,
+      zoomSnap: 0.25,
       zoomControl: false,
       scrollWheelZoom: true,
       attributionControl: true,
@@ -46,15 +58,27 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
     mapRef.current = map;
     map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24] });
 
-    L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-      subdomains: "abc",
-      maxZoom: 17,
+    L.tileLayer(TERRAIN_URL, {
+      maxZoom: 18,
       attribution:
-        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM · © <a href="https://opentopomap.org/">OpenTopoMap</a> (CC-BY-SA)',
+        '© <a href="https://stadiamaps.com/">Stadia Maps</a> · © <a href="https://stamen.com/">Stamen Design</a> · © <a href="https://openmaptiles.org/">OpenMapTiles</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
     L.control.zoom({ position: "topright" }).addTo(map);
     markersRef.current = L.layerGroup().addTo(map);
+    for (const country of COUNTRY_LABELS) {
+      L.marker([...country.position], {
+        icon: L.divIcon({
+          className: "map-country-label",
+          html: country.name,
+          iconSize: [96, 28],
+          iconAnchor: [48, 14],
+        }),
+        interactive: false,
+        keyboard: false,
+        pane: "shadowPane",
+      }).addTo(map);
+    }
     map.on("click", () => onSelectRef.current(null));
 
     const controller = new AbortController();
@@ -67,7 +91,7 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
         if (controller.signal.aborted) return;
         L.geoJSON(geojson, {
           interactive: false,
-          style: { fillOpacity: 0, color: "#345344", opacity: 0.45, weight: 1 },
+          style: { fillColor: "#dcf0e2", fillOpacity: 0.14, color: "#2d6a4f", opacity: 0.38, weight: 1 },
         }).addTo(map);
       })
       .catch((error: unknown) => {
@@ -81,6 +105,25 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
       markersRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const coordinates = places.flatMap((place): L.LatLngTuple[] =>
+      place.latitude === undefined || place.longitude === undefined
+        ? []
+        : [[place.latitude, place.longitude]],
+    );
+    if (coordinates.length === 0) {
+      map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24] });
+      return;
+    }
+    map.fitBounds(L.latLngBounds(coordinates), {
+      paddingTopLeft: [48, 144],
+      paddingBottomRight: [48, 112],
+      maxZoom: 6,
+    });
+  }, [places]);
 
   useEffect(() => {
     const layer = markersRef.current;

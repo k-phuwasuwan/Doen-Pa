@@ -34,10 +34,10 @@ export function MapOverview() {
     : undefined;
 
   return (
-    <section className="map-fullscreen fixed inset-0 h-dvh w-full overflow-hidden bg-brand-100" aria-label="แผนที่สถานที่ที่เคยไป">
+    <section className={`map-fullscreen fixed inset-0 h-dvh w-full overflow-hidden bg-brand-100${selectedPlace ? " map-fullscreen--place-selected" : ""}`} aria-label="แผนที่สถานที่ที่เคยไป">
       <DynamicThailandMap places={places} selectedPlaceId={selectedPlaceId} onSelectPlace={setSelectedPlaceId} />
 
-      <div className="pointer-events-none absolute inset-x-4 top-28 z-[1000] flex justify-center md:top-32">
+      <div className="pointer-events-none absolute inset-x-4 top-28 z-[1000] flex justify-center md:top-24">
         <div className="liquid-glass-capsule flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-brand-900 shadow-glass sm:text-base">
           <MapPin className="h-4 w-4 text-brand-600" aria-hidden="true" />
           สถานที่ที่ไปแล้ว {places.length} แห่ง

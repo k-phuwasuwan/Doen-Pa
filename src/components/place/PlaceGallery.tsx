@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PhotoLightbox } from "./PhotoLightbox";
 
 interface PlaceGalleryProps {
@@ -10,12 +11,15 @@ interface PlaceGalleryProps {
 }
 
 export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const mainPhoto = recordPhotos[0];
-  const thumbnailPhotos = recordPhotos.slice(1, 3);
-  const overflowCount = Math.max(0, recordPhotos.length - 3);
-  const showThumbnailRow = thumbnailPhotos.length > 0 || overflowCount > 0;
+  const visibleIndex = Math.min(currentPhotoIndex, Math.max(0, recordPhotos.length - 1));
+  const visiblePhoto = recordPhotos[visibleIndex];
+
+  function showPhoto(index: number) {
+    setCurrentPhotoIndex(index);
+  }
 
   function openPhoto(index: number, trigger: HTMLButtonElement) {
     triggerRef.current = trigger;
@@ -27,68 +31,65 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
     requestAnimationFrame(() => triggerRef.current?.focus());
   }
 
+  function showLightboxPhoto(index: number) {
+    setCurrentPhotoIndex(index);
+    setActivePhotoIndex(index);
+  }
+
   return (
-    <div className="flex flex-col gap-4 overflow-hidden">
-      {mainPhoto ? (
-        <button
-          type="button"
-          onClick={(event) => openPhoto(0, event.currentTarget)}
-          className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-glass-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
-          aria-label="ดูภาพจากการเดินทาง รูปที่ 1"
-        >
-          <Image
-            src={mainPhoto}
-            alt="ภาพจากการเดินทางของคุณ"
-            fill
-            priority
-            className="object-cover object-center"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-          />
-          <span className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/20" />
-        </button>
-      ) : (
-        <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-beige-100 shadow-glass-card" />
-      )}
+    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-beige-100 shadow-glass-card">
+      {visiblePhoto && (
+        <>
+          <button
+            type="button"
+            onClick={(event) => openPhoto(visibleIndex, event.currentTarget)}
+            className="absolute inset-0 h-full w-full focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-brand-500"
+            aria-label={`ดูภาพจากการเดินทาง รูปที่ ${visibleIndex + 1} แบบเต็มจอ`}
+          >
+            <Image
+              src={visiblePhoto}
+              alt={`ภาพจากการเดินทางของคุณ รูปที่ ${visibleIndex + 1}`}
+              fill
+              priority
+              className="object-cover object-center"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+            <span className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/20" />
+          </button>
 
-      {showThumbnailRow && (
-        <div className="grid grid-cols-3 gap-3.5 overflow-hidden">
-          {thumbnailPhotos.map((photo, index) => (
-            <button
-              key={`${photo}-${index}`}
-              type="button"
-              onClick={(event) => openPhoto(index + 1, event.currentTarget)}
-              className="relative aspect-square overflow-hidden rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
-              aria-label={`ดูภาพจากการเดินทาง รูปที่ ${index + 2}`}
-            >
-              <Image
-                src={photo}
-                alt={`ภาพความทรงจำที่ ${index + 2}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 33vw, 16vw"
-              />
-            </button>
-          ))}
+          {recordPhotos.length > 1 && (
+            <div className="pointer-events-none absolute inset-x-4 bottom-4 z-10 flex items-center justify-between gap-2 sm:inset-x-5 sm:bottom-5">
+              <button
+                type="button"
+                onClick={() => showPhoto((visibleIndex - 1 + recordPhotos.length) % recordPhotos.length)}
+                className="liquid-glass pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-brand-800 shadow-glass transition-all duration-200 hover:brightness-110 active:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                aria-label="ภาพก่อนหน้า"
+              >
+                <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+              </button>
 
-          {overflowCount > 0 && (
-            <button
-              type="button"
-              onClick={(event) => openPhoto(3, event.currentTarget)}
-              className="liquid-glass flex aspect-square flex-col items-center justify-center rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
-              aria-label={`ดูภาพถ่ายที่เหลืออีก ${overflowCount} รูป`}
-            >
-              <span className="text-2xl font-bold leading-none text-brand-700">+{overflowCount}</span>
-              <span className="mt-1 text-xs text-brand-800/65">ภาพถ่าย</span>
-            </button>
+              <span aria-live="polite" className="liquid-glass rounded-full px-4 py-2 text-sm font-semibold tabular-nums text-brand-800 shadow-glass">
+                {visibleIndex + 1} / {recordPhotos.length}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => showPhoto((visibleIndex + 1) % recordPhotos.length)}
+                className="liquid-glass pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-brand-800 shadow-glass transition-all duration-200 hover:brightness-110 active:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                aria-label="ภาพถัดไป"
+              >
+                <ChevronRight className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
           )}
-        </div>
+        </>
       )}
 
       {activePhotoIndex !== null && (
         <PhotoLightbox
           photos={recordPhotos}
           activeIndex={activePhotoIndex}
-          onIndexChange={setActivePhotoIndex}
+          onIndexChange={showLightboxPhoto}
           onClose={closePhoto}
         />
       )}

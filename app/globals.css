@@ -165,6 +165,10 @@ body {
 }
 .visited-map-pin-wrapper:focus-visible { outline: 3px solid #1b4332; outline-offset: 2px; border-radius: 50%; }
 .leaflet-control-attribution { font-family: var(--font-plus-jakarta), sans-serif; }
+.map-fullscreen .leaflet-top.leaflet-right { top: 6rem; }
+@media (max-width: 767px) {
+  .map-fullscreen .leaflet-bottom .leaflet-control-attribution { margin-bottom: 4rem; }
+}
 
 @media (max-width: 767px) {
   .liquid-glass,

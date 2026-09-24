@@ -34,10 +34,10 @@ export function MapOverview() {
     : undefined;
 
   return (
-    <section className="relative mt-4 h-[calc(100dvh-9rem)] min-h-[28rem] overflow-hidden bg-brand-100 md:mt-5 md:h-[calc(100dvh-6rem)]" aria-label="แผนที่สถานที่ที่เคยไป">
+    <section className="map-fullscreen fixed inset-0 h-dvh w-full overflow-hidden bg-brand-100" aria-label="แผนที่สถานที่ที่เคยไป">
       <DynamicThailandMap places={places} selectedPlaceId={selectedPlaceId} onSelectPlace={setSelectedPlaceId} />
 
-      <div className="pointer-events-none absolute inset-x-4 top-4 z-[1000] flex justify-center">
+      <div className="pointer-events-none absolute inset-x-4 top-28 z-[1000] flex justify-center md:top-32">
         <div className="liquid-glass-capsule flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-brand-900 shadow-glass sm:text-base">
           <MapPin className="h-4 w-4 text-brand-600" aria-hidden="true" />
           สถานที่ที่ไปแล้ว {places.length} แห่ง
@@ -45,7 +45,7 @@ export function MapOverview() {
       </div>
 
       {places.length === 0 && (
-        <div className="pointer-events-none absolute inset-x-4 top-24 z-[1000] flex justify-center">
+        <div className="pointer-events-none absolute inset-x-4 top-44 z-[1000] flex justify-center md:top-48">
           <p className="liquid-glass-card max-w-sm rounded-3xl px-5 py-4 text-center text-sm text-brand-800">
             ยังไม่มีสถานที่บนแผนที่ เริ่มบันทึกสถานที่ที่คุณเคยไปในแพสพอร์ต
           </p>
@@ -53,7 +53,7 @@ export function MapOverview() {
       )}
 
       {selectedPlace && (
-        <aside className="absolute bottom-8 left-1/2 z-[1000] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 md:bottom-7" aria-label={`รายละเอียด ${selectedPlace.name}`}>
+        <aside className="absolute bottom-20 left-1/2 z-[1000] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 md:bottom-7" aria-label={`รายละเอียด ${selectedPlace.name}`}>
           <div className="liquid-glass-card relative rounded-3xl p-3 shadow-glass-card sm:p-4">
             <button
               type="button"

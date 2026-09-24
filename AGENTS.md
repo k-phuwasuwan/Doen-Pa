@@ -414,7 +414,7 @@ export function PlaceCard({ place }: Props) { ... }
 - On submit: `travelRecordService.createRecord()` then redirect to `/passport`
 
 ### `/map`
-- Full-page Leaflet terrain map of Thailand (`ThailandMap`, dynamic-imported with `ssr: false`)
+- Full-viewport Leaflet map of Thailand (`ThailandMap`, dynamic-imported with `ssr: false`); the map extends behind the floating TopNav and mobile BottomNav
 - Pins only for unique visited places with valid `latitude`/`longitude`; do not shade provinces by visited status
 - Floating `.liquid-glass` badge pill top-center: "สถานที่ที่ไปแล้ว X แห่ง" (unique places)
 - Selecting a pin opens a display-only place card at the bottom on mobile and desktop: user's record photo when available, name, distance, altitude. The card does not navigate.

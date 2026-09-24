@@ -29,7 +29,7 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
               src={image}
               alt={`ภาพความทรงจำจาก ${place.name}`}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (

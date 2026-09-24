@@ -332,7 +332,7 @@ Anywhere a Stitch mockup used a real photo (`<img src="lh3.googleusercontent.com
 - User avatar pill on the right shows initials + display name; this is mock/local user data, not real auth
 - `TopNav` must be a Client Component (`usePathname()` for active state)
 
-**Mobile:** collapses to logo + hamburger; `BottomNav` (same 5 routes) remains the primary mobile navigation.
+**Mobile:** show a compact logo capsule without a hamburger. `BottomNav` is the primary navigation: a floating Liquid Glass capsule with the same 5 routes, icons and short labels, a clear active state, and safe-area spacing.
 
 ---
 

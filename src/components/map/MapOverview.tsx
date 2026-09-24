@@ -53,7 +53,7 @@ export function MapOverview() {
       )}
 
       {selectedPlace && (
-        <aside className="absolute bottom-20 left-1/2 z-[1000] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 md:bottom-7" aria-label={`รายละเอียด ${selectedPlace.name}`}>
+        <aside className="absolute bottom-28 left-1/2 z-[1000] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 md:bottom-7" aria-label={`รายละเอียด ${selectedPlace.name}`}>
           <div className="liquid-glass-card relative rounded-3xl p-3 shadow-glass-card sm:p-4">
             <button
               type="button"

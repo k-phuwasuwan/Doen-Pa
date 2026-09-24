@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="ambient-glow-mesh-2 right-[-18rem] top-[20rem]" aria-hidden="true" />
         <div className="ambient-glow-mesh-3 bottom-[-22rem] left-[30%]" aria-hidden="true" />
         <TopNav />
-        <main className="relative z-10 flex-1 pb-16 md:pb-0">
+        <main className="relative z-10 flex-1 pb-28 md:pb-0">
           {children}
         </main>
         <BottomNav />

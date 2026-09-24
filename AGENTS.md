@@ -417,6 +417,7 @@ export function PlaceCard({ place }: Props) { ... }
 - Full-viewport Leaflet map of Thailand (`ThailandMap`, dynamic-imported with `ssr: false`); the map extends behind the floating TopNav and mobile BottomNav
 - Use a light, simple terrain background matching Design System v2. Hide the base map's city/road labels and display only the neighboring country names in Thai as noninteractive labels.
 - Keep panning within Thailand and the nearby Southeast Asian region so the user cannot drag the map far from visited places.
+- Keep the required Stadia Maps, Stamen Design, OpenMapTiles, and OpenStreetMap attribution visible in a compact corner pill; omit Leaflet's optional UI prefix.
 - Pins only for unique visited places with valid `latitude`/`longitude`; do not shade provinces by visited status
 - Floating `.liquid-glass` badge pill top-center: "สถานที่ที่ไปแล้ว X แห่ง" (unique places)
 - Selecting a pin opens a display-only place card at the bottom on mobile and desktop: user's record photo when available, name, distance, altitude. The card does not navigate.

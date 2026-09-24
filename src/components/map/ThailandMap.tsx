@@ -58,6 +58,7 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
       attributionControl: true,
     });
     mapRef.current = map;
+    map.attributionControl.setPrefix(false);
     map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24] });
 
     L.tileLayer(TERRAIN_URL, {

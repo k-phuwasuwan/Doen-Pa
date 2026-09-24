@@ -354,7 +354,7 @@ Anywhere a Stitch mockup used a real photo (`<img src="lh3.googleusercontent.com
 - `PassportFilter` / `/passport/page.tsx` — client-side filtering by type
 - `BottomNav` — uses `usePathname()` to highlight active tab
 - `PlaceActions` — uses `useRouter()` to navigate to `/records/new`
-- `BackButton` — uses `router.back()`
+- `BackButton` — links directly to `/search`, regardless of browser history
 - Anything using `useState`, `useEffect`, Browser APIs
 
 ```typescript
@@ -397,7 +397,7 @@ export function PlaceCard({ place }: Props) { ... }
 
 ### `/places/[id]` (v2 — redesigned per Stitch mockup, decisions locked below)
 - Full page (not a modal). `notFound()` if place doesn't exist.
-- `BackButton` ("← ย้อนกลับ") above the two-column layout — pill shape (`.liquid-glass-capsule` or `.liquid-glass`), arrow icon slides left on hover
+- `BackButton` ("← ย้อนกลับ") above the two-column layout — links directly to `/search` and uses a pill shape (`.liquid-glass-capsule` or `.liquid-glass`), with the arrow sliding left on hover
 - Desktop: two columns, `gap-8` to `gap-12` —
   - **Left:** `PlaceGallery` (no box — image sits directly on page background, matching the gallery-only side)
   - **Right:** `PlaceInfoPanel` — **wrapped in a `.liquid-glass-card` box** (`rounded-3xl`, generous padding `p-6` to `p-9`, `shadow-glass-card`) — *this reverses an earlier "no boxed card" decision; the box is back, styled with Design System v2 classes, not the mockup's own `.ultra-glass-panel`*

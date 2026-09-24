@@ -13,20 +13,37 @@ interface PhotoLightboxProps {
 }
 
 export function PhotoLightbox({ photos, activeIndex, onIndexChange, onClose }: PhotoLightboxProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [imageStatus, setImageStatus] = useState<"loading" | "loaded" | "error">("loading");
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-    dialog?.showModal();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
-    return () => dialog?.close();
+    return () => { document.body.style.overflow = previousOverflow; };
   }, []);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key === "Tab") {
+        const buttons = [...(overlayRef.current?.querySelectorAll<HTMLButtonElement>("button:not([tabindex='-1'])") ?? [])];
+        const currentIndex = buttons.indexOf(document.activeElement as HTMLButtonElement);
+        if (buttons.length > 0 && ((event.shiftKey && currentIndex === 0) || (!event.shiftKey && currentIndex === buttons.length - 1))) {
+          event.preventDefault();
+          buttons[event.shiftKey ? buttons.length - 1 : 0].focus();
+        }
+        return;
+      }
+
       if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (photos.length < 2) return;
       event.preventDefault();
       const direction = event.key === "ArrowLeft" ? -1 : 1;
       setImageStatus("loading");
@@ -35,7 +52,7 @@ export function PhotoLightbox({ photos, activeIndex, onIndexChange, onClose }: P
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [activeIndex, onIndexChange, photos.length]);
+  }, [activeIndex, onClose, onIndexChange, photos.length]);
 
   function goTo(index: number) {
     setImageStatus("loading");
@@ -43,14 +60,12 @@ export function PhotoLightbox({ photos, activeIndex, onIndexChange, onClose }: P
   }
 
   return createPortal(
-    <dialog
-      ref={dialogRef}
+    <div
+      ref={overlayRef}
+      role="dialog"
+      aria-modal="true"
       aria-label="ดูรูปภาพจากการเดินทาง"
-      onCancel={(event) => {
-        event.preventDefault();
-        onClose();
-      }}
-      className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-hidden bg-brand-950/95 p-4 text-white backdrop:bg-brand-950/95 sm:p-6"
+      className="photo-lightbox"
     >
       <button type="button" onClick={onClose} tabIndex={-1} aria-hidden="true" className="absolute inset-0 h-full w-full cursor-default" />
       <div className="relative mx-auto flex h-full max-w-6xl flex-col gap-4">
@@ -78,7 +93,7 @@ export function PhotoLightbox({ photos, activeIndex, onIndexChange, onClose }: P
               alt={`ภาพจากการเดินทาง รูปที่ ${activeIndex + 1}`}
               fill
               className="object-contain"
-              sizes="100vw"
+              sizes="(max-width: 1152px) 100vw, 1152px"
               onLoad={() => setImageStatus("loaded")}
               onError={() => setImageStatus("error")}
             />
@@ -106,7 +121,7 @@ export function PhotoLightbox({ photos, activeIndex, onIndexChange, onClose }: P
           )}
         </div>
       </div>
-    </dialog>,
+    </div>,
     document.body,
   );
 }

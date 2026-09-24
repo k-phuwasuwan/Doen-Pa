@@ -66,7 +66,7 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
                   event.stopPropagation();
                   showPhoto(-1);
                 }}
-                className="absolute left-2 top-1/2 z-10 flex h-12 w-10 -translate-y-1/2 items-center justify-center rounded-lg bg-white/55 text-brand-900 backdrop-blur-sm transition-colors hover:bg-white/85 active:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:left-4"
+                className="place-gallery-control place-gallery-control--previous"
                 aria-label="ภาพก่อนหน้า"
               >
                 <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -82,7 +82,7 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
                   event.stopPropagation();
                   showPhoto(1);
                 }}
-                className="absolute right-2 top-1/2 z-10 flex h-12 w-10 -translate-y-1/2 items-center justify-center rounded-lg bg-white/55 text-brand-900 backdrop-blur-sm transition-colors hover:bg-white/85 active:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:right-4"
+                className="place-gallery-control place-gallery-control--next"
                 aria-label="ภาพถัดไป"
               >
                 <ChevronRight className="h-5 w-5" aria-hidden="true" />

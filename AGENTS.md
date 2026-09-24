@@ -321,7 +321,7 @@ Anywhere a Stitch mockup used a real photo (`<img src="lh3.googleusercontent.com
 
 ## Navigation (capsule style)
 
-**Desktop:** `TopNav` is a **floating capsule**, not an edge-to-edge bar — `sticky top-4`, wrapped in a `max-w-7xl mx-auto` container with horizontal padding, `.liquid-glass-capsule` background, `rounded-full`, `shadow-glass hover:shadow-glass-hover`.
+**Desktop:** `TopNav` is a **floating capsule**, not an edge-to-edge bar — `sticky top-4`, spanning the viewport width with horizontal padding, `.liquid-glass-capsule` background, `rounded-full`, `shadow-glass hover:shadow-glass-hover`.
 
 ```
 [Logo + wordmark]   [pill nav: ค้นหา (active, filled gradient) | แผนที่ | พาสปอร์ต ● | สถิติ | โปรไฟล์]   [avatar pill: "N  นักท่องไพร"]
@@ -404,7 +404,7 @@ export function PlaceCard({ place }: Props) { ... }
 - Inside `PlaceInfoPanel`, top to bottom: name → location row (province chip + region chip, each as a small `.liquid-glass` pill) → `PlaceChips` → `<hr>` → "เกี่ยวกับสถานที่" + description → `PlaceMeta` (two `.liquid-glass-card` tiles side by side: ช่วงเวลาเปิดปิด / จุดกางเต็นท์ — static copy for now) → `PlaceRecord` (only if user has a TravelRecord here) → `PlaceActions` (primary button + bookmark only — **no share button**)
 - `PlaceChips` order (locked): **ประเภท → ความสูง → ระยะทาง** (type → altitude → distance) — each chip is a small icon-in-rounded-square + label, `.liquid-glass` pill background
 - `PlaceRecord` (only if visited): pulsing green status dot + "คุณเคยไปที่นี่แล้ว" + date pill (right-aligned) → star rating (personal, read-only) → quote with a left accent border — no aggregate score anywhere
-- `PlaceGallery`: show one large image at a time, using the user's own TravelRecord photos for that place. If no photo exists, show a plain gray placeholder. For multiple photos, place understated previous/next controls at the vertical center of the image's left/right edges and a small position counter near the top center; do not render a thumbnail row. Clicking the image opens the current photo in the full-screen viewer. Do not scale gallery images on hover.
+- `PlaceGallery`: show one large image at a time, using the user's own TravelRecord photos for that place. If no photo exists, show a plain gray placeholder. For multiple photos, place understated dark frosted previous/next controls at the vertical center of the image's left/right edges and a small position counter near the top center; do not render a thumbnail row. Clicking the image opens the current photo in a fixed full-screen overlay. Do not scale gallery images on hover.
 - Below the two-column layout: `PlaceGuidelines` — 3-card grid, only rendered if `place.guidelines` has entries
 - **Dropped from this page** (per redesign): trail-route breakdown section, "เกี่ยวกับสถานที่ & ข้อปฏิบัติ" regulations block, emergency contact card, aggregate rating display, booking-status breadcrumb badge, "Doen Pa Passport" digital stamp graphic widget — none of these are implemented
 

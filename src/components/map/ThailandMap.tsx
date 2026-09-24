@@ -6,7 +6,8 @@ import type { GeoJsonObject } from "geojson";
 import type { Place } from "@/types";
 import "leaflet/dist/leaflet.css";
 
-const THAILAND_BOUNDS: L.LatLngBoundsExpression = [[5.5, 97.5], [20.5, 105.7]];
+const THAILAND_BOUNDS: L.LatLngBoundsLiteral = [[5.5, 97.5], [20.5, 105.7]];
+const MAP_PAN_PADDING = 0.3;
 const COUNTRY_LABELS = [
   { name: "เมียนมา", position: [17.1, 97.1] },
   { name: "ลาว", position: [18.1, 103.1] },
@@ -51,6 +52,7 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
       center: [13, 101],
       zoom: 6,
       zoomSnap: 0.25,
+      maxBoundsViscosity: 1,
       zoomControl: false,
       scrollWheelZoom: true,
       attributionControl: true,
@@ -114,15 +116,18 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
         ? []
         : [[place.latitude, place.longitude]],
     );
+    map.setMaxBounds();
     if (coordinates.length === 0) {
       map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24] });
-      return;
+    } else {
+      map.fitBounds(L.latLngBounds(coordinates), {
+        paddingTopLeft: [48, 144],
+        paddingBottomRight: [48, 112],
+        maxZoom: 6,
+      });
     }
-    map.fitBounds(L.latLngBounds(coordinates), {
-      paddingTopLeft: [48, 144],
-      paddingBottomRight: [48, 112],
-      maxZoom: 6,
-    });
+
+    map.setMaxBounds(L.latLngBounds(THAILAND_BOUNDS).extend(map.getBounds()).pad(MAP_PAN_PADDING));
   }, [places]);
 
   useEffect(() => {

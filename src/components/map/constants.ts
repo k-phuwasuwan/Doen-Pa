@@ -77,3 +77,7 @@ export const PROVINCE_TH_TO_EN: Record<string, string> = {
   นราธิวาส: "Narathiwat",
   ระนอง: "Ranong",
 };
+
+export const PROVINCE_EN_TO_TH: Record<string, string> = Object.fromEntries(
+  Object.entries(PROVINCE_TH_TO_EN).map(([thaiName, englishName]) => [englishName, thaiName]),
+);

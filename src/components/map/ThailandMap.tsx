@@ -2,8 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import type { GeoJsonObject } from "geojson";
+import type { FeatureCollection, Geometry } from "geojson";
 import type { Place } from "@/types";
+import { PROVINCE_EN_TO_TH } from "./constants";
+import { provinceLabelWidth, updateProvinceLabels, type ProvinceLabel } from "./provinceLabels";
 import "leaflet/dist/leaflet.css";
 
 const THAILAND_BOUNDS: L.LatLngBoundsLiteral = [[5.5, 97.5], [20.5, 105.7]];
@@ -19,6 +21,7 @@ const STADIA_API_KEY = process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY;
 const TERRAIN_URL =
   "https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}.png" +
   (STADIA_API_KEY ? `?api_key=${encodeURIComponent(STADIA_API_KEY)}` : "");
+type ProvinceGeoJSON = FeatureCollection<Geometry, { name: string }>;
 
 interface ThailandMapProps {
   places: Place[];
@@ -39,6 +42,8 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.LayerGroup | null>(null);
+  const provinceLabelsRef = useRef<ProvinceLabel[]>([]);
+  const placesRef = useRef(places);
   const onSelectRef = useRef(onSelectPlace);
 
   useEffect(() => {
@@ -83,19 +88,53 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
       }).addTo(map);
     }
     map.on("click", () => onSelectRef.current(null));
+    const refreshProvinceLabels = () => updateProvinceLabels(
+      map,
+      provinceLabelsRef.current,
+      placesRef.current,
+    );
+    map.on("moveend zoomend resize", refreshProvinceLabels);
 
     const controller = new AbortController();
     fetch("/data/thailand.json", { signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error("Province boundaries unavailable");
-        return response.json() as Promise<GeoJsonObject>;
+        return response.json() as Promise<ProvinceGeoJSON>;
       })
       .then((geojson) => {
         if (controller.signal.aborted) return;
         L.geoJSON(geojson, {
           interactive: false,
           style: { fillColor: "#dcf0e2", fillOpacity: 0.14, color: "#2d6a4f", opacity: 0.38, weight: 1 },
+          onEachFeature(feature, layer) {
+            const name = PROVINCE_EN_TO_TH[feature.properties.name];
+            if (!name || !(layer instanceof L.Polygon)) return;
+            const bounds = layer.getBounds();
+            const position = bounds.getCenter();
+            const width = provinceLabelWidth(name);
+            const labelText = document.createElement("span");
+            labelText.textContent = name;
+            const marker = L.marker(position, {
+              icon: L.divIcon({
+                className: "map-province-label",
+                html: labelText,
+                iconSize: [width, 20],
+                iconAnchor: [width / 2, 10],
+              }),
+              interactive: false,
+              keyboard: false,
+              pane: "shadowPane",
+            }).addTo(map);
+            provinceLabelsRef.current.push({
+              name,
+              position,
+              width,
+              marker,
+              area: (bounds.getEast() - bounds.getWest()) * (bounds.getNorth() - bounds.getSouth()),
+            });
+          },
         }).addTo(map);
+        refreshProvinceLabels();
       })
       .catch((error: unknown) => {
         if (!controller.signal.aborted) console.error("Failed to load province boundaries:", error);
@@ -103,15 +142,18 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
 
     return () => {
       controller.abort();
+      map.off("moveend zoomend resize", refreshProvinceLabels);
       map.remove();
       mapRef.current = null;
       markersRef.current = null;
+      provinceLabelsRef.current = [];
     };
   }, []);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
+    placesRef.current = places;
     const coordinates = places.flatMap((place): L.LatLngTuple[] =>
       place.latitude === undefined || place.longitude === undefined
         ? []
@@ -129,6 +171,7 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
     }
 
     map.setMaxBounds(L.latLngBounds(THAILAND_BOUNDS).extend(map.getBounds()).pad(MAP_PAN_PADDING));
+    updateProvinceLabels(map, provinceLabelsRef.current, places);
   }, [places]);
 
   useEffect(() => {

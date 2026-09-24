@@ -422,6 +422,7 @@ export function PlaceCard({ place }: Props) { ... }
 - Floating `.liquid-glass` badge pill top-center: "สถานที่ที่ไปแล้ว X แห่ง" (unique places)
 - Selecting a pin opens a display-only place card at the bottom on mobile and desktop: user's record photo when available, name, distance, altitude. The card does not navigate.
 - GeoJSON at `public/data/thailand.json` may show neutral province outlines as map context
+- Show small Thai province names from that GeoJSON, using zoom-aware collision handling so labels do not overwhelm the visited-place pins.
 
 ### `/passport`
 - `PassportHeader`: avatar + username + 3 `StatCard`

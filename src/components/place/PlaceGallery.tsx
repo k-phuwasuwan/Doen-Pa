@@ -17,8 +17,8 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
   const visibleIndex = Math.min(currentPhotoIndex, Math.max(0, recordPhotos.length - 1));
   const visiblePhoto = recordPhotos[visibleIndex];
 
-  function showPhoto(index: number) {
-    setCurrentPhotoIndex(index);
+  function showPhoto(direction: -1 | 1) {
+    setCurrentPhotoIndex((index) => (index + direction + recordPhotos.length) % recordPhotos.length);
   }
 
   function openPhoto(index: number, trigger: HTMLButtonElement) {
@@ -47,6 +47,7 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
             aria-label={`ดูภาพจากการเดินทาง รูปที่ ${visibleIndex + 1} แบบเต็มจอ`}
           >
             <Image
+              key={visiblePhoto}
               src={visiblePhoto}
               alt={`ภาพจากการเดินทางของคุณ รูปที่ ${visibleIndex + 1}`}
               fill
@@ -58,29 +59,35 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
           </button>
 
           {recordPhotos.length > 1 && (
-            <div className="pointer-events-none absolute inset-x-4 bottom-4 z-10 flex items-center justify-between gap-2 sm:inset-x-5 sm:bottom-5">
+            <>
               <button
                 type="button"
-                onClick={() => showPhoto((visibleIndex - 1 + recordPhotos.length) % recordPhotos.length)}
-                className="liquid-glass pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-brand-800 shadow-glass transition-all duration-200 hover:brightness-110 active:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showPhoto(-1);
+                }}
+                className="absolute left-2 top-1/2 z-10 flex h-12 w-10 -translate-y-1/2 items-center justify-center rounded-lg bg-white/55 text-brand-900 backdrop-blur-sm transition-colors hover:bg-white/85 active:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:left-4"
                 aria-label="ภาพก่อนหน้า"
               >
-                <ChevronLeft className="h-6 w-6" aria-hidden="true" />
+                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
               </button>
 
-              <span aria-live="polite" className="liquid-glass rounded-full px-4 py-2 text-sm font-semibold tabular-nums text-brand-800 shadow-glass">
+              <span aria-live="polite" className="absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full bg-brand-950/45 px-3 py-1 text-xs font-medium tabular-nums text-white backdrop-blur-sm">
                 {visibleIndex + 1} / {recordPhotos.length}
               </span>
 
               <button
                 type="button"
-                onClick={() => showPhoto((visibleIndex + 1) % recordPhotos.length)}
-                className="liquid-glass pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-brand-800 shadow-glass transition-all duration-200 hover:brightness-110 active:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  showPhoto(1);
+                }}
+                className="absolute right-2 top-1/2 z-10 flex h-12 w-10 -translate-y-1/2 items-center justify-center rounded-lg bg-white/55 text-brand-900 backdrop-blur-sm transition-colors hover:bg-white/85 active:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:right-4"
                 aria-label="ภาพถัดไป"
               >
-                <ChevronRight className="h-6 w-6" aria-hidden="true" />
+                <ChevronRight className="h-5 w-5" aria-hidden="true" />
               </button>
-            </div>
+            </>
           )}
         </>
       )}

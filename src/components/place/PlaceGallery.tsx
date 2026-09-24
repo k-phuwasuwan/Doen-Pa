@@ -1,4 +1,8 @@
+"use client";
+
+import { useRef, useState } from "react";
 import Image from "next/image";
+import { PhotoLightbox } from "./PhotoLightbox";
 
 interface PlaceGalleryProps {
   /** User's own uploaded photos from TravelRecord. Empty = no record or no uploads. */
@@ -6,66 +10,87 @@ interface PlaceGalleryProps {
 }
 
 export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
-  const hasPhotos = recordPhotos.length > 0;
-  const mainPhoto = hasPhotos ? recordPhotos[0] : null;
+  const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const mainPhoto = recordPhotos[0];
+  const thumbnailPhotos = recordPhotos.slice(1, 3);
+  const overflowCount = Math.max(0, recordPhotos.length - 3);
+  const showThumbnailRow = thumbnailPhotos.length > 0 || overflowCount > 0;
 
-  // Show thumbnail row only when user has uploaded > 1 photo
-  const thumbnailPhotos = hasPhotos ? recordPhotos.slice(1, 3) : [];
-  const overflowCount = hasPhotos ? recordPhotos.length - 3 : 0; // photos beyond 3
-  const showOverflowCard = overflowCount > 0;
-  const showThumbnailRow = thumbnailPhotos.length > 0 || showOverflowCard;
+  function openPhoto(index: number, trigger: HTMLButtonElement) {
+    triggerRef.current = trigger;
+    setActivePhotoIndex(index);
+  }
+
+  function closePhoto() {
+    setActivePhotoIndex(null);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  }
 
   return (
     <div className="flex flex-col gap-4 overflow-hidden">
-      {/* Main image — gray placeholder until user uploads */}
-      <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-glass-card group">
-        {mainPhoto ? (
+      {mainPhoto ? (
+        <button
+          type="button"
+          onClick={(event) => openPhoto(0, event.currentTarget)}
+          className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-glass-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+          aria-label="ดูภาพจากการเดินทาง รูปที่ 1"
+        >
           <Image
             src={mainPhoto}
             alt="ภาพจากการเดินทางของคุณ"
             fill
             priority
-            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+            className="object-cover object-center"
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
-        ) : (
-          <div className="w-full h-full bg-beige-100 flex items-center justify-center">
-            {/* Plain placeholder — real photos come from user uploads */}
-          </div>
-        )}
-        {/* Inner specular rim */}
-        <div className="absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/20 pointer-events-none" />
-      </div>
+          <span className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/20" />
+        </button>
+      ) : (
+        <div className="aspect-[4/3] w-full overflow-hidden rounded-3xl bg-beige-100 shadow-glass-card" />
+      )}
 
-      {/* Thumbnail row — only when user has uploaded multiple photos */}
       {showThumbnailRow && (
         <div className="grid grid-cols-3 gap-3.5 overflow-hidden">
-          {thumbnailPhotos.map((photo, idx) => (
-            <div
-              key={`${photo}-${idx}`}
-              className="aspect-square rounded-2xl overflow-hidden group cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glass-card"
+          {thumbnailPhotos.map((photo, index) => (
+            <button
+              key={`${photo}-${index}`}
+              type="button"
+              onClick={(event) => openPhoto(index + 1, event.currentTarget)}
+              className="relative aspect-square overflow-hidden rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+              aria-label={`ดูภาพจากการเดินทาง รูปที่ ${index + 2}`}
             >
-              <div className="relative w-full h-full">
-                <Image
-                  src={photo}
-                  alt={`ภาพความทรงจำที่ ${idx + 2}`}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  sizes="(max-width: 768px) 33vw, 16vw"
-                />
-              </div>
-            </div>
+              <Image
+                src={photo}
+                alt={`ภาพความทรงจำที่ ${index + 2}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 33vw, 16vw"
+              />
+            </button>
           ))}
 
-          {showOverflowCard && (
-            <div className="aspect-square rounded-2xl liquid-glass flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:shadow-glass-card">
-              <span className="text-2xl font-bold text-brand-700 leading-none">
-                +{overflowCount}
-              </span>
-              <span className="text-xs text-brand-800/65 mt-1">ภาพถ่าย</span>
-            </div>
+          {overflowCount > 0 && (
+            <button
+              type="button"
+              onClick={(event) => openPhoto(3, event.currentTarget)}
+              className="liquid-glass flex aspect-square flex-col items-center justify-center rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+              aria-label={`ดูภาพถ่ายที่เหลืออีก ${overflowCount} รูป`}
+            >
+              <span className="text-2xl font-bold leading-none text-brand-700">+{overflowCount}</span>
+              <span className="mt-1 text-xs text-brand-800/65">ภาพถ่าย</span>
+            </button>
           )}
         </div>
+      )}
+
+      {activePhotoIndex !== null && (
+        <PhotoLightbox
+          photos={recordPhotos}
+          activeIndex={activePhotoIndex}
+          onIndexChange={setActivePhotoIndex}
+          onClose={closePhoto}
+        />
       )}
     </div>
   );

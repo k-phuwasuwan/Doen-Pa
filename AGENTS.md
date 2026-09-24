@@ -405,6 +405,7 @@ export function PlaceCard({ place }: Props) { ... }
 - `PlaceChips` order (locked): **ประเภท → ความสูง → ระยะทาง** (type → altitude → distance) — each chip is a small icon-in-rounded-square + label, `.liquid-glass` pill background
 - `PlaceRecord` (only if visited): pulsing green status dot + "คุณเคยไปที่นี่แล้ว" + date pill (right-aligned) → star rating (personal, read-only) → quote with a left accent border — no aggregate score anywhere
 - `PlaceGallery`: main image area is a gray placeholder unless the user's own TravelRecord for this place has photos (then show the user's first uploaded photo); below it, a 3-up thumbnail row of the user's *other* uploaded photos for this place **only when they exist** — if the user has never uploaded photos here, no thumbnail row renders at all. Overflow beyond 3 thumbnails shows an empty `+N ภาพถ่าย` card (no photo behind the number, just the count)
+- Uploaded photos and the `+N ภาพถ่าย` card open a full-screen viewer; the overflow card starts at the first hidden photo. Do not scale gallery images on hover.
 - Below the two-column layout: `PlaceGuidelines` — 3-card grid, only rendered if `place.guidelines` has entries
 - **Dropped from this page** (per redesign): trail-route breakdown section, "เกี่ยวกับสถานที่ & ข้อปฏิบัติ" regulations block, emergency contact card, aggregate rating display, booking-status breadcrumb badge, "Doen Pa Passport" digital stamp graphic widget — none of these are implemented
 

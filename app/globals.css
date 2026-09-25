@@ -157,8 +157,8 @@ body {
   -webkit-backdrop-filter: blur(12px) saturate(140%);
   transition: background-color 150ms ease;
 }
-.place-gallery-control--previous { left: 0; border-radius: 0 12px 12px 0; }
-.place-gallery-control--next { right: 0; border-radius: 12px 0 0 12px; }
+.place-gallery-control--previous { left: 12px; border-radius: 12px; }
+.place-gallery-control--next { right: 12px; border-radius: 12px; }
 .place-gallery-control:hover { background: rgba(15, 41, 30, 0.62); }
 .place-gallery-control:active { background: rgba(15, 41, 30, 0.78); }
 .place-gallery-control:focus-visible { outline: 2px solid white; outline-offset: -4px; }

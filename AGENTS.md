@@ -27,7 +27,8 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/records/new?placeId=[id]` | New travel record for the given place; invalid/missing place redirects to Search. |
 | `/map` | Full-viewport visited-place terrain map. |
 | `/passport` | Current mock user's Passport and travel-record cards. |
-| `/passport?view=guest` | **Preview** of the logged-out Passport screen. Login button is disabled because auth does not exist; this URL is not a security boundary. |
+| `/passport?view=guest` | **Preview** of the logged-out Passport screen. Login button opens `/login`; this URL is not a security boundary. |
+| `/login` | Standalone login design with email/password and Google controls. Auth is not implemented; attempts show an unavailable message without sending or storing credentials. `from` keeps Back linked to the originating guest preview. |
 | `/stats` | Personal travel statistics and badges. |
 | `/stats?view=guest` | Logged-out Stats preview with an empty state and a link to the mock-user Stats page. |
 | `/profile` | Personal profile and photo gallery. |
@@ -39,7 +40,7 @@ Place Details receives an explicit origin when needed:
 - Passport cards open `/places/[id]?from=passport`: Back → `/passport`; the Passport nav item remains active; **read-only**, so no Stamp button.
 - Profile photos open `/places/[id]?from=profile`: Back → `/profile`; the Profile nav item remains active.
 - `src/components/navigation/activeNav.ts` owns active-tab mapping for TopNav and BottomNav. Preserve a visible active tab on nested pages and during client navigation.
-- On `?view=guest` previews, TopNav shows a disabled Login button instead of the mock-user pill. TopNav and BottomNav preserve `view=guest` when navigating between main routes. This query parameter is a design preview, not real authentication or access control.
+- On `?view=guest` previews, TopNav shows a Login link instead of the mock-user pill. TopNav and BottomNav preserve `view=guest` when navigating between main routes. This query parameter is a design preview, not real authentication or access control.
 - `BackButton` uses an explicit href, never browser history. In the record form, `returnTo=search` returns to Search; otherwise Back returns to the place page. A successful record submission redirects to Passport.
 
 Do not add a dialog version of Place Details. The map's selected-place card is display-only and does not navigate.

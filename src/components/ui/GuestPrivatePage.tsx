@@ -40,11 +40,10 @@ export function GuestPrivatePage({
         </div>
         <h2 id="guest-empty-heading" className="mt-8 text-2xl font-bold text-brand-800 sm:text-3xl">{emptyTitle}</h2>
         <p className="mt-3 max-w-sm text-base text-brand-800/65">{description}</p>
-        <button type="button" disabled aria-describedby="guest-login-note" className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-brand-700/15 bg-white/75 px-7 py-3 font-semibold text-brand-800/65 shadow-glass">
+        <Link href={`/login?from=${previewHref.slice(1)}`} className="liquid-glass mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-7 py-3 font-semibold text-brand-800 transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
           <LogIn className="h-5 w-5" aria-hidden="true" />
           เข้าสู่ระบบ
-        </button>
-        <p id="guest-login-note" className="mt-3 text-sm text-brand-800/65">ระบบเข้าสู่ระบบยังไม่เปิดใช้งาน</p>
+        </Link>
         <Link href={previewHref} className="mt-5 rounded-full px-4 py-2 text-sm font-medium text-brand-700 underline underline-offset-4 transition hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           {previewLabel}
         </Link>

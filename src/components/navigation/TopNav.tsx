@@ -64,10 +64,10 @@ function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: 
         </div>
 
         {isGuest ? (
-          <button type="button" disabled title="ระบบเข้าสู่ระบบยังไม่เปิดใช้งาน" className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/80 bg-white/80 px-3 py-1.5 text-sm font-semibold text-brand-800 shadow-glass sm:px-4">
+          <Link href={`/login?from=${activeHref.slice(1)}`} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/80 bg-white/80 px-3 py-1.5 text-sm font-semibold text-brand-800 shadow-glass transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:px-4">
             <LogIn className="h-4 w-4" aria-hidden="true" />
             เข้าสู่ระบบ
-          </button>
+          </Link>
         ) : (
           <div className="hidden items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-sm text-brand-800 md:flex">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">N</span>

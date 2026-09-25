@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Kanit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { TopNav } from "@/components/navigation/TopNav";
-import { BottomNav } from "@/components/navigation/BottomNav";
+import { AppShell } from "@/components/navigation/AppShell";
 
 const kanit = Kanit({
   variable: "--font-kanit",
@@ -34,11 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="ambient-glow-mesh-2 right-[-18rem] top-[20rem]" />
           <div className="ambient-glow-mesh-3 bottom-[-22rem] left-[30%]" />
         </div>
-        <TopNav />
-        <main className="relative z-10 flex-1 pb-28 md:pb-0">
-          {children}
-        </main>
-        <BottomNav />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

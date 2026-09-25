@@ -40,8 +40,8 @@ function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: 
 
   return (
     <nav className="sticky top-4 z-40 mx-4 flex items-center md:mx-auto md:w-full md:px-8">
-      <div className="liquid-glass-capsule flex w-full items-center justify-between rounded-full px-4 py-2 shadow-glass transition-shadow hover:shadow-glass-hover md:px-6">
-        <Link href={getNavigationHref("/search", isGuest)} className="flex items-center gap-2 rounded-full text-xl font-bold text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600">
+      <div className="liquid-glass-capsule flex min-h-16 w-full items-center justify-between rounded-full px-5 py-2.5 shadow-glass transition-shadow hover:shadow-glass-hover md:min-h-0 md:px-6 md:py-2">
+        <Link href={getNavigationHref("/search", isGuest)} className="flex min-h-11 items-center gap-2 rounded-full text-xl font-bold text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 md:min-h-0">
           <Mountain className="h-6 w-6" aria-hidden="true" />
           <span>Doen Pa</span>
         </Link>

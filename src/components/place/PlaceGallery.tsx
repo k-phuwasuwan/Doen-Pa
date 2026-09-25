@@ -66,7 +66,7 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
                   event.stopPropagation();
                   showPhoto(-1);
                 }}
-                className="place-gallery-control place-gallery-control--previous"
+                className="place-gallery-control place-gallery-control--previous backdrop-blur-md"
                 aria-label="ภาพก่อนหน้า"
               >
                 <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -82,7 +82,7 @@ export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
                   event.stopPropagation();
                   showPhoto(1);
                 }}
-                className="place-gallery-control place-gallery-control--next"
+                className="place-gallery-control place-gallery-control--next backdrop-blur-md"
                 aria-label="ภาพถัดไป"
               >
                 <ChevronRight className="h-5 w-5" aria-hidden="true" />

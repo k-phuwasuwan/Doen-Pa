@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, ChevronRight, MapPin, Stamp, Star } from "lucide-react";
+import { CalendarDays, ChevronRight, MapPin, Star } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import type { Place, TravelRecord } from "@/types";
 
@@ -37,9 +37,6 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
           )}
           <span className="absolute left-4 top-4 rounded-full bg-brand-600/90 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
             {typeLabels[place.type]}
-          </span>
-          <span className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-brand-800/25 text-white backdrop-blur-md" aria-hidden="true">
-            <Stamp className="h-5 w-5" />
           </span>
         </div>
 

@@ -4,7 +4,7 @@ import { SearchX } from "lucide-react";
 export function PlaceList({ cards }: { cards: ReactNode[] }) {
   if (cards.length === 0) {
     return (
-      <div className="liquid-glass-card p-12 flex flex-col items-center justify-center text-center">
+      <div id="search-place-list" className="liquid-glass-card scroll-mt-24 p-12 flex flex-col items-center justify-center text-center">
         <div className="h-16 w-16 bg-beige-100/20 rounded-full flex items-center justify-center mb-4">
           <SearchX className="w-8 h-8 text-brand-800/65" />
         </div>
@@ -17,7 +17,7 @@ export function PlaceList({ cards }: { cards: ReactNode[] }) {
   }
 
   return (
-    <div className="grid items-stretch grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div id="search-place-list" className="grid scroll-mt-24 items-stretch grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {cards}
     </div>
   );

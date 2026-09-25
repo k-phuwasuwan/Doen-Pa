@@ -387,6 +387,7 @@ export function PlaceCard({ place }: Props) { ... }
 - `CategoryGrid`: 5 `CategoryCard`s (`.liquid-glass-card`, `rounded-3xl`) — icon, label, real count from `placeService`. Active category gets `border-2 border-emerald-500/80` + `shadow-liquid-glow` + top gradient rim
 - `VisitedFilter`: pill row — "เคยไปแล้ว" / "ยังไม่เคยไป" (real filter, see Data Models)
 - `PlaceList`: section header ("สถานที่แนะนำ" + total count) + `VisitedFilter` + grid of `PlaceCard`s
+- On mobile, selecting a category card scrolls to the first result card after the filter updates, with enough offset to keep it below the floating TopNav. Keep desktop scroll position unchanged.
 - `PlaceCard` (`.liquid-glass-card`, `rounded-3xl`):
   - Image area: gray placeholder (see Image placeholders), gradient overlay, bookmark icon button top-right
   - Top-left badge over image: **place type** (ภูเขา / น้ำตก / ถ้ำ / หมู่เกาะและทะเล) — not a booking status

@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import type { PlaceType } from "@/types";
+import { CategoryFilterLink } from "./CategoryFilterLink";
 
 interface CategoryCardProps {
   label: string;
@@ -19,9 +19,8 @@ export function CategoryCard({ label, type, count, icon: Icon, active = false, q
   if (visited !== "all") params.set("visited", visited);
 
   return (
-    <Link
+    <CategoryFilterLink
       href={`/search${params.size ? `?${params.toString()}` : ""}`}
-      scroll={false}
       className={`group relative flex min-w-36 flex-1 flex-col items-center gap-2 overflow-hidden rounded-3xl border bg-white/80 px-4 py-4 text-center shadow-glass transition-colors ${
         active ? "border-2 border-brand-500" : "border-white/90"
       }`}
@@ -31,6 +30,6 @@ export function CategoryCard({ label, type, count, icon: Icon, active = false, q
       </span>
       <span className="font-semibold text-brand-800">{label}</span>
       <span className="text-sm text-brand-800/60">{count} {type === "all" ? "อุทยาน" : "แห่ง"}</span>
-    </Link>
+    </CategoryFilterLink>
   );
 }

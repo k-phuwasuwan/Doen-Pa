@@ -182,6 +182,16 @@ body {
 .liquid-glass-card {
   border-radius: 24px;
 }
+.map-place-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(245, 250, 247, 0.92));
+}
+@media (max-width: 767px) and (max-height: 620px) {
+  .map-place-photo { height: 7rem; }
+  .map-fullscreen--place-selected .leaflet-control-zoom { display: none; }
+}
+@media (max-width: 767px) and (max-height: 520px) {
+  .map-fullscreen--place-selected .map-visited-count { display: none; }
+}
 
 .visited-map-pin-wrapper { background: transparent; border: 0; }
 .visited-map-pin {

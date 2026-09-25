@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
-import { MapPin, X } from "lucide-react";
+import { MapPin } from "lucide-react";
 import DynamicThailandMap from "@/components/map/DynamicThailandMap";
 import { useTravelRecords } from "@/lib/use-travel-records";
 import { placeService } from "@/services/place.service";
 import { userService } from "@/services/user.service";
 import type { Place } from "@/types";
+import { SelectedPlaceCard } from "./SelectedPlaceCard";
 
 function hasCoordinates(place: Place): boolean {
   return Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
@@ -37,7 +37,7 @@ export function MapOverview() {
     <section className={`map-fullscreen fixed inset-0 h-dvh w-full overflow-hidden bg-brand-100${selectedPlace ? " map-fullscreen--place-selected" : ""}`} aria-label="แผนที่สถานที่ที่เคยไป">
       <DynamicThailandMap places={places} selectedPlaceId={selectedPlaceId} onSelectPlace={setSelectedPlaceId} />
 
-      <div className="pointer-events-none absolute inset-x-4 top-22 z-[1000] flex justify-center md:top-24">
+      <div className="map-visited-count pointer-events-none absolute inset-x-4 top-22 z-[1000] flex justify-center md:top-24">
         <div className="liquid-glass-capsule flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-brand-900 shadow-glass sm:text-base">
           <MapPin className="h-4 w-4 text-brand-600" aria-hidden="true" />
           สถานที่ที่ไปแล้ว {places.length} แห่ง
@@ -53,30 +53,7 @@ export function MapOverview() {
       )}
 
       {selectedPlace && (
-        <aside className="absolute bottom-28 left-1/2 z-[1000] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 md:bottom-7" aria-label={`รายละเอียด ${selectedPlace.name}`}>
-          <div className="liquid-glass-card relative rounded-3xl p-3 shadow-glass-card sm:p-4">
-            <button
-              type="button"
-              onClick={() => setSelectedPlaceId(null)}
-              className="absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-brand-800 shadow-glass transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
-              aria-label="ปิดรายละเอียดสถานที่"
-            >
-              <X className="h-5 w-5" aria-hidden="true" />
-            </button>
-            <div className="relative h-40 overflow-hidden rounded-2xl bg-beige-100 sm:h-44">
-              {photo && (
-                <Image src={photo} alt={`ภาพบันทึกการเดินทางที่${selectedPlace.name}`} fill sizes="(max-width: 640px) 100vw, 448px" className="object-cover" />
-              )}
-              <div className="absolute inset-x-3 bottom-3 rounded-xl bg-white/90 px-4 py-2 text-center font-semibold text-brand-900 backdrop-blur-sm">
-                {selectedPlace.name}
-              </div>
-            </div>
-            <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs font-medium text-brand-800 sm:text-sm">
-              <span className="rounded-xl bg-brand-100/80 px-2 py-2">ระยะทาง {selectedPlace.distance ?? "—"}</span>
-              <span className="rounded-xl bg-brand-100/80 px-2 py-2">ความสูง {selectedPlace.altitude ?? "—"}</span>
-            </div>
-          </div>
-        </aside>
+        <SelectedPlaceCard place={selectedPlace} photo={photo} onClose={() => setSelectedPlaceId(null)} />
       )}
     </section>
   );

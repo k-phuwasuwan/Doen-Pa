@@ -3,11 +3,15 @@
 import { useMemo } from "react";
 import { useTravelRecords } from "@/lib/use-travel-records";
 import { CategoryStats } from "@/components/stats/CategoryStats";
+import { NationalParkProgress } from "@/components/stats/NationalParkProgress";
 import { ProvinceProgress } from "@/components/stats/ProvinceProgress";
 import { RegionStats } from "@/components/stats/RegionStats";
 import { StatsHero } from "@/components/stats/StatsHero";
 import { statsService } from "@/services/stats.service";
+import { placeService } from "@/services/place.service";
 import { userService } from "@/services/user.service";
+
+const totalNationalParks = placeService.filterByType("national_park").length;
 
 export function StatsContent() {
   const currentUser = userService.getCurrentUser();
@@ -21,6 +25,9 @@ export function StatsContent() {
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <div className="lg:col-span-2"><ProvinceProgress stats={stats} /></div>
+          <div className="lg:col-span-2">
+            <NationalParkProgress visitedCount={stats.byType.national_park} totalCount={totalNationalParks} />
+          </div>
           <CategoryStats stats={stats} />
           <RegionStats stats={stats} />
         </div>

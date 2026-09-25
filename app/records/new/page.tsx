@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
 import { placeService } from "@/services/place.service";
 import { TravelRecordForm } from "@/components/records/TravelRecordForm";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { BackButton } from "@/components/place/BackButton";
 
 export const metadata = {
-  title: "เพิ่มบันทึกใหม่ | Doen Pa",
+  title: "สแตมป์ | Doen Pa",
 };
 
 interface RecordsNewPageProps {
@@ -25,18 +24,12 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
   }
 
   const backHref = returnTo === "search" ? "/search" : `/places/${place.id}`;
-  const backLabel = returnTo === "search" ? "กลับหน้าค้นหา" : `กลับไปหน้า ${place.name}`;
 
   return (
     <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
-      {/* Back link */}
-      <Link
-        href={backHref}
-        className="inline-flex items-center gap-1.5 text-sm text-brand-800/65 hover:text-brand-800 transition-colors mb-6"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {backLabel}
-      </Link>
+      <div className="mb-6">
+        <BackButton href={backHref} />
+      </div>
 
       {/* Centered card */}
       <div className="max-w-xl mx-auto">

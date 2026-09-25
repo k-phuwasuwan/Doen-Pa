@@ -354,7 +354,7 @@ Anywhere a Stitch mockup used a real photo (`<img src="lh3.googleusercontent.com
 - `PassportFilter` / `/passport/page.tsx` — client-side filtering by type
 - `BottomNav` — uses `usePathname()` to highlight active tab
 - `PlaceActions` — uses `useRouter()` to navigate to `/records/new`
-- `BackButton` — links directly to `/search`, regardless of browser history
+- `BackButton` — links to an explicit route, never browser history; Place Details uses `/search`, while the travel-record form uses its entry route
 - Anything using `useState`, `useEffect`, Browser APIs
 
 ```typescript
@@ -411,6 +411,7 @@ export function PlaceCard({ place }: Props) { ... }
 
 ### `/records/new`
 - Reads `placeId` from `searchParams`; redirect to `/search` if place not found
+- Uses the same pill-shaped `BackButton` as Place Details, labeled "ย้อนกลับ"; returns to `/search` when opened from Search, otherwise to the place page
 - `TravelRecordForm` (Client), centered `max-w-xl`: place info (read-only) → date → `PhotoUploader` (max 5 photos, 5MB each, jpg/png/webp) → note textarea → optional 1–5 star rating (**personal only** — never displayed elsewhere as an aggregate) → submit
 - On submit: `travelRecordService.createRecord()` then redirect to `/passport`
 

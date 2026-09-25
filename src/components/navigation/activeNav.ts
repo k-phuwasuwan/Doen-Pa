@@ -1,5 +1,9 @@
 export type NavHref = "/search" | "/map" | "/passport" | "/stats" | "/profile";
 
+export function getNavigationHref(href: NavHref, isGuest: boolean): string {
+  return isGuest ? `${href}?view=guest` : href;
+}
+
 export function getActiveNavHref(pathname: string, from?: string | null): NavHref {
   if (pathname.startsWith("/places/")) {
     if (from === "passport") return "/passport";

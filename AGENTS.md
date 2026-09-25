@@ -29,7 +29,9 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/passport` | Current mock user's Passport and travel-record cards. |
 | `/passport?view=guest` | **Preview** of the logged-out Passport screen. Login button is disabled because auth does not exist; this URL is not a security boundary. |
 | `/stats` | Personal travel statistics and badges. |
+| `/stats?view=guest` | Logged-out Stats preview with an empty state and a link to the mock-user Stats page. |
 | `/profile` | Personal profile and photo gallery. |
+| `/profile?view=guest` | Logged-out Profile preview with an empty state and a link to the mock-user Profile page. |
 
 Place Details receives an explicit origin when needed:
 
@@ -37,6 +39,7 @@ Place Details receives an explicit origin when needed:
 - Passport cards open `/places/[id]?from=passport`: Back → `/passport`; the Passport nav item remains active; **read-only**, so no Stamp button.
 - Profile photos open `/places/[id]?from=profile`: Back → `/profile`; the Profile nav item remains active.
 - `src/components/navigation/activeNav.ts` owns active-tab mapping for TopNav and BottomNav. Preserve a visible active tab on nested pages and during client navigation.
+- On `?view=guest` previews, TopNav shows a disabled Login button instead of the mock-user pill. TopNav and BottomNav preserve `view=guest` when navigating between main routes. This query parameter is a design preview, not real authentication or access control.
 - `BackButton` uses an explicit href, never browser history. In the record form, `returnTo=search` returns to Search; otherwise Back returns to the place page. A successful record submission redirects to Passport.
 
 Do not add a dialog version of Place Details. The map's selected-place card is display-only and does not navigate.
@@ -93,7 +96,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 ### Passport, Stats, Profile
 
 - Passport filter row is centered and may scroll horizontally on narrow screens. It filters record cards by place type. Cards open read-only Place Details with `from=passport`; they do not offer stamping there.
-- `/passport?view=guest` is the logged-out design preview while auth is absent. Keep this distinct from the signed-in Passport's empty-record state.
+- `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are logged-out design previews while auth is absent. Keep them distinct from signed-in empty-data states.
 - Stats and Profile derive personal counts from the current user's records. Profile photo tiles link to Place Details with `from=profile`.
 - Keep ratings personal, avoid public review or social features.
 

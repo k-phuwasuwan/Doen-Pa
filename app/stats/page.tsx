@@ -1,34 +1,28 @@
-"use client";
+import { BarChart3, ChartNoAxesCombined } from "lucide-react";
+import { StatsContent } from "@/components/stats/StatsContent";
+import { GuestPrivatePage } from "@/components/ui/GuestPrivatePage";
 
-import { useMemo } from "react";
-import { useTravelRecords } from "@/lib/use-travel-records";
-import { BadgeGrid } from "@/components/stats/BadgeGrid";
-import { BadgeTeaser } from "@/components/stats/BadgeTeaser";
-import { CategoryStats } from "@/components/stats/CategoryStats";
-import { ProvinceProgress } from "@/components/stats/ProvinceProgress";
-import { RegionStats } from "@/components/stats/RegionStats";
-import { StatsHero } from "@/components/stats/StatsHero";
-import { statsService } from "@/services/stats.service";
-import { userService } from "@/services/user.service";
+interface StatsPageProps {
+  searchParams: Promise<{ view?: string }>;
+}
 
-export default function StatsPage() {
-  const currentUser = userService.getCurrentUser();
-  const records = useTravelRecords(currentUser.id);
-  const stats = useMemo(() => statsService.calculateStats(currentUser.id, records), [currentUser.id, records]);
+export default async function StatsPage({ searchParams }: StatsPageProps) {
+  const { view } = await searchParams;
 
-  return (
-    <div className="min-h-screen">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <StatsHero stats={stats} journeyCount={records.length} />
+  if (view === "guest") {
+    return (
+      <GuestPrivatePage
+        label="Doen Pa Stats"
+        title="สถิติของคุณ"
+        emptyTitle="ยังไม่มีสถิติการเดินทาง"
+        description="เข้าสู่ระบบเพื่อดูจำนวนสถานที่ จังหวัด รูปภาพ และตราที่สะสมจากการเดินทางของคุณ"
+        previewHref="/stats"
+        previewLabel="ดูตัวอย่างสถิติ"
+        headerIcon={BarChart3}
+        emptyIcon={ChartNoAxesCombined}
+      />
+    );
+  }
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <BadgeTeaser stats={stats} />
-          <BadgeGrid stats={stats} />
-          <ProvinceProgress stats={stats} />
-          <CategoryStats stats={stats} />
-          <RegionStats stats={stats} />
-        </div>
-      </div>
-    </div>
-  );
+  return <StatsContent />;
 }

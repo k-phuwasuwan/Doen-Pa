@@ -38,7 +38,7 @@ export function ProfileHeader({ user, coverImage, showEditButton = true, heading
             <p className="text-sm text-brand-800/65">@{user.username}</p>
           </div>
         </div>
-        <p className="mt-5 max-w-md text-sm leading-6 text-brand-800/65">{user.bio || "บันทึกการเดินทางและความทรงจำจากทุกเส้นทาง"}</p>
+        {user.bio && <p className="mt-5 max-w-md text-sm leading-6 text-brand-800/65">{user.bio}</p>}
       </div>
     </section>
   );

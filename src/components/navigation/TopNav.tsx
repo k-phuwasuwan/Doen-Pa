@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LogIn, Mountain } from "lucide-react";
+import { useCurrentUser } from "@/lib/use-current-user";
 import { getActiveNavHref, getNavigationHref, type NavHref } from "./activeNav";
 
 const links: { href: NavHref; label: string }[] = [
@@ -35,6 +36,8 @@ function ResolvedTopNav({ pathname, onActiveChange, onGuestChange }: { pathname:
 }
 
 function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: boolean }) {
+  const user = useCurrentUser();
+
   return (
     <nav className="sticky top-4 z-40 mx-4 flex items-center md:mx-auto md:w-full md:px-8">
       <div className="liquid-glass-capsule flex w-full items-center justify-between rounded-full px-4 py-2 shadow-glass transition-shadow hover:shadow-glass-hover md:px-6">
@@ -70,8 +73,8 @@ function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: 
           </Link>
         ) : (
           <div className="hidden items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-sm text-brand-800 md:flex">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">N</span>
-            นักท่องไพร
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">{user.name.slice(0, 1)}</span>
+            <span className="max-w-32 truncate">{user.name}</span>
           </div>
         )}
       </div>

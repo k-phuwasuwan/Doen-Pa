@@ -11,11 +11,11 @@ This file describes the **current implementation and accepted behavior**, not a 
 ## Current stack and repository
 
 - Next.js **16.3.4** App Router, React **19**, TypeScript strict mode, Tailwind CSS **4**, Lucide React, Leaflet 1.9/react-leaflet 5; package manager **pnpm**.
-- Fonts: Kanit and Plus Jakarta Sans via `next/font`.
+- Fonts: Kanit and Plus Jakarta Sans are bundled under `public/fonts/` and declared in `app/globals.css`; the production build uses Webpack so it does not fetch Google Fonts during compilation.
 - Pages and global CSS live in root-level `app/`; components, services, mocks, types, and hooks live in `src/`. Do not create a second `src/app/`.
 - State currently uses React hooks, URL query parameters, `useSyncExternalStore`, and localStorage. **Zustand is not installed**; do not assume a store layer exists.
-- Source of truth for types: `src/types/index.ts`; for design tokens/effects: `app/globals.css` and `tailwind.config.ts`; for mock data: `src/mocks/`.
-- `userService.getCurrentUser()` returns the mock user with any locally saved profile edits. There is **no real authentication or backend**.
+- Source of truth for types: `src/types/index.ts`; for design tokens/effects: `app/globals.css` and `tailwind.config.ts`; for the searchable place catalog: `src/mocks/places.ts`.
+- The app starts as a **new local user with zero records, photos, and visited places**. `userService.getCurrentUser()` returns a neutral local identity with any locally saved profile edits. There is **no real authentication or backend**. Never reintroduce seeded personal records or sample user photos.
 
 ## Routes and navigation
 
@@ -26,31 +26,32 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/places/[id]` | Full Place Details page. Missing IDs call `notFound()`. |
 | `/records/new?placeId=[id]` | New travel record for the given place; invalid/missing place redirects to Search. |
 | `/map` | Full-viewport visited-place terrain map. |
-| `/passport` | Current mock user's Passport and travel-record cards. |
+| `/passport` | Local user's Passport and travel-record cards; initially empty. |
 | `/passport?view=guest` | **Preview** of the logged-out Passport screen. Login button opens `/login`; this URL is not a security boundary. |
 | `/login` | Standalone login design with email/password and Google controls. Auth is not implemented; attempts show an unavailable message without sending or storing credentials. `from` keeps Back linked to the originating guest preview. |
 | `/stats` | Personal travel statistics and badges. |
-| `/stats?view=guest` | Logged-out Stats preview with an empty state and a link to the mock-user Stats page. |
+| `/stats?view=guest` | Logged-out Stats preview with an empty state and a link to the local-user Stats page. |
 | `/profile` | Personal profile and photo gallery. |
-| `/profile/edit` | Edit the mock user's display name, username, bio, avatar, and cover image, with a live preview. Changes persist in this browser's localStorage. |
-| `/profile?view=guest` | Logged-out Profile preview with an empty state and a link to the mock-user Profile page. |
+| `/profile/edit` | Edit the local user's display name, username, bio, avatar, and cover image, with a live preview. Changes persist in this browser's localStorage. |
+| `/profile?view=guest` | Logged-out Profile preview with an empty state and a link to the local-user Profile page. |
 
 Place Details receives an explicit origin when needed:
 
 - Search opens `/places/[id]`: Back → `/search`; the Search nav item remains active; stamping is available.
 - Passport cards open `/places/[id]?from=passport`: Back → `/passport`; the Passport nav item remains active; **read-only**, so no Stamp button.
-- Profile photos open `/places/[id]?from=profile`: Back → `/profile`; the Profile nav item remains active.
+- Profile photos open `/places/[id]?from=profile&photo=[index]` at the selected image: Back → `/profile`; the Profile nav item remains active.
 - `src/components/navigation/activeNav.ts` owns active-tab mapping for TopNav and BottomNav. Preserve a visible active tab on nested pages and during client navigation.
-- On `?view=guest` previews, TopNav shows a Login link instead of the mock-user pill. TopNav and BottomNav preserve `view=guest` when navigating between main routes. This query parameter is a design preview, not real authentication or access control.
+- On `?view=guest` previews, TopNav shows a Login link instead of the local-user pill. TopNav and BottomNav preserve `view=guest` when navigating between main routes. This query parameter is a design preview, not real authentication or access control.
+- Outside guest previews, the TopNav user pill reads the current local profile. Do not hardcode a sample person's name or avatar.
 - `BackButton` uses an explicit href, never browser history. In the record form, `returnTo=search` returns to Search; otherwise Back returns to the place page. A successful record submission redirects to Passport.
 
 Do not add a dialog version of Place Details. The map's selected-place card is display-only and does not navigate.
 
 ## Data and persistence
 
-`Place` has `id`, `name`, `location`, `province`, `region`, `description`, `image`, `type`, optional coordinates, altitude, distance, season and camping text. `TravelRecord` has `userId`, `placeId`, `visitedAt`, `note`, `photos: string[]`, personal `rating`, and `createdAt`. Use the actual interfaces in `src/types/index.ts`; older fields such as `category`, `rankLabel`, `difficulty`, and `guidelines` are **not in the current Place model**.
+`Place` has `id`, `name`, `location`, `province`, `region`, `description`, `type`, optional coordinates, altitude, distance, season and camping text. The place catalog has **no sample image URLs**. `TravelRecord` has `userId`, `placeId`, `visitedAt`, `note`, `photos: string[]`, personal `rating`, and `createdAt`. Use the actual interfaces in `src/types/index.ts`; older fields such as `image`, `category`, `rankLabel`, `difficulty`, and `guidelines` are **not in the current Place model**.
 
-`travelRecordService` seeds from `src/mocks/travel-records.ts` when browser storage is empty and persists records under `doen-pa-travel-records` in localStorage. `useTravelRecords` subscribes to changes. `userService` starts with `src/mocks/users.ts`, stores profile edits under `doen-pa-current-user`, and `useCurrentUser` subscribes so Profile and Passport show saved changes. Keep service access out of purely presentational components where practical.
+`travelRecordService` starts with an **empty array** and persists new records under `doen-pa-travel-records-v2` in localStorage. `useTravelRecords` subscribes to changes. `userService` starts with a neutral local identity (`local-user`), stores profile edits under `doen-pa-current-user-v2`, and `useCurrentUser` subscribes so Profile and Passport show saved changes. `AppShell` removes the legacy pre-reset personal-data keys on load. Keep service access out of purely presentational components where practical.
 
 Photo rules:
 
@@ -60,7 +61,7 @@ Photo rules:
 - The current `TravelRecord.photos` schema stores image strings only. Uploader alt text is UI state and is **not persisted**; changing that needs an explicit data-model decision.
 - localStorage is MVP storage and has browser quota limits. Do not claim uploads are backed up or synced.
 
-The mock place catalog and images are demo content. Some current mock images use Unsplash URLs; Stitch `lh3.googleusercontent.com/aida-public/...` preview URLs must never be added as production image sources. The permanent photo-source strategy is undecided.
+The searchable place catalog remains local data; its sample image URLs were removed. Place images shown in personal surfaces must come from records the user creates, while empty images use neutral placeholders. Stitch `lh3.googleusercontent.com/aida-public/...` preview URLs must never be added as production image sources. The permanent place-photo strategy is undecided.
 
 ## Design system and references
 

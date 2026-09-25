@@ -25,14 +25,13 @@ export function ProfileContent() {
   const provinceCount = new Set(entries.map(({ place }) => place.province)).size;
   const placeCount = new Set(entries.map(({ place }) => place.id)).size;
   const badgeCount = Math.min(14, placeCount);
-  const coverImage = user.coverImage || placeService.getAll()[0]?.image;
 
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,2fr)] lg:items-start">
           <div className="space-y-6">
-            <ProfileHeader user={user} coverImage={coverImage} />
+            <ProfileHeader user={user} coverImage={user.coverImage} />
             <ProfileStats
               placeCount={placeCount}
               provinceCount={provinceCount}

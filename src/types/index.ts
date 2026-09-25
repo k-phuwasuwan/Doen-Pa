@@ -28,7 +28,6 @@ export interface Place {
   province: string;
   region: Region;
   description: string;
-  image: string;
   type: PlaceType;
   latitude?: number;
   longitude?: number;

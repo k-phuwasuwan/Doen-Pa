@@ -18,7 +18,7 @@ interface TravelRecordCardProps {
 }
 
 export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
-  const image = record.photos[0] || place.image;
+  const image = record.photos[0];
 
   return (
     <article className="liquid-glass-card h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-glass-card">

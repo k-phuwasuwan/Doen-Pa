@@ -1,21 +1,16 @@
-import { mockTravelRecords } from "@/mocks/travel-records";
 import { placeService } from "@/services/place.service";
 import type { TravelRecord } from "@/types";
 
-const STORAGE_KEY = "doen-pa-travel-records";
+const STORAGE_KEY = "doen-pa-travel-records-v2";
 const RECORDS_CHANGED_EVENT = "doen-pa-records-changed";
 const SERVER_SNAPSHOT = "__server_snapshot__";
 
-function getMockRecords(): TravelRecord[] {
-  return mockTravelRecords.map((record) => ({ ...record, photos: [...record.photos] }));
-}
-
 function parseRecords(raw: string | null): TravelRecord[] {
-  if (!raw) return getMockRecords();
+  if (!raw) return [];
 
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return getMockRecords();
+    if (!Array.isArray(parsed)) return [];
     return parsed.flatMap((value): TravelRecord[] => {
       if (value === null || typeof value !== "object" || Array.isArray(value)) return [];
       const record = value as Record<string, unknown>;
@@ -49,12 +44,12 @@ function parseRecords(raw: string | null): TravelRecord[] {
     });
   } catch (error) {
     console.error("Failed to parse travel records from storage:", error);
-    return getMockRecords();
+    return [];
   }
 }
 
 function getStorageRecords(): TravelRecord[] {
-  if (typeof window === "undefined") return mockTravelRecords;
+  if (typeof window === "undefined") return [];
   return parseRecords(travelRecordService.getSnapshot());
 }
 
@@ -94,7 +89,7 @@ export const travelRecordService = {
   },
 
   getRecordsFromSnapshot(snapshot: string): TravelRecord[] {
-    return getVisibleRecords(snapshot === SERVER_SNAPSHOT ? mockTravelRecords : parseRecords(snapshot));
+    return getVisibleRecords(snapshot === SERVER_SNAPSHOT ? [] : parseRecords(snapshot));
   },
 
   getRecordsByUser(userId: string): TravelRecord[] {

@@ -10,15 +10,12 @@ export const mockPlaces: Place[] = [
     region: "north",
     description:
       "ยอดเขาที่สูงที่สุดในประเทศไทย จุดชมทะเลหมอก กิ่วแม่ปาน และเส้นทางศึกษาธรรมชาติบนดอยสูง",
-    image:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=800&fit=crop",
     type: "mountain",
     altitude: "2565 m",
     distance: "8.5 km",
     bestSeason:
       "เปิดให้บริการทุกวัน ช่วงที่ดีที่สุดคือ ต.ค. – ก.พ. (อากาศเย็น ทะเลหมอกสวย)",
     campingInfo: "มีลานกางเต็นท์ให้บริการภายในพื้นที่อุทยาน ต้องจองล่วงหน้า",
-
     latitude: 18.5327878,
     longitude: 98.5461701,
   },
@@ -30,14 +27,11 @@ export const mockPlaces: Place[] = [
     region: "north",
     description:
       "ยอดหินปูนสูงชัน ต้องขออนุญาตเข้าเขตสงวน วิวเทือกเขาและดวงดาวบนสันดอย",
-    image:
-      "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=1200&h=800&fit=crop",
     type: "mountain",
     altitude: "2225 m",
     distance: "5.2 km",
     bestSeason: "เปิดให้บริการทุกวัน ควรหลีกเลี่ยงช่วงฤดูฝน (มิ.ย. – ต.ค.)",
     campingInfo: "มีลานกางเต็นท์ให้บริการภายในพื้นที่อุทยาน",
-
     latitude: 19.3777134,
     longitude: 99.661175,
   },
@@ -51,8 +45,6 @@ export const mockPlaces: Place[] = [
     region: "central",
     description:
       "อุทยานแห่งชาติแห่งแรกของไทย เส้นทางเดินป่า น้ำตกเหวนรก และสัตว์ป่าในผืนป่ามรดกโลก",
-    image:
-      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=800&fit=crop",
     type: "national_park",
     altitude: "1350 m",
     distance: "15.0 km",
@@ -67,8 +59,6 @@ export const mockPlaces: Place[] = [
     province: "ประจวบคีรีขันธ์",
     region: "central",
     description: "เขาสามร้อยยอด ยอดเขาสวยงาม จุดชมวิวทะเล และอุทยานแห่งชาติ",
-    image:
-      "https://images.unsplash.com/photo-1551244072-5d12893278ab?w=1200&h=800&fit=crop",
     type: "mountain",
     altitude: "604 m",
     distance: "6.0 km",
@@ -86,8 +76,6 @@ export const mockPlaces: Place[] = [
     region: "south",
     description:
       "ป่าดิบชื้นโบราณ อ่างเก็บน้ำเชี่ยวหลาน เขาหินปูนโผล่เหนือผิวน้ำ และเส้นทางศึกษาธรรมชาติ",
-    image:
-      "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=1200&h=800&fit=crop",
     type: "national_park",
     altitude: "960 m",
     distance: "12.0 km",
@@ -102,8 +90,6 @@ export const mockPlaces: Place[] = [
     province: "กระบี่",
     region: "south",
     description: "หมู่เกาะพีพี เกาะสวยงาม หาดทรายขาว น้ำใส และถ้ำธรรมชาติ",
-    image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=800&fit=crop",
     type: "island",
     altitude: "0 m",
     distance: "0.5 km",
@@ -121,8 +107,6 @@ export const mockPlaces: Place[] = [
     region: "northeast",
     description:
       "ที่ราบสูงหินทราย ท่องเที่ยวเดินป่าค้างคืน ผาหล่มสัก และลานกว้างบนยอดภู",
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
     type: "mountain",
     altitude: "1316 m",
     distance: "9.0 km",
@@ -137,8 +121,6 @@ export const mockPlaces: Place[] = [
     province: "เลย",
     region: "northeast",
     description: "ภูเรือ ยอดเขาสูงชัน วิวทิวทัศน์ และฤดูหนาวที่สวยงาม",
-    image:
-      "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=1200&h=800&fit=crop",
     type: "mountain",
     altitude: "1365 m",
     distance: "7.5 km",
@@ -153,8 +135,6 @@ export const mockPlaces: Place[] = [
     province: "อุดรธานี",
     region: "northeast",
     description: "ภูเวียง ยอดเขาที่สูงที่สุดในภาคอีสาน วิวทิวทัศน์ และศาสนสถาน",
-    image:
-      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=800&fit=crop",
     type: "mountain",
     altitude: "1279 m",
     distance: "8.0 km",
@@ -169,8 +149,6 @@ export const mockPlaces: Place[] = [
     province: "ชัยภูมิ",
     region: "northeast",
     description: "น้ำตกตาดโตน น้ำตกในอุทยานแห่งชาติ สวยงามและเดินทางสะดวก",
-    image:
-      "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=1200&h=800&fit=crop",
     type: "waterfall",
     altitude: "300 m",
     distance: "2.0 km",
@@ -187,8 +165,6 @@ export const mockPlaces: Place[] = [
     province: "ประจวบคีรีขันธ์",
     region: "east",
     description: "อุทยานแห่งชาติเขาสามร้อยยอด หน้าผาสูง ถ้ำ และหาดทรายขาว",
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop",
     type: "national_park",
     altitude: "605 m",
     distance: "8.0 km",

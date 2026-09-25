@@ -1,12 +1,16 @@
-import { mockUsers } from "@/mocks/users";
 import type { User } from "@/types";
 
-const STORAGE_KEY = "doen-pa-current-user";
+const STORAGE_KEY = "doen-pa-current-user-v2";
 const USER_CHANGED_EVENT = "doen-pa-user-changed";
 const SERVER_SNAPSHOT = "__server_snapshot__";
+const DEFAULT_USER: User = {
+  id: "local-user",
+  name: "ผู้ใช้ใหม่",
+  username: "new_hiker",
+};
 
 function readUser(snapshot: string): User {
-  const fallback = mockUsers[0];
+  const fallback = DEFAULT_USER;
   if (!snapshot || snapshot === SERVER_SNAPSHOT) return fallback;
 
   try {
@@ -33,7 +37,7 @@ export const userService = {
   },
 
   getUserById(id: string): User | null {
-    return id === mockUsers[0].id ? this.getCurrentUser() : null;
+    return id === DEFAULT_USER.id ? this.getCurrentUser() : null;
   },
 
   subscribe(listener: () => void): () => void {

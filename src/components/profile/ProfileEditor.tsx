@@ -5,14 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Camera, ImagePlus, Save } from "lucide-react";
 import { useCurrentUser } from "@/lib/use-current-user";
-import { placeService } from "@/services/place.service";
 import { userService } from "@/services/user.service";
 import { ProfileHeader } from "./ProfileHeader";
 import type { User } from "@/types";
 
 const MAX_IMAGE_BYTES = 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-const DEFAULT_COVER = placeService.getAll()[0]?.image;
 
 function readImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -33,7 +31,7 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
   const router = useRouter();
   const [name, setName] = useState(initialUser.name);
   const [username, setUsername] = useState(initialUser.username);
-  const [bio, setBio] = useState(initialUser.bio ?? "บันทึกการเดินทางและความทรงจำจากทุกเส้นทาง");
+  const [bio, setBio] = useState(initialUser.bio ?? "");
   const [avatar, setAvatar] = useState(initialUser.avatar);
   const [coverImage, setCoverImage] = useState(initialUser.coverImage);
   const [error, setError] = useState("");
@@ -90,7 +88,7 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
     <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start lg:gap-8">
       <div>
         <p className="mb-3 text-sm font-medium text-brand-800/65">ตัวอย่างโปรไฟล์ของคุณ</p>
-        <ProfileHeader user={previewUser} coverImage={coverImage || DEFAULT_COVER} showEditButton={false} headingLevel={2} />
+        <ProfileHeader user={previewUser} coverImage={coverImage} showEditButton={false} headingLevel={2} />
         <p className="mt-3 text-center text-xs text-brand-800/55">ตัวอย่างจะเปลี่ยนตามข้อมูลที่คุณแก้ไข</p>
       </div>
 

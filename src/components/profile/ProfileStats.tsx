@@ -3,16 +3,16 @@ import { StatCard } from "@/components/ui/StatCard";
 interface ProfileStatsProps {
   placeCount: number;
   provinceCount: number;
-  badgeCount: number;
+  photoCount: number;
 }
 
-export function ProfileStats({ placeCount, provinceCount, badgeCount }: ProfileStatsProps) {
+export function ProfileStats({ placeCount, provinceCount, photoCount }: ProfileStatsProps) {
   return (
     <section className="liquid-glass-card p-5" aria-label="สถิติโปรไฟล์">
       <div className="grid grid-cols-3 gap-3">
         <StatCard value={placeCount} label="สถานที่" />
         <StatCard value={provinceCount} label="จังหวัด" />
-        <StatCard value={badgeCount} label="ตราสะสม" />
+        <StatCard value={photoCount} label="รูปภาพ" />
       </div>
     </section>
   );

@@ -24,7 +24,7 @@ export function ProfileContent() {
     }));
   const provinceCount = new Set(entries.map(({ place }) => place.province)).size;
   const placeCount = new Set(entries.map(({ place }) => place.id)).size;
-  const badgeCount = Math.min(14, placeCount);
+  const photoCount = posts.length;
 
   return (
     <div className="min-h-screen">
@@ -35,7 +35,7 @@ export function ProfileContent() {
             <ProfileStats
               placeCount={placeCount}
               provinceCount={provinceCount}
-              badgeCount={badgeCount}
+              photoCount={photoCount}
             />
           </div>
           <PostGallery posts={posts} />

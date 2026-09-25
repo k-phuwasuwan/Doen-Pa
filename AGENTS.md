@@ -29,7 +29,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/passport` | Local user's Passport and travel-record cards; initially empty. |
 | `/passport?view=guest` | **Preview** of the logged-out Passport screen. Login button opens `/login`; this URL is not a security boundary. |
 | `/login` | Standalone login design with email/password and Google controls. Auth is not implemented; attempts show an unavailable message without sending or storing credentials. `from` keeps Back linked to the originating guest preview. |
-| `/stats` | Personal travel statistics and badges. |
+| `/stats` | Personal travel statistics by province, place type, and region. Badge UI is deferred. |
 | `/stats?view=guest` | Logged-out Stats preview with an empty state and a link to the local-user Stats page. |
 | `/profile` | Personal profile and photo gallery. |
 | `/profile/edit` | Edit the local user's display name, username, bio, avatar, and cover image, with a live preview. Changes persist in this browser's localStorage. |
@@ -100,7 +100,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 - Passport filter row is centered and may scroll horizontally on narrow screens. It filters record cards by place type. Cards open read-only Place Details with `from=passport`; they do not offer stamping there.
 - `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are logged-out design previews while auth is absent. Keep them distinct from signed-in empty-data states.
-- Stats and Profile derive personal counts from the current user's records. Profile photo tiles link to Place Details with `from=profile`.
+- Stats and Profile derive personal counts from the current user's records. Stats shows travel, province, place type, region, and photo counts; the badge teaser and collection are deferred. Profile uses a real photo count in place of the former badge count. Profile photo tiles link to Place Details with `from=profile`.
 - The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves locally. There is no backend sync or account authentication.
 - Keep ratings personal, avoid public review or social features.
 
@@ -115,9 +115,9 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 ## MVP boundary
 
-**In scope:** personal search/discovery, Place Details, stamping visits, travel records, Passport, visited-place map, personal stats/badges, profile.
+**In scope:** personal search/discovery, Place Details, stamping visits, travel records, Passport, visited-place map, personal stats, profile.
 
-**Out of scope until explicitly approved:** social interactions, public profiles/reviews or aggregate ratings, booking/payment, trip planning and routing, live GPS, weather, gear management, recommendation/popularity engines, activity feed, messaging.
+**Out of scope until explicitly approved:** badge collection, social interactions, public profiles/reviews or aggregate ratings, booking/payment, trip planning and routing, live GPS, weather, gear management, recommendation/popularity engines, activity feed, messaging.
 
 ## Verification and workflow
 

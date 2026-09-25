@@ -2,8 +2,6 @@
 
 import { useMemo } from "react";
 import { useTravelRecords } from "@/lib/use-travel-records";
-import { BadgeGrid } from "@/components/stats/BadgeGrid";
-import { BadgeTeaser } from "@/components/stats/BadgeTeaser";
 import { CategoryStats } from "@/components/stats/CategoryStats";
 import { ProvinceProgress } from "@/components/stats/ProvinceProgress";
 import { RegionStats } from "@/components/stats/RegionStats";
@@ -22,9 +20,7 @@ export function StatsContent() {
         <StatsHero stats={stats} journeyCount={records.length} />
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <BadgeTeaser stats={stats} />
-          <BadgeGrid stats={stats} />
-          <ProvinceProgress stats={stats} />
+          <div className="lg:col-span-2"><ProvinceProgress stats={stats} /></div>
           <CategoryStats stats={stats} />
           <RegionStats stats={stats} />
         </div>

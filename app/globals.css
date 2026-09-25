@@ -222,18 +222,20 @@ body {
 }
 .visited-map-pin-wrapper:focus-visible { outline: 3px solid #1b4332; outline-offset: 2px; border-radius: 50%; }
 .map-fullscreen .leaflet-control-attribution {
-  max-width: 20rem;
-  margin: 0 0.75rem 0.75rem 0;
-  padding: 0.35rem 0.6rem;
+  max-width: calc(100vw - 1rem);
+  margin: 0 0.5rem 0.5rem 0;
+  padding: 0.15rem 0.4rem;
   border: 1px solid rgba(255, 255, 255, 0.85);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 4px 16px rgba(8, 28, 20, 0.12);
   color: #153728;
   font-family: var(--font-plus-jakarta), sans-serif;
-  font-size: 11px;
-  line-height: 1.4;
+  font-size: clamp(7px, 2.3vw, 10px);
+  line-height: 1.2;
   text-align: right;
+  white-space: nowrap;
+  overflow-x: auto;
 }
 .map-fullscreen .leaflet-control-attribution a {
   color: #1b4332;
@@ -241,8 +243,8 @@ body {
   text-underline-offset: 2px;
 }
 .map-fullscreen .leaflet-bottom .leaflet-control-attribution {
-  margin-right: 0.75rem;
-  margin-bottom: 0.75rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 .map-fullscreen .leaflet-tile-pane { filter: saturate(0.72) sepia(0.04) brightness(1.02) contrast(0.94); }
 .map-country-label {
@@ -272,7 +274,7 @@ body {
 }
 .map-fullscreen .leaflet-top.leaflet-right { top: 6rem; }
 @media (max-width: 767px) {
-  .map-fullscreen .leaflet-bottom .leaflet-control-attribution { max-width: 16rem; margin-bottom: 6rem; }
+  .map-fullscreen .leaflet-bottom .leaflet-control-attribution { margin-bottom: 6rem; }
   .map-fullscreen--place-selected .leaflet-bottom .leaflet-control-attribution { margin-bottom: 20rem; }
 }
 

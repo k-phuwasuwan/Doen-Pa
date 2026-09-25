@@ -23,16 +23,18 @@ interface PassportFilterProps {
 
 export function PassportFilter({ currentType, onChange }: PassportFilterProps) {
   return (
-    <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar" aria-label="กรองประเภทสถานที่">
-      {filters.map((filter) => (
-        <FilterChip
-          key={filter.type}
-          icon={filter.icon}
-          label={filter.label}
-          active={currentType === filter.type}
-          onClick={() => onChange(filter.type)}
-        />
-      ))}
+    <div className="overflow-x-auto pb-2 hide-scrollbar" aria-label="กรองประเภทสถานที่">
+      <div className="mx-auto flex w-max min-w-full justify-center gap-4">
+        {filters.map((filter) => (
+          <FilterChip
+            key={filter.type}
+            icon={filter.icon}
+            label={filter.label}
+            active={currentType === filter.type}
+            onClick={() => onChange(filter.type)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

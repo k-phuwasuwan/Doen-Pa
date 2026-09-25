@@ -24,6 +24,7 @@ export default async function PlacePage({ params, searchParams }: PlacePageProps
   const { from } = await searchParams;
   const place = placeService.getPlaceById(id);
   const isFromPassport = from === "passport";
+  const isFromProfile = from === "profile";
 
   if (!place) notFound();
 
@@ -31,7 +32,7 @@ export default async function PlacePage({ params, searchParams }: PlacePageProps
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 overflow-x-hidden">
       {/* Back button */}
       <div className="mb-6">
-        <BackButton href={isFromPassport ? "/passport" : "/search"} />
+        <BackButton href={isFromPassport ? "/passport" : isFromProfile ? "/profile" : "/search"} />
       </div>
 
       <PlaceDetailContent place={place} userId={userService.getCurrentUser().id} readOnly={isFromPassport} />

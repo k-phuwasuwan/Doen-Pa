@@ -1,8 +1,10 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Search, Map, BookOpen, BarChart2, User } from "lucide-react";
+import { getActiveNavHref, type NavHref } from "./activeNav";
 
 const links = [
   { href: "/search", label: "ค้นหา", icon: Search },
@@ -14,11 +16,26 @@ const links = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const [lastActiveHref, setLastActiveHref] = useState<NavHref>(() => getActiveNavHref(pathname));
+  return (
+    <Suspense fallback={<BottomNavContent activeHref={lastActiveHref} />}>
+      <ResolvedBottomNav pathname={pathname} onActiveChange={setLastActiveHref} />
+    </Suspense>
+  );
+}
 
+function ResolvedBottomNav({ pathname, onActiveChange }: { pathname: string; onActiveChange: (href: NavHref) => void }) {
+  const searchParams = useSearchParams();
+  const activeHref = getActiveNavHref(pathname, searchParams.get("from"));
+  useEffect(() => onActiveChange(activeHref), [activeHref, onActiveChange]);
+  return <BottomNavContent activeHref={activeHref} />;
+}
+
+function BottomNavContent({ activeHref }: { activeHref: NavHref }) {
   return (
     <nav aria-label="เมนูหลัก" className="mobile-bottom-nav fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center rounded-full p-1.5 md:hidden">
       {links.map((link) => {
-        const isActive = pathname.startsWith(link.href);
+        const isActive = activeHref === link.href;
         const Icon = link.icon;
         return (
           <Link

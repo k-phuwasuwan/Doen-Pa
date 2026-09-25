@@ -1,8 +1,10 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Mountain } from "lucide-react";
+import { getActiveNavHref, type NavHref } from "./activeNav";
 
 const links = [
   { href: "/search", label: "ค้นหา" },
@@ -14,7 +16,22 @@ const links = [
 
 export function TopNav() {
   const pathname = usePathname();
+  const [lastActiveHref, setLastActiveHref] = useState<NavHref>(() => getActiveNavHref(pathname));
+  return (
+    <Suspense fallback={<TopNavContent activeHref={lastActiveHref} />}>
+      <ResolvedTopNav pathname={pathname} onActiveChange={setLastActiveHref} />
+    </Suspense>
+  );
+}
 
+function ResolvedTopNav({ pathname, onActiveChange }: { pathname: string; onActiveChange: (href: NavHref) => void }) {
+  const searchParams = useSearchParams();
+  const activeHref = getActiveNavHref(pathname, searchParams.get("from"));
+  useEffect(() => onActiveChange(activeHref), [activeHref, onActiveChange]);
+  return <TopNavContent activeHref={activeHref} />;
+}
+
+function TopNavContent({ activeHref }: { activeHref: NavHref }) {
   return (
     <nav className="sticky top-4 z-40 mx-4 flex items-center md:mx-auto md:w-full md:px-8">
       <div className="liquid-glass-capsule flex w-full items-center justify-between rounded-full px-4 py-2 shadow-glass transition-shadow hover:shadow-glass-hover md:px-6">
@@ -25,7 +42,7 @@ export function TopNav() {
 
         <div className="hidden min-w-0 rounded-full bg-brand-900/[0.04] p-1.5 md:flex md:gap-2">
           {links.map((link) => {
-            const isActive = pathname.startsWith(link.href);
+            const isActive = activeHref === link.href;
             return (
               <Link
                 key={link.href}

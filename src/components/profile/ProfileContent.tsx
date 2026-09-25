@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowRight, LogOut } from "lucide-react";
 import { useTravelRecords } from "@/lib/use-travel-records";
 import { PostGallery } from "@/components/profile/PostGallery";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
@@ -37,6 +39,19 @@ export function ProfileContent() {
               provinceCount={provinceCount}
               photoCount={photoCount}
             />
+            <Link
+              href="/profile?view=guest"
+              className="liquid-glass-card group flex min-h-16 items-center gap-4 rounded-3xl px-5 py-4 text-brand-800 transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+            >
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-700 transition-colors group-hover:bg-brand-600/15">
+                <LogOut className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold">ออกจากระบบ</span>
+                <span className="block text-sm text-brand-800/60">กลับสู่หน้าเยี่ยมชม</span>
+              </span>
+              <ArrowRight className="h-5 w-5 shrink-0 text-brand-700/70 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </Link>
           </div>
           <PostGallery posts={posts} />
         </div>

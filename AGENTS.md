@@ -102,6 +102,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 - `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are logged-out design previews while auth is absent. Keep them distinct from signed-in empty-data states.
 - Stats and Profile derive personal counts from the current user's records. Stats shows travel, province, place type, region, and photo counts; the badge teaser and collection are deferred. Profile uses a real photo count in place of the former badge count. Profile photo tiles link to Place Details with `from=profile`.
 - The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves locally. There is no backend sync or account authentication.
+- The Profile logout control opens `/profile?view=guest` in the current auth-preview design, preserving local profile and travel records. It does not claim to end a real server session because authentication is not implemented yet.
 - Keep ratings personal, avoid public review or social features.
 
 ## Architecture and quality rules

@@ -16,7 +16,7 @@ export function TopNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-4 z-40 ml-4 mr-auto flex w-fit items-center md:mx-auto md:w-full md:px-8">
+    <nav className="sticky top-4 z-40 mx-4 flex items-center md:mx-auto md:w-full md:px-8">
       <div className="liquid-glass-capsule flex w-full items-center justify-between rounded-full px-4 py-2 shadow-glass transition-shadow hover:shadow-glass-hover md:px-6">
         <Link href="/search" className="flex items-center gap-2 rounded-full text-xl font-bold text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600">
           <Mountain className="h-6 w-6" aria-hidden="true" />

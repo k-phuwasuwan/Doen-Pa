@@ -5,10 +5,10 @@ import { PostGallery } from "@/components/profile/PostGallery";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileStats } from "@/components/profile/ProfileStats";
 import { placeService } from "@/services/place.service";
-import { userService } from "@/services/user.service";
+import { useCurrentUser } from "@/lib/use-current-user";
 
 export function ProfileContent() {
-  const user = userService.getCurrentUser();
+  const user = useCurrentUser();
   const records = useTravelRecords(user.id);
   const entries = records.flatMap((record) => {
     const place = placeService.getPlaceById(record.placeId);
@@ -20,7 +20,7 @@ export function ProfileContent() {
   const provinceCount = new Set(entries.map(({ place }) => place.province)).size;
   const placeCount = new Set(entries.map(({ place }) => place.id)).size;
   const badgeCount = Math.min(14, placeCount);
-  const coverImage = placeService.getAll()[0]?.image;
+  const coverImage = user.coverImage || placeService.getAll()[0]?.image;
 
   return (
     <div className="min-h-screen">

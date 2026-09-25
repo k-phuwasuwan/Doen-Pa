@@ -15,7 +15,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 - Pages and global CSS live in root-level `app/`; components, services, mocks, types, and hooks live in `src/`. Do not create a second `src/app/`.
 - State currently uses React hooks, URL query parameters, `useSyncExternalStore`, and localStorage. **Zustand is not installed**; do not assume a store layer exists.
 - Source of truth for types: `src/types/index.ts`; for design tokens/effects: `app/globals.css` and `tailwind.config.ts`; for mock data: `src/mocks/`.
-- `userService.getCurrentUser()` returns a mock user. There is **no real authentication or backend**.
+- `userService.getCurrentUser()` returns the mock user with any locally saved profile edits. There is **no real authentication or backend**.
 
 ## Routes and navigation
 
@@ -32,6 +32,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/stats` | Personal travel statistics and badges. |
 | `/stats?view=guest` | Logged-out Stats preview with an empty state and a link to the mock-user Stats page. |
 | `/profile` | Personal profile and photo gallery. |
+| `/profile/edit` | Edit the mock user's display name, username, bio, avatar, and cover image, with a live preview. Changes persist in this browser's localStorage. |
 | `/profile?view=guest` | Logged-out Profile preview with an empty state and a link to the mock-user Profile page. |
 
 Place Details receives an explicit origin when needed:
@@ -49,7 +50,7 @@ Do not add a dialog version of Place Details. The map's selected-place card is d
 
 `Place` has `id`, `name`, `location`, `province`, `region`, `description`, `image`, `type`, optional coordinates, altitude, distance, season and camping text. `TravelRecord` has `userId`, `placeId`, `visitedAt`, `note`, `photos: string[]`, personal `rating`, and `createdAt`. Use the actual interfaces in `src/types/index.ts`; older fields such as `category`, `rankLabel`, `difficulty`, and `guidelines` are **not in the current Place model**.
 
-`travelRecordService` seeds from `src/mocks/travel-records.ts` when browser storage is empty and persists records under `doen-pa-travel-records` in localStorage. `useTravelRecords` subscribes to changes. Keep service access out of purely presentational components where practical.
+`travelRecordService` seeds from `src/mocks/travel-records.ts` when browser storage is empty and persists records under `doen-pa-travel-records` in localStorage. `useTravelRecords` subscribes to changes. `userService` starts with `src/mocks/users.ts`, stores profile edits under `doen-pa-current-user`, and `useCurrentUser` subscribes so Profile and Passport show saved changes. Keep service access out of purely presentational components where practical.
 
 Photo rules:
 
@@ -99,6 +100,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 - Passport filter row is centered and may scroll horizontally on narrow screens. It filters record cards by place type. Cards open read-only Place Details with `from=passport`; they do not offer stamping there.
 - `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are logged-out design previews while auth is absent. Keep them distinct from signed-in empty-data states.
 - Stats and Profile derive personal counts from the current user's records. Profile photo tiles link to Place Details with `from=profile`.
+- The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves locally. There is no backend sync or account authentication.
 - Keep ratings personal, avoid public review or social features.
 
 ## Architecture and quality rules

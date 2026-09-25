@@ -8,11 +8,11 @@ import { PassportHeader } from "@/components/passport/PassportHeader";
 import { TravelRecordCard } from "@/components/passport/TravelRecordCard";
 import { placeService } from "@/services/place.service";
 import { useTravelRecords } from "@/lib/use-travel-records";
-import { userService } from "@/services/user.service";
+import { useCurrentUser } from "@/lib/use-current-user";
 import type { PlaceType } from "@/types";
 
 export function PassportContent() {
-  const user = userService.getCurrentUser();
+  const user = useCurrentUser();
   const records = useTravelRecords(user.id);
   const entries = records.flatMap((record) => {
     const place = placeService.getPlaceById(record.placeId);

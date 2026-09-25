@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const coverImage = placeService.getAll()[0]?.image;
 
   return (
-    <main className="min-h-screen bg-canvas">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,2fr)] lg:items-start">
           <div className="space-y-6">
@@ -37,6 +37,6 @@ export default function ProfilePage() {
           <PostGallery posts={posts} />
         </div>
       </div>
-    </main>
+    </div>
   );
 }

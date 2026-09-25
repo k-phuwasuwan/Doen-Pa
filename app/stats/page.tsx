@@ -17,7 +17,7 @@ export default function StatsPage() {
   const stats = useMemo(() => statsService.calculateStats(currentUser.id, records), [currentUser.id, records]);
 
   return (
-    <main className="min-h-screen bg-canvas">
+    <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <StatsHero stats={stats} journeyCount={records.length} />
 
@@ -29,6 +29,6 @@ export default function StatsPage() {
           <RegionStats stats={stats} />
         </div>
       </div>
-    </main>
+    </div>
   );
 }

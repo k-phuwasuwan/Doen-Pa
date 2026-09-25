@@ -8,17 +8,18 @@ import { PhotoLightbox } from "./PhotoLightbox";
 interface PlaceGalleryProps {
   /** User's own uploaded photos from TravelRecord. Empty = no record or no uploads. */
   recordPhotos: string[];
+  initialPhotoIndex?: number;
 }
 
-export function PlaceGallery({ recordPhotos }: PlaceGalleryProps) {
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+export function PlaceGallery({ recordPhotos, initialPhotoIndex = 0 }: PlaceGalleryProps) {
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(initialPhotoIndex);
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const visibleIndex = Math.min(currentPhotoIndex, Math.max(0, recordPhotos.length - 1));
   const visiblePhoto = recordPhotos[visibleIndex];
 
   function showPhoto(direction: -1 | 1) {
-    setCurrentPhotoIndex((index) => (index + direction + recordPhotos.length) % recordPhotos.length);
+    setCurrentPhotoIndex((index) => (Math.min(index, recordPhotos.length - 1) + direction + recordPhotos.length) % recordPhotos.length);
   }
 
   function openPhoto(index: number, trigger: HTMLButtonElement) {

@@ -160,8 +160,15 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
             ${dragging ? "border-brand-600 bg-brand-600/5" : "border-brand-800/10 hover:border-brand-600/50 hover:bg-brand-600/[0.02]"}
             focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
             ${loading ? "opacity-60 pointer-events-none" : ""}`}
-          onClick={() => inputRef.current?.click()}
-          onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
+          onClick={(event) => {
+            if (!loading && event.target !== inputRef.current) inputRef.current?.click();
+          }}
+          onKeyDown={(e) => {
+            if ((e.key === "Enter" || e.key === " ") && !loading) {
+              e.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
           onDrop={handleDrop}
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
@@ -182,6 +189,7 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
             accept={ACCEPTED_EXTENSIONS}
             className="sr-only"
             onChange={handleInputChange}
+            disabled={loading}
             aria-label="เลือกไฟล์รูปภาพ"
           />
         </div>
@@ -189,7 +197,7 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
 
       {/* Error messages */}
       {errors.length > 0 && (
-        <div className="space-y-1">
+        <div className="space-y-1" role="alert">
           {errors.map((err, i) => (
             <div key={i} className="flex items-start gap-2 text-xs text-red-600">
               <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />

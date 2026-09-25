@@ -50,18 +50,6 @@ export const mockTravelRecords: TravelRecord[] = [
     createdAt: new Date("2025-09-05"),
   },
   {
-    id: "record-5",
-    userId: "user-1",
-    placeId: "place-emerald-cave",
-    visitedAt: new Date("2025-08-15"),
-    note: "ลอดถ้ำมรกต หาดทรายขาวสวยงาม",
-    photos: [
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop",
-    ],
-    rating: 4,
-    createdAt: new Date("2025-08-15"),
-  },
-  {
     id: "record-6",
     userId: "user-1",
     placeId: "place-doi-chiang-dao",

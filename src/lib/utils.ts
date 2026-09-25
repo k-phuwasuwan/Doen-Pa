@@ -4,9 +4,9 @@ export function formatThaiDate(date: Date): string {
     "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
   ];
   
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear() + 543; // Convert to Thai year
+  const day = date.getUTCDate();
+  const month = months[date.getUTCMonth()];
+  const year = date.getUTCFullYear() + 543; // Convert to Thai year
   
   return `${day} ${month} ${year}`;
 }
@@ -17,17 +17,17 @@ export function formatDate(date: Date): string {
     "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
   ];
   
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear() + 543; // Convert to Thai year
+  const day = date.getUTCDate();
+  const month = months[date.getUTCMonth()];
+  const year = date.getUTCFullYear() + 543; // Convert to Thai year
   
   return `${day} ${month} ${year}`;
 }
 
 export function formatShortDate(date: Date): string {
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
+  const day = date.getUTCDate().toString().padStart(2, '0');
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+  const year = date.getUTCFullYear();
   
   return `${day}/${month}/${year}`;
 }

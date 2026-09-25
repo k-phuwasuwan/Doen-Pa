@@ -29,7 +29,7 @@ export function CategoryCard({ label, type, count, icon: Icon, active = false, q
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
       <span className="font-semibold text-brand-800">{label}</span>
-      <span className="text-sm text-brand-800/60">{count} {type === "all" ? "อุทยาน" : "แห่ง"}</span>
+      <span className="text-sm text-brand-800/60">{count} แห่ง</span>
     </CategoryFilterLink>
   );
 }

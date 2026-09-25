@@ -7,7 +7,9 @@ export const statsService = {
     const allPlaces = placeService.getAll();
     
     // Get unique places visited
-    const visitedPlaceIds = new Set(records.map((r) => r.placeId));
+    const placeIds = new Set(allPlaces.map((place) => place.id));
+    const validRecords = records.filter((record) => placeIds.has(record.placeId));
+    const visitedPlaceIds = new Set(validRecords.map((r) => r.placeId));
     const visitedPlaces = allPlaces.filter((place) => visitedPlaceIds.has(place.id));
     
     // Get unique provinces
@@ -48,10 +50,10 @@ export const statsService = {
     });
     
     // Count total photos
-    const totalPhotos = records.reduce((sum, record) => sum + record.photos.length, 0);
+    const totalPhotos = validRecords.reduce((sum, record) => sum + record.photos.length, 0);
     
     return {
-      totalPlaces: visitedPlaceIds.size,
+      totalPlaces: visitedPlaces.length,
       totalProvinces: visitedProvinces.size,
       totalPhotos,
       totalRegions: visitedRegions.size,

@@ -14,9 +14,14 @@ export function ProfileContent() {
     const place = placeService.getPlaceById(record.placeId);
     return place ? [{ record, place }] : [];
   });
-  const posts = entries.flatMap(({ record, place }) =>
-    record.photos.map((photo) => ({ photo, place, recordId: record.id })),
-  );
+  const photoCounts = new Map<string, number>();
+  const posts = [...entries]
+    .sort((a, b) => b.record.visitedAt.getTime() - a.record.visitedAt.getTime() || b.record.createdAt.getTime() - a.record.createdAt.getTime())
+    .flatMap(({ record, place }) => record.photos.map((photo) => {
+      const photoIndex = photoCounts.get(place.id) ?? 0;
+      photoCounts.set(place.id, photoIndex + 1);
+      return { photo, place, recordId: record.id, photoIndex };
+    }));
   const provinceCount = new Set(entries.map(({ place }) => place.province)).size;
   const placeCount = new Set(entries.map(({ place }) => place.id)).size;
   const badgeCount = Math.min(14, placeCount);

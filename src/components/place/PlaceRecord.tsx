@@ -10,6 +10,7 @@ function formatThaiDate(date: Date): string {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "UTC",
   }).format(new Date(date));
 }
 

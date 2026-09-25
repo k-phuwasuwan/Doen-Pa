@@ -15,9 +15,10 @@ interface PlaceDetailContentProps {
   place: Place;
   userId: string;
   readOnly?: boolean;
+  initialPhotoIndex?: number;
 }
 
-export function PlaceDetailContent({ place, userId, readOnly = false }: PlaceDetailContentProps) {
+export function PlaceDetailContent({ place, userId, readOnly = false, initialPhotoIndex = 0 }: PlaceDetailContentProps) {
   const records = useTravelRecords(userId);
   const placeRecords = useMemo(
     () => records
@@ -30,7 +31,7 @@ export function PlaceDetailContent({ place, userId, readOnly = false }: PlaceDet
   return (
     <div className="grid grid-cols-1 items-start gap-8 overflow-hidden lg:grid-cols-2 lg:gap-12 xl:gap-14">
       <div className="overflow-hidden lg:sticky lg:top-24">
-        <PlaceGallery recordPhotos={photos} />
+        <PlaceGallery key={initialPhotoIndex} recordPhotos={photos} initialPhotoIndex={initialPhotoIndex} />
       </div>
 
       <section className="liquid-glass-card relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-9">
@@ -52,7 +53,7 @@ export function PlaceDetailContent({ place, userId, readOnly = false }: PlaceDet
           </section>
         )}
 
-        {!readOnly && <PlaceActions placeId={place.id} hasRecord={placeRecords.length > 0} />}
+        {!readOnly && <PlaceActions placeId={place.id} />}
       </section>
     </div>
   );

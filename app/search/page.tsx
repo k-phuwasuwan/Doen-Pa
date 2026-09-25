@@ -25,21 +25,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   // Simulate network delay for skeleton to show in dev
   // await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  let places = placeService.getAll();
+  let places = placeService.searchPlaces(query);
 
   if (type !== "all") {
     places = places.filter((p) => p.type === type);
-  }
-
-  if (query) {
-    const lowerQuery = query.trim().toLowerCase();
-    places = places.filter(
-      (p) =>
-        p.name.toLowerCase().includes(lowerQuery) ||
-        p.location.toLowerCase().includes(lowerQuery) ||
-        p.province.toLowerCase().includes(lowerQuery) ||
-        p.region.toLowerCase().includes(lowerQuery)
-    );
   }
 
   return (

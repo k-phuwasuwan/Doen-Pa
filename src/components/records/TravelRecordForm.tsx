@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Star, CalendarDays, FileText, CheckCircle2 } from "lucide-react";
 import { PhotoUploader, type UploadedPhoto } from "./PhotoUploader";
 import { travelRecordService } from "@/services/travel-record.service";
+import { userService } from "@/services/user.service";
 import type { Place } from "@/types";
 
 interface TravelRecordFormProps {
@@ -14,7 +15,8 @@ interface TravelRecordFormProps {
 export function TravelRecordForm({ place }: TravelRecordFormProps) {
   const router = useRouter();
 
-  const todayISO = new Date().toISOString().split("T")[0];
+  const today = new Date();
+  const todayISO = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
   const [visitedAt, setVisitedAt] = useState(todayISO);
   const [note, setNote] = useState("");
@@ -27,7 +29,14 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!visitedAt) errs.visitedAt = "กรุณาเลือกวันที่ไป";
+    if (!visitedAt) {
+      errs.visitedAt = "กรุณาเลือกวันที่ไป";
+    } else {
+      const parsed = new Date(`${visitedAt}T12:00:00Z`);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(visitedAt) || Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== visitedAt || visitedAt > todayISO) {
+        errs.visitedAt = "กรุณาเลือกวันที่ที่ไม่เกินวันนี้";
+      }
+    }
     return errs;
   };
 
@@ -44,9 +53,9 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
 
     try {
       travelRecordService.createRecord({
-        userId: "user-1",
+        userId: userService.getCurrentUser().id,
         placeId: place.id,
-        visitedAt: new Date(visitedAt),
+        visitedAt: new Date(`${visitedAt}T12:00:00Z`),
         note: note.trim(),
         photos: photos.map((p) => p.dataUrl),
         rating,
@@ -195,4 +204,3 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
     </form>
   );
 }
-

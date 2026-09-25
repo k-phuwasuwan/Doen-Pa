@@ -1,20 +1,6 @@
 import type { Metadata } from "next";
-import { Kanit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/navigation/AppShell";
-
-const kanit = Kanit({
-  variable: "--font-kanit",
-  subsets: ["thai", "latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Doen Pa — แพสพอร์ตเดินป่า",
@@ -23,10 +9,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="th"
-      className={`${kanit.variable} ${plusJakartaSans.variable} h-full antialiased`}
-    >
+    <html lang="th" className="h-full antialiased">
       <body className="relative min-h-full flex flex-col bg-canvas contour-pattern">
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div className="ambient-glow-mesh-1 left-[-20rem] top-[-18rem]" />

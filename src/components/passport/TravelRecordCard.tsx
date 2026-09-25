@@ -55,10 +55,12 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
                 <CalendarDays className="h-4 w-4" aria-hidden="true" />
                 {formatDate(record.visitedAt)}
               </span>
-              <span className="inline-flex items-center gap-1" aria-label={`คะแนน ${record.rating} จาก 5`}>
-                <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden="true" />
-                {record.rating}/5
-              </span>
+              {record.rating > 0 && (
+                <span className="inline-flex items-center gap-1" aria-label={`คะแนน ${record.rating} จาก 5`}>
+                  <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden="true" />
+                  {record.rating}/5
+                </span>
+              )}
             </div>
           </div>
 

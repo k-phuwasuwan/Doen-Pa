@@ -7,7 +7,7 @@ function matchesQuery(place: Place, query: string): boolean {
     return true;
   }
 
-  return [place.name, place.location, place.province, place.description]
+  return [place.name, place.location, place.province, place.region, place.description]
     .join(" ")
     .toLowerCase()
     .includes(normalized);

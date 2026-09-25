@@ -16,11 +16,37 @@ function parseRecords(raw: string | null): TravelRecord[] {
   try {
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return getMockRecords();
-    return parsed.map((record: TravelRecord) => ({
-      ...record,
-      visitedAt: new Date(record.visitedAt),
-      createdAt: new Date(record.createdAt),
-    }));
+    return parsed.flatMap((value): TravelRecord[] => {
+      if (value === null || typeof value !== "object" || Array.isArray(value)) return [];
+      const record = value as Record<string, unknown>;
+      if (
+        typeof record.id !== "string" ||
+        typeof record.userId !== "string" ||
+        typeof record.placeId !== "string" ||
+        typeof record.note !== "string" ||
+        !Array.isArray(record.photos) ||
+        !record.photos.every((photo: unknown) => typeof photo === "string") ||
+        typeof record.rating !== "number" ||
+        !Number.isInteger(record.rating) ||
+        record.rating < 0 || record.rating > 5 ||
+        typeof record.visitedAt !== "string" ||
+        typeof record.createdAt !== "string"
+      ) return [];
+
+      const visitedAt = new Date(record.visitedAt);
+      const createdAt = new Date(record.createdAt);
+      if (Number.isNaN(visitedAt.getTime()) || Number.isNaN(createdAt.getTime())) return [];
+      return [{
+        id: record.id,
+        userId: record.userId,
+        placeId: record.placeId,
+        note: record.note,
+        photos: record.photos as string[],
+        rating: record.rating,
+        visitedAt,
+        createdAt,
+      }];
+    });
   } catch (error) {
     console.error("Failed to parse travel records from storage:", error);
     return getMockRecords();

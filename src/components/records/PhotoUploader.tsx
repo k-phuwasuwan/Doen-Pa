@@ -139,7 +139,7 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
         <label className="text-sm font-medium text-brand-800">
           รูปภาพ
           <span className="ml-1 text-brand-800/65 font-normal">
-            ({value.length}/{MAX_FILES})
+            ({value.length}/{MAX_FILES} ต่อบันทึก)
           </span>
         </label>
         {value.length === MAX_FILES && (
@@ -244,4 +244,3 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
     </div>
   );
 }
-

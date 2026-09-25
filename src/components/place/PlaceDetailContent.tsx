@@ -14,9 +14,10 @@ import { PlaceRecord } from "./PlaceRecord";
 interface PlaceDetailContentProps {
   place: Place;
   userId: string;
+  readOnly?: boolean;
 }
 
-export function PlaceDetailContent({ place, userId }: PlaceDetailContentProps) {
+export function PlaceDetailContent({ place, userId, readOnly = false }: PlaceDetailContentProps) {
   const records = useTravelRecords(userId);
   const placeRecords = useMemo(
     () => records
@@ -51,7 +52,7 @@ export function PlaceDetailContent({ place, userId }: PlaceDetailContentProps) {
           </section>
         )}
 
-        <PlaceActions placeId={place.id} hasRecord={placeRecords.length > 0} />
+        {!readOnly && <PlaceActions placeId={place.id} hasRecord={placeRecords.length > 0} />}
       </section>
     </div>
   );

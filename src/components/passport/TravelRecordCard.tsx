@@ -22,7 +22,7 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
 
   return (
     <article className="liquid-glass-card overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-glass-card">
-      <Link href={`/places/${place.id}`} className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset">
+      <Link href={`/places/${place.id}?from=passport`} className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset">
         <div className="relative h-52 w-full overflow-hidden bg-beige-100/20">
           {image ? (
             <Image

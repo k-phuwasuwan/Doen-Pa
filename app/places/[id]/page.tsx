@@ -6,6 +6,7 @@ import { userService } from "@/services/user.service";
 
 interface PlacePageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
 }
 
 export async function generateMetadata({ params }: PlacePageProps) {
@@ -18,8 +19,9 @@ export async function generateMetadata({ params }: PlacePageProps) {
   };
 }
 
-export default async function PlacePage({ params }: PlacePageProps) {
+export default async function PlacePage({ params, searchParams }: PlacePageProps) {
   const { id } = await params;
+  const { from } = await searchParams;
   const place = placeService.getPlaceById(id);
 
   if (!place) notFound();
@@ -31,7 +33,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
         <BackButton />
       </div>
 
-      <PlaceDetailContent place={place} userId={userService.getCurrentUser().id} />
+      <PlaceDetailContent place={place} userId={userService.getCurrentUser().id} readOnly={from === "passport"} />
     </div>
   );
 }

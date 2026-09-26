@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Doen Pa นักเดินป่า">
+  <rect width="128" height="128" rx="29" fill="#e8f1e9"/>
+  <g fill="#111915" stroke="#111915" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Two jointed legs meet beneath the torso, with daylight between them. -->
+    <path d="M64 73 51 91 37 106" fill="none" stroke-width="11"/>
+    <path d="M37 107h12" fill="none" stroke-width="9"/>
+    <path d="M70 73 79 90 84 106" fill="none" stroke-width="11"/>
+    <path d="M84 107h14" fill="none" stroke-width="9"/>
+    <!-- Pack, side pocket, and a solid black shoulder strap. -->
+    <rect x="29" y="40" width="29" height="37" rx="8" stroke="none"/>
+    <rect x="34" y="34" width="20" height="12" rx="5" stroke="none"/>
+    <rect x="24" y="56" width="9" height="17" rx="4" stroke="none"/>
+    <path d="M49 45c6-5 11-6 17-3" fill="none" stroke-width="5"/>
+    <!-- Neck, head, and hiking hat. -->
+    <path d="M67 34v11" fill="none" stroke-width="8"/>
+    <circle cx="69" cy="27" r="10" stroke="none"/>
+    <path d="M57 21c3-10 21-11 25 0l2 4H55z" stroke="none"/>
+    <path d="M55 26h33" fill="none" stroke-width="4"/>
+    <!-- Forward lean keeps the hip clearly above both legs. -->
+    <path d="M55 45c5-6 14-7 20-2l7 12c3 5 2 11-2 15l-9 9-14-5c-4-7-6-18-2-29z" stroke="none"/>
+    <!-- The trailing arm emerges below the pack; the leading arm bends to grip the pole. -->
+    <path d="M57 52 52 73 43 83" fill="none" stroke-width="7"/>
+    <circle cx="43" cy="83" r="4" stroke="none"/>
+    <path d="M75 51 81 69 92 65" fill="none" stroke-width="7"/>
+    <circle cx="92" cy="65" r="4.5" stroke="none"/>
+    <path d="M94 62 106 114" fill="none" stroke-width="4"/>
+    <path d="M94 62 95 57" fill="none" stroke-width="4"/>
+    <path d="M101 114h10" fill="none" stroke-width="3"/>
+  </g>
+</svg>

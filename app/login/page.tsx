@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Mountain } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
@@ -21,8 +22,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </Link>
       <div className="flex flex-1 items-center justify-center py-8">
         <section className="liquid-glass-card w-full max-w-md rounded-3xl px-6 py-9 sm:px-10 sm:py-11" aria-labelledby="login-heading">
-          <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-full border border-white bg-white/85 text-brand-700 shadow-glass sm:h-32 sm:w-32">
-            <Mountain className="h-14 w-14" strokeWidth={1.5} aria-hidden="true" />
+          <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-3xl border border-white bg-white/85 shadow-glass sm:h-32 sm:w-32">
+            <Image src="/icon.svg" alt="" width={96} height={96} unoptimized loading="eager" className="h-24 w-24 rounded-2xl sm:h-28 sm:w-28" />
           </div>
           <h1 id="login-heading" className="mt-6 text-center text-2xl font-bold text-brand-800">เข้าสู่ระบบ Doen Pa</h1>
           <p className="mt-1 text-center text-sm text-brand-800/65">กลับมาบันทึกความทรงจำจากทุกเส้นทาง</p>

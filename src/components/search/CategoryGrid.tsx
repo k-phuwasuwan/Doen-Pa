@@ -1,4 +1,4 @@
-import { Compass, Droplets, Mountain, TreePine, Umbrella, Waves } from "lucide-react";
+import { Compass, Droplets, Mountain, Umbrella, Waves } from "lucide-react";
 import { placeService } from "@/services/place.service";
 import type { PlaceType } from "@/types";
 import { CategoryCard } from "./CategoryCard";
@@ -9,7 +9,6 @@ const categories: { label: string; type: PlaceType | "all"; icon: typeof Compass
   { label: "น้ำตก & ลำธาร", type: "waterfall", icon: Droplets },
   { label: "ถ้ำ & ธรณีสัณฐาน", type: "cave", icon: Waves },
   { label: "หมู่เกาะ & ทะเล", type: "island", icon: Umbrella },
-  { label: "อุทยานแห่งชาติ", type: "national_park", icon: TreePine },
 ];
 
 export function CategoryGrid({ currentType = "all", query = "", visited = "all" }: {
@@ -25,7 +24,7 @@ export function CategoryGrid({ currentType = "all", query = "", visited = "all" 
           <h2 id="category-title" className="text-2xl font-bold text-brand-800">เลือกประเภทสถานที่ตามสไตล์การเดินป่าของคุณ</h2>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {categories.map((category) => (
           <CategoryCard
             key={category.type}

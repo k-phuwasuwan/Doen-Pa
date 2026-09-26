@@ -15,7 +15,7 @@ interface SearchPageProps {
   searchParams: Promise<{ q?: string; type?: string; visited?: string }>;
 }
 
-const placeTypes = new Set<PlaceType>(["mountain", "waterfall", "cave", "island", "national_park"]);
+const placeTypes = new Set<PlaceType>(["mountain", "waterfall", "cave", "island"]);
 
 function isPlaceType(value: string | undefined): value is PlaceType {
   return value !== undefined && placeTypes.has(value as PlaceType);

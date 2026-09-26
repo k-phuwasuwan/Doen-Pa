@@ -47,7 +47,7 @@ export function MapOverview() {
       {places.length === 0 && (
         <div className="pointer-events-none absolute inset-0 z-[1000] flex items-center justify-center px-4">
           <p className="max-w-sm rounded-3xl border border-white bg-white/95 px-5 py-4 text-center text-sm font-medium text-brand-900 shadow-glass backdrop-blur-xl">
-            ยังไม่มีสถานที่บนแผนที่ เริ่มบันทึกสถานที่ที่คุณเคยไปในแพสพอร์ต
+            ยังไม่มีสถานที่บนแผนที่
           </p>
         </div>
       )}

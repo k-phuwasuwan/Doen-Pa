@@ -1,6 +1,6 @@
 "use client";
 
-import { Compass, Droplets, Map, Mountain, TreePine, Umbrella } from "lucide-react";
+import { Compass, Droplets, Map, Mountain, Umbrella } from "lucide-react";
 import { FilterChip } from "@/components/ui/FilterChip";
 import type { PlaceType } from "@/types";
 
@@ -14,7 +14,6 @@ const filters: {
   { label: "น้ำตก", type: "waterfall", icon: <Droplets className="h-6 w-6" /> },
   { label: "ถ้ำ", type: "cave", icon: <Map className="h-6 w-6" /> },
   { label: "หมู่เกาะและทะเล", type: "island", icon: <Umbrella className="h-6 w-6" /> },
-  { label: "อุทยานแห่งชาติ", type: "national_park", icon: <TreePine className="h-6 w-6" /> },
 ];
 
 interface PassportFilterProps {
@@ -24,8 +23,8 @@ interface PassportFilterProps {
 
 export function PassportFilter({ currentType, onChange }: PassportFilterProps) {
   return (
-    <div className="overflow-x-auto pb-3 hide-scrollbar" role="group" aria-label="กรองประเภทสถานที่">
-      <div className="mx-auto flex w-max min-w-full justify-center gap-5 px-2 sm:gap-8">
+    <div className="w-full pb-3" role="group" aria-label="กรองประเภทสถานที่">
+      <div className="grid w-full grid-cols-5 items-start gap-1 sm:mx-auto sm:flex sm:w-max sm:max-w-full sm:justify-center sm:gap-8">
         {filters.map((filter) => (
           <FilterChip
             key={filter.type}

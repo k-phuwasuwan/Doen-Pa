@@ -20,8 +20,8 @@ function clearTimer(timer: { current: ReturnType<typeof setTimeout> | null }) {
 
 export function RouteLoadingProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [visible, setVisible] = useState(false);
-  const activeLoads = useRef(0);
+  const [visible, setVisible] = useState(true);
+  const activeLoads = useRef(1);
   const navigationPending = useRef(false);
   const previousPathname = useRef(pathname);
   const visibleSince = useRef<number | null>(null);
@@ -54,6 +54,11 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
       setVisible(false);
     }, Math.max(0, MIN_VISIBLE_MS - elapsed));
   }, []);
+
+  useEffect(() => {
+    visibleSince.current = performance.now();
+    end();
+  }, [end]);
 
   useEffect(() => {
     if (previousPathname.current === pathname) return;

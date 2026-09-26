@@ -3,8 +3,8 @@ import "./globals.css";
 import { AppShell } from "@/components/navigation/AppShell";
 
 export const metadata: Metadata = {
-  title: "Doen Pa — แพสพอร์ตเดินป่า",
-  description: "บันทึกการเดินป่า สะสมทริป สร้างแพสพอร์ตที่ไม่ซ้ำใคร",
+  title: "Doen Pa — พาสปอร์ตเดินป่า",
+  description: "บันทึกการเดินป่า สะสมทริป สร้างพาสปอร์ตที่ไม่ซ้ำใคร",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

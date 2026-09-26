@@ -9,7 +9,7 @@ import { getActiveNavHref, getNavigationHref, type NavHref } from "./activeNav";
 const links: { href: NavHref; label: string; icon: typeof Search }[] = [
   { href: "/search", label: "ค้นหา", icon: Search },
   { href: "/map", label: "แผนที่", icon: Map },
-  { href: "/passport", label: "แพสพอร์ต", icon: BookOpen },
+  { href: "/passport", label: "พาสปอร์ต", icon: BookOpen },
   { href: "/stats", label: "สถิติ", icon: BarChart2 },
   { href: "/profile", label: "โปรไฟล์", icon: User },
 ];

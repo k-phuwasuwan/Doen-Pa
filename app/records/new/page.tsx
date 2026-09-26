@@ -37,7 +37,7 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-brand-800">บันทึกการเดินทาง</h1>
             <p className="text-brand-800/65 text-sm mt-1">
-              บันทึกความทรงจำและรูปภาพของทริปนี้ลงแพสพอร์ต
+              บันทึกความทรงจำและรูปภาพของทริปนี้ลงพาสปอร์ต
             </p>
           </div>
 

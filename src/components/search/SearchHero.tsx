@@ -26,7 +26,7 @@ export function SearchHero({ initialQuery = "" }: { initialQuery?: string }) {
         >
           ค้นพบสถานที่ที่เคยอยู่ในความทรงจำ
         </h1>
-        <p className="max-w-xl text-brand-800/75">ค้นหาเส้นทาง ภูเขา น้ำตก และสถานที่ธรรมชาติ เพื่อเติมเต็มแพสพอร์ตของคุณ</p>
+        <p className="max-w-xl text-brand-800/75">ค้นหาเส้นทาง ภูเขา น้ำตก และสถานที่ธรรมชาติ เพื่อเติมเต็มพาสปอร์ตของคุณ</p>
         <div className="w-full max-w-2xl rounded-2xl hero-glass-console p-2">
           <Suspense fallback={<div className="glass-input h-[48px] w-full bg-white/90 animate-pulse" />}>
             <SearchBar initialQuery={initialQuery} />

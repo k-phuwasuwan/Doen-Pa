@@ -78,7 +78,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
         </div>
         <div>
           <p className="font-bold text-brand-800 text-lg">บันทึกสำเร็จ!</p>
-          <p className="text-brand-800/65 text-sm mt-1">กำลังพาไปที่แพสพอร์ต…</p>
+          <p className="text-brand-800/65 text-sm mt-1">กำลังพาไปที่พาสปอร์ต…</p>
         </div>
       </div>
     );
@@ -199,7 +199,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
         disabled={submitting}
         className="glass-button w-full py-3 text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {submitting ? "กำลังบันทึก…" : "บันทึกลงแพสพอร์ต"}
+        {submitting ? "กำลังบันทึก…" : "บันทึกลงพาสปอร์ต"}
       </button>
     </form>
   );

@@ -1,4 +1,3 @@
-import { Map, Camera } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 import type { Stats } from "@/types";
 
@@ -21,10 +20,6 @@ export function StatsHero({ stats, journeyCount }: StatsHeroProps) {
         <StatCard value={stats.totalProvinces} label="จังหวัด" variant="yellow" />
         <StatCard value={stats.totalRegions} label="ภูมิภาค" variant="yellow" />
         <StatCard value={stats.totalPhotos} label="รูปภาพ" variant="yellow" />
-      </div>
-      <div className="mt-5 flex flex-wrap gap-4 text-sm text-brand-800/65">
-        <span className="inline-flex items-center gap-2"><Map className="h-4 w-4 text-brand-800" aria-hidden="true" /> สำรวจทั่วประเทศ</span>
-        <span className="inline-flex items-center gap-2"><Camera className="h-4 w-4 text-brand-800" aria-hidden="true" /> เก็บทุกความทรงจำ</span>
       </div>
     </section>
   );

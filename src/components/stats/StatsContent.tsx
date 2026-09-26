@@ -8,10 +8,7 @@ import { ProvinceProgress } from "@/components/stats/ProvinceProgress";
 import { RegionStats } from "@/components/stats/RegionStats";
 import { StatsHero } from "@/components/stats/StatsHero";
 import { statsService } from "@/services/stats.service";
-import { placeService } from "@/services/place.service";
 import { userService } from "@/services/user.service";
-
-const totalNationalParks = placeService.getAll().length;
 
 export function StatsContent() {
   const currentUser = userService.getCurrentUser();
@@ -26,7 +23,7 @@ export function StatsContent() {
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <div className="lg:col-span-2"><ProvinceProgress stats={stats} /></div>
           <div className="lg:col-span-2">
-            <NationalParkProgress visitedCount={stats.totalPlaces} totalCount={totalNationalParks} />
+            <NationalParkProgress visitedCount={stats.visitedNationalParks} totalCount={stats.totalNationalParks} />
           </div>
           <CategoryStats stats={stats} />
           <RegionStats stats={stats} />

@@ -22,7 +22,7 @@ export function PassportContent() {
 
   const filteredEntries = selectedType === "all"
     ? entries
-    : entries.filter(({ place }) => place.type === selectedType);
+    : entries.filter(({ place }) => placeService.matchesType(place, selectedType));
   const provinceCount = new Set(entries.map(({ place }) => place.province)).size;
   const placeCount = new Set(entries.map(({ place }) => place.id)).size;
   const photoCount = entries.reduce((total, { record }) => total + record.photos.length, 0);

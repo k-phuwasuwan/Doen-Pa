@@ -11,6 +11,7 @@ export const mockPlaces: Place[] = [
     description:
       "ยอดเขาที่สูงที่สุดในประเทศไทย จุดชมทะเลหมอก กิ่วแม่ปาน และเส้นทางศึกษาธรรมชาติบนดอยสูง",
     type: "mountain",
+    isNationalPark: true,
     altitude: "2565 m",
     distance: "8.5 km",
     bestSeason:
@@ -28,6 +29,7 @@ export const mockPlaces: Place[] = [
     description:
       "ยอดหินปูนสูงชัน ต้องขออนุญาตเข้าเขตสงวน วิวเทือกเขาและดวงดาวบนสันดอย",
     type: "mountain",
+    isNationalPark: true,
     altitude: "2225 m",
     distance: "5.2 km",
     bestSeason: "เปิดให้บริการทุกวัน ควรหลีกเลี่ยงช่วงฤดูฝน (มิ.ย. – ต.ค.)",
@@ -60,6 +62,7 @@ export const mockPlaces: Place[] = [
     region: "central",
     description: "เขาสามร้อยยอด ยอดเขาสวยงาม จุดชมวิวทะเล และอุทยานแห่งชาติ",
     type: "mountain",
+    isNationalPark: true,
     altitude: "604 m",
     distance: "6.0 km",
 
@@ -91,6 +94,7 @@ export const mockPlaces: Place[] = [
     region: "south",
     description: "หมู่เกาะพีพี เกาะสวยงาม หาดทรายขาว น้ำใส และถ้ำธรรมชาติ",
     type: "island",
+    isNationalPark: true,
     altitude: "0 m",
     distance: "0.5 km",
 
@@ -108,6 +112,7 @@ export const mockPlaces: Place[] = [
     description:
       "ที่ราบสูงหินทราย ท่องเที่ยวเดินป่าค้างคืน ผาหล่มสัก และลานกว้างบนยอดภู",
     type: "mountain",
+    isNationalPark: true,
     altitude: "1316 m",
     distance: "9.0 km",
 
@@ -122,6 +127,7 @@ export const mockPlaces: Place[] = [
     region: "northeast",
     description: "ภูเรือ ยอดเขาสูงชัน วิวทิวทัศน์ และฤดูหนาวที่สวยงาม",
     type: "mountain",
+    isNationalPark: true,
     altitude: "1365 m",
     distance: "7.5 km",
 
@@ -136,6 +142,7 @@ export const mockPlaces: Place[] = [
     region: "northeast",
     description: "ภูเวียง ยอดเขาที่สูงที่สุดในภาคอีสาน วิวทิวทัศน์ และศาสนสถาน",
     type: "mountain",
+    isNationalPark: true,
     altitude: "1279 m",
     distance: "8.0 km",
 
@@ -150,6 +157,7 @@ export const mockPlaces: Place[] = [
     region: "northeast",
     description: "น้ำตกตาดโตน น้ำตกในอุทยานแห่งชาติ สวยงามและเดินทางสะดวก",
     type: "waterfall",
+    isNationalPark: true,
     altitude: "300 m",
     distance: "2.0 km",
 

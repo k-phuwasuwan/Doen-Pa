@@ -29,6 +29,8 @@ export interface Place {
   region: Region;
   description: string;
   type: PlaceType;
+  /** Counts toward national park progress even when displayed under another place type. */
+  isNationalPark?: boolean;
   latitude?: number;
   longitude?: number;
   altitude?: string;
@@ -52,9 +54,12 @@ export interface TravelRecord {
 
 export interface Stats {
   totalPlaces: number;
+  totalNationalParks: number;
+  visitedNationalParks: number;
   totalProvinces: number;
   totalPhotos: number;
   totalRegions: number;
   byType: Record<PlaceType, number>;
-  byRegion: Record<Region, { count: number; provinces: string[] }>;
+  totalByType: Record<PlaceType, number>;
+  byRegion: Record<Region, { count: number; provinces: string[]; totalNationalParks: number; visitedNationalParks: number }>;
 }

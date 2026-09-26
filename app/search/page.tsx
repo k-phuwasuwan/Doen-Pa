@@ -15,10 +15,16 @@ interface SearchPageProps {
   searchParams: Promise<{ q?: string; type?: string; visited?: string }>;
 }
 
+const placeTypes = new Set<PlaceType>(["mountain", "waterfall", "cave", "island", "national_park"]);
+
+function isPlaceType(value: string | undefined): value is PlaceType {
+  return value !== undefined && placeTypes.has(value as PlaceType);
+}
+
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
   const query = params.q || "";
-  const type = (params.type as PlaceType | "all") || "all";
+  const type = isPlaceType(params.type) ? params.type : "all";
   const visited = params.visited === "visited" || params.visited === "unvisited" ? params.visited : "all";
   const currentUser = userService.getCurrentUser();
 
@@ -28,7 +34,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   let places = placeService.searchPlaces(query);
 
   if (type !== "all") {
-    places = places.filter((p) => p.type === type);
+    places = places.filter((place) => placeService.matchesType(place, type));
   }
 
   return (

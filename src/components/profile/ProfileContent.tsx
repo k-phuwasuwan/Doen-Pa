@@ -32,7 +32,7 @@ export function ProfileContent() {
     <div className="min-h-screen">
       <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,2fr)] lg:items-start">
-          <div className="space-y-6">
+          <div className="contents lg:block lg:space-y-6">
             <ProfileHeader user={user} coverImage={user.coverImage} />
             <ProfileStats
               placeCount={placeCount}
@@ -41,7 +41,7 @@ export function ProfileContent() {
             />
             <Link
               href="/profile?view=guest"
-              className="liquid-glass-card group flex min-h-16 items-center gap-4 rounded-3xl px-5 py-4 text-brand-800 transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+              className="liquid-glass-card group order-last flex min-h-16 items-center gap-4 rounded-3xl px-5 py-4 text-brand-800 transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 lg:order-none"
             >
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-700 transition-colors group-hover:bg-brand-600/15">
                 <LogOut className="h-5 w-5" aria-hidden="true" />

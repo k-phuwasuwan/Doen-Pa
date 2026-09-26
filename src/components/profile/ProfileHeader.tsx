@@ -16,7 +16,7 @@ export function ProfileHeader({ user, coverImage, showEditButton = true, heading
 
   return (
     <section className="liquid-glass-card overflow-hidden" aria-labelledby="profile-heading">
-      <div className="relative h-40 bg-brand-600 sm:h-48">
+      <div className="relative h-36 bg-brand-600 sm:h-44">
         {coverImage && (
           <Image src={coverImage} alt="ภาพปกโปรไฟล์" fill priority className="object-cover" sizes="(max-width: 1024px) 100vw, 600px" />
         )}
@@ -29,11 +29,11 @@ export function ProfileHeader({ user, coverImage, showEditButton = true, heading
         )}
       </div>
       <div className="px-6 pb-6 sm:px-8 sm:pb-8">
-        <div className="-mt-12 flex items-end gap-4 sm:-mt-14">
+        <div className="-mt-12 flex items-start gap-4 sm:-mt-14">
           <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600 text-3xl font-bold text-white ring-4 ring-white/90 sm:h-28 sm:w-28">
             {user.avatar ? <Image src={user.avatar} alt={user.name} fill className="object-cover" sizes="112px" /> : initials}
           </div>
-          <div className="min-w-0 pb-1">
+          <div className="min-w-0 pt-16 sm:pt-20">
             <Heading id="profile-heading" className="break-words text-2xl font-bold text-brand-800">{user.name}</Heading>
             <p className="text-sm text-brand-800/65">@{user.username}</p>
           </div>

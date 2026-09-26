@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LogIn, Mountain } from "lucide-react";
@@ -41,8 +42,8 @@ function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: 
   return (
     <nav className="sticky top-4 z-40 mx-4 flex items-center md:mx-auto md:w-full md:px-8">
       <div className="liquid-glass-capsule flex min-h-16 w-full items-center justify-between rounded-full px-5 py-2.5 shadow-glass transition-shadow hover:shadow-glass-hover md:min-h-0 md:px-6 md:py-2">
-        <Link href={getNavigationHref("/search", isGuest)} className="flex min-h-11 items-center gap-2 rounded-full text-xl font-bold text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 md:min-h-0">
-          <Mountain className="h-6 w-6" aria-hidden="true" />
+        <Link href={getNavigationHref("/search", isGuest)} className="flex min-h-11 shrink-0 items-center gap-2 rounded-full text-base font-bold text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 sm:text-xl md:min-h-0">
+          <Mountain className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
           <span>Doen Pa</span>
         </Link>
 
@@ -72,10 +73,12 @@ function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: 
             เข้าสู่ระบบ
           </Link>
         ) : (
-          <div className="hidden items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-sm text-brand-800 md:flex">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-600 text-xs font-bold text-white">{user.name.slice(0, 1)}</span>
-            <span className="max-w-32 truncate">{user.name}</span>
-          </div>
+          <Link href="/profile" aria-label={`โปรไฟล์ ${user.name}`} className="inline-flex min-h-11 min-w-0 max-w-32 items-center gap-1.5 rounded-full bg-white/70 px-2 py-1.5 text-xs font-medium text-brand-800 shadow-glass transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:max-w-40 sm:gap-2 sm:px-3 sm:text-sm">
+            <span className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600 text-xs font-bold text-white">
+              {user.avatar ? <Image src={user.avatar} alt="" fill sizes="28px" className="object-cover" /> : user.name.slice(0, 1)}
+            </span>
+            <span className="min-w-0 truncate">{user.name}</span>
+          </Link>
         )}
       </div>
     </nav>

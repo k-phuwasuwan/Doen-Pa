@@ -25,14 +25,14 @@
       <path d="M64 73 51 91" fill="none" stroke-width="11"/>
       <g class="rear-shin">
         <path d="M51 91 37 106" fill="none" stroke-width="11"/>
-        <path d="M34 98c2-1 5 0 7 2l1 4c3 1 7 1 10 3 2 1 3 3 2 4-1 2-4 2-7 1l-16-1c-3 0-4-2-3-5l3-5c1-2 2-3 3-3z" stroke="none"/>
+        <path d="M34 100c2-1 4 0 6 1l1 3c3 0 7 1 9 3 2 2 1 4-2 4H32c-3 0-3-2-2-5l2-4c1-1 1-2 2-2z" stroke="none"/>
       </g>
     </g>
     <g class="lead-thigh">
       <path d="M70 73 79 90" fill="none" stroke-width="11"/>
       <g class="lead-shin">
         <path d="M79 90 84 106" fill="none" stroke-width="11"/>
-        <path d="M81 98c2-1 5 0 7 2l2 4c4 1 8 1 11 4 2 2 1 4-2 4H79c-3 0-4-2-3-5l2-6c1-2 2-3 3-3z" stroke="none"/>
+        <path d="M81 100c2-1 4 0 6 1l1 3c3 0 7 1 9 3 2 2 1 4-2 4H79c-3 0-3-2-2-5l2-4c1-1 1-2 2-2z" stroke="none"/>
       </g>
     </g>
     <rect x="29" y="40" width="29" height="37" rx="8" stroke="none"/>

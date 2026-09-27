@@ -2,7 +2,7 @@
   <rect width="128" height="128" rx="29" fill="#e8f1e9"/>
   <g fill="#111915" stroke="#111915" stroke-linecap="round" stroke-linejoin="round">
     <!-- Straight leg edges flow into compact hiking boots without a separate ankle joint. -->
-    <path d="M60 69 68 77 42 104c5 0 8 1 9 4 1 2 0 3-3 3H32c-3 0-4-2-2-4z" stroke="none"/>
+    <path d="M60 69 68 77 45 104c2 0 5 1 6 4 1 2 0 3-3 3H32c-3 0-4-2-2-4z" stroke="none"/>
     <path d="M65 75 75 71 89 102c5 1 8 3 9 6 1 2 0 3-3 3H81z" stroke="none"/>
     <!-- Pack, side pocket, and a solid black shoulder strap. -->
     <rect x="29" y="40" width="29" height="37" rx="8" stroke="none"/>

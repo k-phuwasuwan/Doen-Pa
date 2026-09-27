@@ -41,7 +41,7 @@ function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: 
 
   return (
     <nav className="sticky top-4 z-40 mx-4 flex items-center md:mx-auto md:w-full md:px-8">
-      <div className="liquid-glass-capsule flex min-h-16 w-full items-center justify-between rounded-full px-5 py-2.5 shadow-glass transition-shadow hover:shadow-glass-hover md:min-h-0 md:px-6 md:py-2">
+      <div className="liquid-glass-capsule site-top-nav-surface flex min-h-16 w-full items-center justify-between rounded-full px-5 py-2.5 shadow-glass transition-shadow hover:shadow-glass-hover md:min-h-0 md:px-6 md:py-2" style={{ backdropFilter: "blur(32px) saturate(160%)", WebkitBackdropFilter: "blur(32px) saturate(160%)" }}>
         <Link href={getNavigationHref("/search", isGuest)} className="flex min-h-11 shrink-0 items-center gap-2 rounded-full text-base font-bold text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 sm:text-xl md:min-h-0">
           <Image src="/icon.svg" alt="" width={32} height={32} unoptimized loading="eager" className="h-8 w-8 rounded-lg" />
           <span>Doen Pa</span>

@@ -280,11 +280,12 @@ body {
   border: 1px solid rgba(255,255,255,0.9);
   box-shadow: 0 8px 30px rgba(18,48,32,0.07), inset 0 1.5px 1.5px rgba(255,255,255,0.95);
 }
+.site-top-nav-surface {
+  background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(244,250,246,0.84));
+}
 .mobile-bottom-nav {
   bottom: max(0.75rem, env(safe-area-inset-bottom));
-  background: linear-gradient(115deg, rgba(255,255,255,0.94), rgba(236,248,240,0.9) 52%, rgba(255,255,255,0.94));
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  background: linear-gradient(115deg, rgba(255,255,255,0.97), rgba(236,248,240,0.94) 52%, rgba(255,255,255,0.97));
   border: 1px solid rgba(255,255,255,0.94);
   box-shadow: 0 12px 32px rgba(8,28,20,0.2), inset 0 1px 1px rgba(255,255,255,0.95);
 }
@@ -469,9 +470,5 @@ body {
   .hero-glass-console {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-  }
-  .mobile-bottom-nav {
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
   }
 }

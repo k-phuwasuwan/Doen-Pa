@@ -35,7 +35,7 @@ export function PostGallery({ posts }: PostGalleryProps) {
         </div>
       ) : (
         <div className="flex min-h-56 flex-col items-center justify-center text-center">
-          <Images className="h-10 w-10 text-brand-800/30" aria-hidden="true" />
+          <Images className="h-10 w-10 text-[#aeb8b0]" aria-hidden="true" />
           <p className="mt-3 font-medium text-brand-800">ยังไม่มีรูปภาพในแกลเลอรี</p>
           <p className="mt-1 text-sm text-brand-800/65">เพิ่มรูปภาพเมื่อบันทึกการเดินทางครั้งถัดไป</p>
         </div>

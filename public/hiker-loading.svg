@@ -18,12 +18,10 @@
   <g class="hiker" fill="#111915" stroke="#111915" stroke-linecap="round" stroke-linejoin="round">
     <!-- Each straight leg swings from the hip with its boot attached. -->
     <g class="rear-leg">
-      <path d="M64 73 37 102" fill="none" stroke-width="11"/>
-      <path d="M34 100c2-1 4 0 6 1l1 3c3 0 7 1 9 3 2 2 1 4-2 4H32c-3 0-3-2-2-5l2-4c1-1 1-2 2-2z" stroke="none"/>
+      <path d="M60 69 68 77 42 104c5 0 8 1 9 4 1 2 0 3-3 3H32c-3 0-4-2-2-4z" stroke="none"/>
     </g>
     <g class="lead-leg">
-      <path d="M70 73 84 102" fill="none" stroke-width="11"/>
-      <path d="M81 100c2-1 4 0 6 1l1 3c3 0 7 1 9 3 2 2 1 4-2 4H79c-3 0-3-2-2-5l2-4c1-1 1-2 2-2z" stroke="none"/>
+      <path d="M65 75 75 71 89 102c5 1 8 3 9 6 1 2 0 3-3 3H81z" stroke="none"/>
     </g>
     <rect x="29" y="40" width="29" height="37" rx="8" stroke="none"/>
     <rect x="34" y="34" width="20" height="12" rx="5" stroke="none"/>

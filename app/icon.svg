@@ -18,9 +18,9 @@
     <path d="M55 26h33" fill="none" stroke-width="4"/>
     <!-- Forward lean keeps the hip clearly above both legs. -->
     <path d="M55 45c5-6 14-7 20-2l7 12c3 5 2 11-2 15l-9 9-14-5c-4-7-6-18-2-29z" stroke="none"/>
-    <!-- The trailing arm emerges below the pack; the leading arm bends to grip the pole. -->
-    <path d="M57 52 52 73 43 83" fill="none" stroke-width="7"/>
-    <circle cx="43" cy="83" r="4" stroke="none"/>
+    <!-- The free arm starts at the shoulder and swings close to the torso. -->
+    <path d="M61 44 62 58 56 70 48 78" fill="none" stroke-width="7"/>
+    <circle cx="48" cy="78" r="4" stroke="none"/>
     <path d="M75 51 81 67 91 63" fill="none" stroke-width="7"/>
     <circle cx="91" cy="63" r="4.5" stroke="none"/>
     <!-- Hiking-pole handle with a downward hanging wrist strap. -->

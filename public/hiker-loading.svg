@@ -44,8 +44,8 @@
     <path d="M57 21c3-10 21-11 25 0l2 4H55z" stroke="none"/>
     <path d="M55 26h33" fill="none" stroke-width="4"/>
     <path d="M55 45c5-6 14-7 20-2l7 12c3 5 2 11-2 15l-9 9-14-5c-4-7-6-18-2-29z" stroke="none"/>
-    <path d="M57 52 52 73 43 83" fill="none" stroke-width="7"/>
-    <circle cx="43" cy="83" r="4" stroke="none"/>
+    <path d="M61 44 62 58 56 70 48 78" fill="none" stroke-width="7"/>
+    <circle cx="48" cy="78" r="4" stroke="none"/>
     <g class="pole-arm">
       <path d="M75 51 81 67 91 63" fill="none" stroke-width="7"/>
       <circle cx="91" cy="63" r="4.5" stroke="none"/>

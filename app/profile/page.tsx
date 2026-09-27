@@ -2,6 +2,10 @@ import { UserRound, UserRoundPen } from "lucide-react";
 import { ProfileContent } from "@/components/profile/ProfileContent";
 import { GuestPrivatePage } from "@/components/ui/GuestPrivatePage";
 
+export const metadata = {
+  title: "โปรไฟล์ | Doen Pa",
+};
+
 interface ProfilePageProps {
   searchParams: Promise<{ view?: string }>;
 }

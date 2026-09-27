@@ -2,6 +2,10 @@ import { BarChart3, ChartNoAxesCombined } from "lucide-react";
 import { StatsContent } from "@/components/stats/StatsContent";
 import { GuestPrivatePage } from "@/components/ui/GuestPrivatePage";
 
+export const metadata = {
+  title: "สถิติ | Doen Pa",
+};
+
 interface StatsPageProps {
   searchParams: Promise<{ view?: string }>;
 }

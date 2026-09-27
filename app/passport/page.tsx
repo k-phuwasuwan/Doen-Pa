@@ -1,6 +1,10 @@
 import { GuestPassport } from "@/components/passport/GuestPassport";
 import { PassportContent } from "@/components/passport/PassportContent";
 
+export const metadata = {
+  title: "พาสปอร์ต | Doen Pa",
+};
+
 interface PassportPageProps {
   searchParams: Promise<{ view?: string }>;
 }

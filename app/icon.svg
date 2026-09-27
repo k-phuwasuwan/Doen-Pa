@@ -2,10 +2,10 @@
   <rect width="128" height="128" rx="29" fill="#e8f1e9"/>
   <g fill="#111915" stroke="#111915" stroke-linecap="round" stroke-linejoin="round">
     <!-- Two jointed legs meet beneath the torso, with daylight between them. -->
-    <path d="M64 73 51 91 37 102" fill="none" stroke-width="11"/>
+    <path d="M64 73 51 91C44 96 39 97 37 102" fill="none" stroke-width="11"/>
     <!-- Close-fitting hiking boots follow the ankles into short, forward-facing toes. -->
     <path d="M34 100c2-1 4 0 6 1l1 3c3 0 7 1 9 3 2 2 1 4-2 4H32c-3 0-3-2-2-5l2-4c1-1 1-2 2-2z" stroke="none"/>
-    <path d="M70 73 79 90 84 102" fill="none" stroke-width="11"/>
+    <path d="M70 73 79 90C82 95 84 98 84 102" fill="none" stroke-width="11"/>
     <path d="M81 100c2-1 4 0 6 1l1 3c3 0 7 1 9 3 2 2 1 4-2 4H79c-3 0-3-2-2-5l2-4c1-1 1-2 2-2z" stroke="none"/>
     <!-- Pack, side pocket, and a solid black shoulder strap. -->
     <rect x="29" y="40" width="29" height="37" rx="8" stroke="none"/>

@@ -5,9 +5,9 @@ import { CategoryCard } from "./CategoryCard";
 
 const categories: { label: string; type: PlaceType | "all"; icon: typeof Compass }[] = [
   { label: "ทั้งหมด", type: "all", icon: Compass },
-  { label: "ภูเขา & ยอดดอย", type: "mountain", icon: Mountain },
-  { label: "น้ำตก & ลำธาร", type: "waterfall", icon: Droplets },
-  { label: "ถ้ำ & ธรณีสัณฐาน", type: "cave", icon: Waves },
+  { label: "ภูเขา", type: "mountain", icon: Mountain },
+  { label: "น้ำตก", type: "waterfall", icon: Droplets },
+  { label: "ถ้ำ", type: "cave", icon: Waves },
   { label: "หมู่เกาะ & ทะเล", type: "island", icon: Umbrella },
 ];
 

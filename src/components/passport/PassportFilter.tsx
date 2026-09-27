@@ -13,7 +13,7 @@ const filters: {
   { label: "ภูเขา", type: "mountain", icon: <Mountain className="h-6 w-6" /> },
   { label: "น้ำตก", type: "waterfall", icon: <Droplets className="h-6 w-6" /> },
   { label: "ถ้ำ", type: "cave", icon: <Map className="h-6 w-6" /> },
-  { label: "หมู่เกาะและทะเล", type: "island", icon: <Umbrella className="h-6 w-6" /> },
+  { label: "หมู่เกาะ & ทะเล", type: "island", icon: <Umbrella className="h-6 w-6" /> },
 ];
 
 interface PassportFilterProps {

@@ -2,8 +2,7 @@ export type PlaceType =
   | "mountain"
   | "waterfall"
   | "cave"
-  | "island"
-  | "national_park";
+  | "island";
 export type Region =
   | "north"
   | "central"

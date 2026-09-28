@@ -15,7 +15,6 @@ function matchesQuery(place: Place, query: string): boolean {
 
 function matchesType(place: Place, type: PlaceType | "all"): boolean {
   if (type === "all") return true;
-  if (type === "national_park") return place.type === "national_park" || place.isNationalPark === true;
   return place.type === type;
 }
 
@@ -41,6 +40,6 @@ export const placeService = {
   },
 
   getNationalParks(): Place[] {
-    return mockPlaces.filter((place) => matchesType(place, "national_park"));
+    return mockPlaces.filter((place) => place.isNationalPark === true);
   },
 };

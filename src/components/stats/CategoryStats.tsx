@@ -5,7 +5,7 @@ interface CategoryStatsProps {
   stats: Stats;
 }
 
-const categories: { type: Exclude<PlaceType, "national_park">; label: string; icon: typeof Mountain }[] = [
+const categories: { type: PlaceType; label: string; icon: typeof Mountain }[] = [
   { type: "mountain", label: "ภูเขา", icon: Mountain },
   { type: "waterfall", label: "น้ำตก", icon: Waves },
   { type: "cave", label: "ถ้ำ", icon: Castle },

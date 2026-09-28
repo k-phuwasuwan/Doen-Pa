@@ -1,4 +1,4 @@
-import { CalendarDays, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import type { TravelRecord } from "@/types";
 
 interface PlaceRecordProps {
@@ -33,8 +33,7 @@ export function PlaceRecord({ record }: PlaceRecordProps) {
         </div>
 
         {/* Date pill */}
-        <div className="liquid-glass inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs sm:text-sm text-brand-800/65 font-medium">
-          <CalendarDays className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+        <div className="liquid-glass inline-flex items-center rounded-full px-2.5 py-1 text-xs sm:text-sm text-brand-800/65 font-medium">
           {formatThaiDate(record.visitedAt)}
         </div>
       </div>

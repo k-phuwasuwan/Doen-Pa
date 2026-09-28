@@ -25,14 +25,12 @@ export const statsService = {
       waterfall: 0,
       cave: 0,
       island: 0,
-      national_park: 0,
     };
     const totalByType: Record<PlaceType, number> = {
       mountain: 0,
       waterfall: 0,
       cave: 0,
       island: 0,
-      national_park: 0,
     };
 
     allPlaces.forEach((place) => {

@@ -8,8 +8,7 @@ const typeLabels: Record<Place["type"], string> = {
   mountain: "ภูเขา",
   waterfall: "น้ำตก",
   cave: "ถ้ำ",
-  island: "หมู่เกาะและทะเล",
-  national_park: "อุทยานแห่งชาติ",
+  island: "หมู่เกาะ & ทะเล",
 };
 
 interface TravelRecordCardProps {

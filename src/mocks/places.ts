@@ -47,7 +47,8 @@ export const mockPlaces: Place[] = [
     region: "central",
     description:
       "อุทยานแห่งชาติแห่งแรกของไทย เส้นทางเดินป่า น้ำตกเหวนรก และสัตว์ป่าในผืนป่ามรดกโลก",
-    type: "national_park",
+    type: "mountain",
+    isNationalPark: true,
     altitude: "1350 m",
     distance: "15.0 km",
 
@@ -79,7 +80,8 @@ export const mockPlaces: Place[] = [
     region: "south",
     description:
       "ป่าดิบชื้นโบราณ อ่างเก็บน้ำเชี่ยวหลาน เขาหินปูนโผล่เหนือผิวน้ำ และเส้นทางศึกษาธรรมชาติ",
-    type: "national_park",
+    type: "mountain",
+    isNationalPark: true,
     altitude: "960 m",
     distance: "12.0 km",
 
@@ -173,7 +175,8 @@ export const mockPlaces: Place[] = [
     province: "ประจวบคีรีขันธ์",
     region: "east",
     description: "อุทยานแห่งชาติเขาสามร้อยยอด หน้าผาสูง ถ้ำ และหาดทรายขาว",
-    type: "national_park",
+    type: "cave",
+    isNationalPark: true,
     altitude: "605 m",
     distance: "8.0 km",
 

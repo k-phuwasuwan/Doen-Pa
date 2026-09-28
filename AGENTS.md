@@ -49,7 +49,7 @@ Do not add a dialog version of Place Details. The map's selected-place card is d
 
 ## Data and persistence
 
-`Place` has `id`, `name`, `location`, `province`, `region`, `description`, `type`, optional coordinates, altitude, distance, season and camping text. The place catalog has **no sample image URLs**. `TravelRecord` has `userId`, `placeId`, `visitedAt`, `note`, `photos: string[]`, personal `rating`, and `createdAt`. Use the actual interfaces in `src/types/index.ts`; older fields such as `image`, `category`, `rankLabel`, `difficulty`, and `guidelines` are **not in the current Place model**.
+`Place` has `id`, `name`, `location`, `province`, `region`, `description`, `type`, optional coordinates, altitude, distance, season and camping text. `type` is one of the four Search categories; `isNationalPark` separately marks park membership for statistics. The place catalog has **no sample image URLs**. `TravelRecord` has `userId`, `placeId`, `visitedAt`, `note`, `photos: string[]`, personal `rating`, and `createdAt`. Use the actual interfaces in `src/types/index.ts`; older fields such as `image`, `category`, `rankLabel`, `difficulty`, and `guidelines` are **not in the current Place model**.
 
 `travelRecordService` starts with an **empty array** and persists new records under `doen-pa-travel-records-v2` in localStorage. `useTravelRecords` subscribes to changes. `userService` starts with a neutral local identity (`local-user`), stores profile edits under `doen-pa-current-user-v2`, and `useCurrentUser` subscribes so Profile and Passport show saved changes. `AppShell` removes the legacy pre-reset personal-data keys on load. Keep service access out of purely presentational components where practical.
 
@@ -76,13 +76,13 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 ### Search
 
 - `app/search/page.tsx` filters mock places with `q`, `type`, and `visited` URL parameters. `SearchResults` combines server-rendered place cards with the current user's records for visited status.
-- Category counts come from `placeService`, not invented numbers. On mobile, choosing a category scrolls to the first result area below the floating nav; desktop keeps its scroll position.
+- Search category options show only their names. On mobile, choosing a category scrolls to the first result area below the floating nav; desktop keeps its scroll position.
 - Place cards link to full Place Details. Their green type chip is a place category, not booking status. The personal visit count appears only when positive. The card's Stamp action opens the record form with `returnTo=search`.
 - No public aggregate rating, review count, booking badge, or popularity recommendation.
 
 ### Place Details and records
 
-- Desktop Place Details uses a gallery column and a `.liquid-glass-card` info column. Show type → altitude → distance chips, description, optional season/camping tiles, and **all** matching personal records.
+- Desktop Place Details uses a gallery column and a `.liquid-glass-card` info column. Show text-only type → altitude → distance chips, description, optional season/camping tiles, and **all** matching personal records. Location, region, and record-date chips also have no icons.
 - Gallery shows one large photo at a time. Previous/next controls are dark frosted vertical rectangles, vertically centered and inset from the photo edges; a position counter sits near the top. No thumbnail row and no image zoom on hover.
 - Clicking a gallery photo opens a fixed full-screen lightbox. Use the same style of controls; close by clicking outside the displayed photo or pressing Escape. There is no visible X button.
 - If the user entered from Passport, suppress `PlaceActions` but keep the records and gallery visible.
@@ -100,7 +100,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 - Passport lists all travel records without a category filter. Cards open read-only Place Details with `from=passport`; they do not offer stamping there.
 - `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are logged-out design previews while auth is absent. Keep them distinct from signed-in empty-data states.
-- Stats and Profile derive personal counts from the current user's records. Stats shows travel, province, national park, place type, region, and photo counts; the badge teaser and collection are deferred. The national-park progress card sits below province progress. Its total comes from catalog places of type `national_park` or marked `isNationalPark`, including park destinations displayed under another category. Visited progress counts each eligible place once; adding another park changes the total automatically. The place-type section uses progress bars and remaining catalog counts; its national-park row uses park membership rather than the display category count. Region progress bars and remaining counts use national parks in each region. Profile uses a real photo count in place of the former badge count. Profile photo tiles link to Place Details with `from=profile`.
+- Stats and Profile derive personal counts from the current user's records. Stats shows travel, place, province, region, national park, and place-type counts; the badge teaser and collection are deferred. The national-park progress card sits below province progress. Its total comes from catalog places marked `isNationalPark`, independent of their display type. Visited progress counts each eligible place once; adding another park changes the total automatically. The place-type section uses progress bars and remaining catalog counts. Region progress bars and remaining counts use national parks in each region. Profile uses a real photo count in place of the former badge count. Profile photo tiles link to Place Details with `from=profile`.
 - The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves locally. There is no backend sync or account authentication.
 - The Profile logout control opens `/profile?view=guest` in the current auth-preview design, preserving local profile and travel records. It does not claim to end a real server session because authentication is not implemented yet.
 - Keep ratings personal, avoid public review or social features.

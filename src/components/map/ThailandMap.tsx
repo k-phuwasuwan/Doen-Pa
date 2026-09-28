@@ -9,8 +9,8 @@ import { provinceLabelWidth, updateProvinceLabels, type ProvinceLabel } from "./
 import "leaflet/dist/leaflet.css";
 
 const THAILAND_BOUNDS: L.LatLngBoundsLiteral = [[5.5, 97.5], [20.5, 105.7]];
-const MAP_PAN_PADDING = 0.1;
-const MAP_ZOOM_OUT_ALLOWANCE = 0.5;
+const MAP_PAN_PADDING = 0.03;
+const MAP_MIN_ZOOM_INSET = 0.25;
 const COUNTRY_LABELS = [
   { name: "เมียนมา", position: [17.1, 97.1] },
   { name: "ลาว", position: [18.1, 103.1] },
@@ -67,7 +67,7 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
     mapRef.current = map;
     map.attributionControl.setPrefix(false);
     map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24] });
-    map.setMinZoom(map.getZoom() - MAP_ZOOM_OUT_ALLOWANCE);
+    map.setMinZoom(map.getZoom() + MAP_MIN_ZOOM_INSET);
 
     L.tileLayer(TERRAIN_URL, {
       maxZoom: 18,

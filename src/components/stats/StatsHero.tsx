@@ -17,9 +17,9 @@ export function StatsHero({ stats, journeyCount }: StatsHeroProps) {
         <p className="mt-2 text-brand-800/65">ทุกเส้นทางที่คุณบันทึกไว้ในพาสปอร์ต</p>
       </div>
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        <StatCard value={stats.totalPlaces} label="สถานที่" variant="yellow" />
         <StatCard value={stats.totalProvinces} label="จังหวัด" variant="yellow" />
         <StatCard value={stats.totalRegions} label="ภูมิภาค" variant="yellow" />
-        <StatCard value={stats.totalPhotos} label="รูปภาพ" variant="yellow" />
       </div>
     </section>
   );

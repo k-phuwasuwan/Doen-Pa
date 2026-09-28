@@ -19,7 +19,7 @@ export default async function StatsPage({ searchParams }: StatsPageProps) {
         label="Doen Pa Stats"
         title="สถิติของคุณ"
         emptyTitle="ยังไม่มีสถิติการเดินทาง"
-        description="เข้าสู่ระบบเพื่อดูจำนวนสถานที่ จังหวัด รูปภาพ และสถิติจากการเดินทางของคุณ"
+        description="เข้าสู่ระบบเพื่อดูจำนวนสถานที่ จังหวัด ภูมิภาค และสถิติจากการเดินทางของคุณ"
         previewHref="/stats"
         previewLabel="ดูตัวอย่างสถิติ"
         headerIcon={BarChart3}

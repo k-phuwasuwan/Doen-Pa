@@ -22,7 +22,7 @@ export function CategoryGrid({ currentType = "all", query = "", visited = "all" 
           <h2 id="category-title" className="text-2xl font-bold text-brand-800">เลือกประเภทสถานที่ตามสไตล์การเดินป่าของคุณ</h2>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {categories.map((category) => (
           <CategoryCard
             key={category.type}

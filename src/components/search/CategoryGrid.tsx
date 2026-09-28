@@ -1,14 +1,12 @@
-import { Compass, Droplets, Mountain, Umbrella, Waves } from "lucide-react";
-import { placeService } from "@/services/place.service";
 import type { PlaceType } from "@/types";
 import { CategoryCard } from "./CategoryCard";
 
-const categories: { label: string; type: PlaceType | "all"; icon: typeof Compass }[] = [
-  { label: "ทั้งหมด", type: "all", icon: Compass },
-  { label: "ภูเขา", type: "mountain", icon: Mountain },
-  { label: "น้ำตก", type: "waterfall", icon: Droplets },
-  { label: "ถ้ำ", type: "cave", icon: Waves },
-  { label: "หมู่เกาะ & ทะเล", type: "island", icon: Umbrella },
+const categories: { label: string; type: PlaceType | "all" }[] = [
+  { label: "ทั้งหมด", type: "all" },
+  { label: "ภูเขา", type: "mountain" },
+  { label: "น้ำตก", type: "waterfall" },
+  { label: "ถ้ำ", type: "cave" },
+  { label: "หมู่เกาะ & ทะเล", type: "island" },
 ];
 
 export function CategoryGrid({ currentType = "all", query = "", visited = "all" }: {
@@ -29,7 +27,6 @@ export function CategoryGrid({ currentType = "all", query = "", visited = "all" 
           <CategoryCard
             key={category.type}
             {...category}
-            count={placeService.filterByType(category.type).length}
             active={currentType === category.type}
             query={query}
             visited={visited}

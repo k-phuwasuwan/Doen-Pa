@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ArrowRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 export function SearchBar({ initialQuery = "" }: { initialQuery?: string }) {
   const router = useRouter();
@@ -51,7 +51,6 @@ export function SearchBar({ initialQuery = "" }: { initialQuery?: string }) {
       />
       <button type="submit" className="shimmer-glass flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-brand-600 px-4 font-semibold text-white shadow-glow-emerald transition-colors hover:bg-brand-700" aria-label="ค้นหา">
         <span className="hidden sm:inline">ค้นหา</span>
-        <ArrowRight className="h-4 w-4" />
       </button>
     </form>
   );

@@ -13,7 +13,7 @@ const MAP_PAN_PADDING = 0.03;
 const MAP_MIN_ZOOM_INSET = 0.25;
 const COUNTRY_LABELS = [
   { name: "เมียนมา", position: [17.1, 97.1] },
-  { name: "ลาว", position: [18.1, 103.1] },
+  { name: "ลาว", position: [19.1, 103.5] },
   { name: "กัมพูชา", position: [12.6, 104.6] },
   { name: "เวียดนาม", position: [16.4, 107.2] },
   { name: "มาเลเซีย", position: [6.1, 101.1] },

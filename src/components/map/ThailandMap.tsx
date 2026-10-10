@@ -11,6 +11,9 @@ import "leaflet/dist/leaflet.css";
 const THAILAND_BOUNDS: L.LatLngBoundsLiteral = [[5.5, 97.5], [20.5, 105.7]];
 const MAP_PAN_PADDING = 0.03;
 const MAP_MIN_ZOOM_INSET = 0.25;
+const MOBILE_MAP_PAN_PADDING = 0.12;
+const MOBILE_MAP_MIN_ZOOM_INSET = -0.25;
+const MOBILE_MAP_QUERY = "(max-width: 1023px)";
 const COUNTRY_LABELS = [
   { name: "เมียนมา", position: [17.1, 97.1] },
   { name: "ลาว", position: [19.1, 103.5] },
@@ -67,7 +70,8 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
     mapRef.current = map;
     map.attributionControl.setPrefix(false);
     map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24], animate: false });
-    const minimumZoom = map.getZoom() + MAP_MIN_ZOOM_INSET;
+    const isMobile = window.matchMedia(MOBILE_MAP_QUERY).matches;
+    const minimumZoom = map.getZoom() + (isMobile ? MOBILE_MAP_MIN_ZOOM_INSET : MAP_MIN_ZOOM_INSET);
     map.setZoom(minimumZoom, { animate: false });
     map.setMinZoom(minimumZoom);
 
@@ -176,7 +180,10 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
       });
     }
 
-    map.setMaxBounds(L.latLngBounds(THAILAND_BOUNDS).extend(map.getBounds()).pad(MAP_PAN_PADDING));
+    const panPadding = window.matchMedia(MOBILE_MAP_QUERY).matches
+      ? MOBILE_MAP_PAN_PADDING
+      : MAP_PAN_PADDING;
+    map.setMaxBounds(L.latLngBounds(THAILAND_BOUNDS).extend(map.getBounds()).pad(panPadding));
     updateProvinceLabels(map, provinceLabelsRef.current, places);
   }, [places]);
 

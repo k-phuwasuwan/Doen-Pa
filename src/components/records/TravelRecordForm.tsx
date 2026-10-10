@@ -150,7 +150,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
 
       {/* Star rating */}
       <div>
-        <p className="text-sm font-medium text-brand-800 mb-2">คะแนนส่วนตัว (ไม่บังคับ)</p>
+        <p className="text-sm font-medium text-brand-800 mb-2">คะแนนส่วนตัว</p>
         <div
           role="radiogroup"
           aria-label="คะแนนส่วนตัว 1 ถึง 5 ดาว"
@@ -164,7 +164,10 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
               role="radio"
               aria-checked={rating === star}
               aria-label={`${star} ดาว`}
-              onClick={() => setRating(rating === star ? 0 : star)}
+              onClick={() => {
+                setRating(rating === star ? 0 : star);
+                setHoverRating(0);
+              }}
               onMouseEnter={() => setHoverRating(star)}
               className="p-0.5 focus:outline-none focus:ring-2 focus:ring-brand-500 rounded transition-transform active:scale-90"
             >
@@ -177,15 +180,6 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
               />
             </button>
           ))}
-          {rating > 0 && (
-            <button
-              type="button"
-              onClick={() => setRating(0)}
-              className="ml-2 text-xs text-brand-800/65 hover:text-brand-800 underline"
-            >
-              ล้าง
-            </button>
-          )}
         </div>
       </div>
 

@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
-import { useTravelRecords } from "@/lib/use-travel-records";
+import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
 import type { Place } from "@/types";
 import { PlaceActions } from "./PlaceActions";
 import { PlaceChips } from "./PlaceChips";
@@ -19,14 +18,8 @@ interface PlaceDetailContentProps {
 }
 
 export function PlaceDetailContent({ place, userId, readOnly = false, initialPhotoIndex = 0 }: PlaceDetailContentProps) {
-  const records = useTravelRecords(userId);
-  const placeRecords = useMemo(
-    () => records
-      .filter((record) => record.placeId === place.id)
-      .sort((a, b) => b.visitedAt.getTime() - a.visitedAt.getTime() || b.createdAt.getTime() - a.createdAt.getTime()),
-    [records, place.id],
-  );
-  const photos = placeRecords.flatMap((record) => record.photos);
+  const memories = useTravelRecordReadModel(userId);
+  const { records: placeRecords, photos } = memories.getPlaceMemory(place.id);
 
   return (
     <div className="grid grid-cols-1 items-start gap-8 overflow-hidden lg:grid-cols-2 lg:gap-12 xl:gap-14">

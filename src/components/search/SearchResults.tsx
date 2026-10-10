@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, type ReactNode } from "react";
-import { useTravelRecords } from "@/lib/use-travel-records";
+import { useEffect, type ReactNode } from "react";
+import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
 import type { Place, PlaceType } from "@/types";
 import { PlaceList } from "./PlaceList";
 import { VisitedFilter } from "./VisitedFilter";
@@ -17,18 +17,11 @@ interface SearchResultsProps {
 }
 
 export function SearchResults({ places, cards, userId, query, type, visited }: SearchResultsProps) {
-  const records = useTravelRecords(userId);
-  const visitCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const record of records) {
-      counts[record.placeId] = (counts[record.placeId] ?? 0) + 1;
-    }
-    return counts;
-  }, [records]);
+  const memories = useTravelRecordReadModel(userId);
 
   const visibleCards = cards.filter((_, index) => {
     const place = places[index];
-    const hasVisited = (visitCounts[place.id] ?? 0) > 0;
+    const hasVisited = memories.getVisitCount(place.id) > 0;
     return visited === "all" || (visited === "visited" ? hasVisited : !hasVisited);
   });
 

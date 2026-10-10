@@ -1,9 +1,9 @@
 "use client";
 
-import { useTravelRecords } from "@/lib/use-travel-records";
+import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
 
 export function VisitCount({ placeId, userId }: { placeId: string; userId: string }) {
-  const count = useTravelRecords(userId).filter((record) => record.placeId === placeId).length;
+  const count = useTravelRecordReadModel(userId).getVisitCount(placeId);
 
   return count > 0 ? <span className="mr-auto">เคยไปแล้ว {count} ครั้ง</span> : null;
 }

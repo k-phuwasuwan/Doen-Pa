@@ -2,31 +2,16 @@
 
 import Link from "next/link";
 import { LogOut } from "lucide-react";
-import { useTravelRecords } from "@/lib/use-travel-records";
+import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
 import { PostGallery } from "@/components/profile/PostGallery";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileStats } from "@/components/profile/ProfileStats";
-import { placeService } from "@/services/place.service";
 import { useCurrentUser } from "@/lib/use-current-user";
 
 export function ProfileContent() {
   const user = useCurrentUser();
-  const records = useTravelRecords(user.id);
-  const entries = records.flatMap((record) => {
-    const place = placeService.getPlaceById(record.placeId);
-    return place ? [{ record, place }] : [];
-  });
-  const photoCounts = new Map<string, number>();
-  const posts = [...entries]
-    .sort((a, b) => b.record.visitedAt.getTime() - a.record.visitedAt.getTime() || b.record.createdAt.getTime() - a.record.createdAt.getTime())
-    .flatMap(({ record, place }) => record.photos.map((photo) => {
-      const photoIndex = photoCounts.get(place.id) ?? 0;
-      photoCounts.set(place.id, photoIndex + 1);
-      return { photo, place, recordId: record.id, photoIndex };
-    }));
-  const provinceCount = new Set(entries.map(({ place }) => place.province)).size;
-  const placeCount = new Set(entries.map(({ place }) => place.id)).size;
-  const photoCount = posts.length;
+  const { photos: posts, counts } = useTravelRecordReadModel(user.id);
+  const { places: placeCount, provinces: provinceCount, photos: photoCount } = counts;
 
   return (
     <div className="min-h-screen">

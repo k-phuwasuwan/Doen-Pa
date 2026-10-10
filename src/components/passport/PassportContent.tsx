@@ -4,20 +4,13 @@ import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { PassportHeader } from "@/components/passport/PassportHeader";
 import { TravelRecordCard } from "@/components/passport/TravelRecordCard";
-import { placeService } from "@/services/place.service";
-import { useTravelRecords } from "@/lib/use-travel-records";
+import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
 import { useCurrentUser } from "@/lib/use-current-user";
 
 export function PassportContent() {
   const user = useCurrentUser();
-  const records = useTravelRecords(user.id);
-  const entries = records.flatMap((record) => {
-    const place = placeService.getPlaceById(record.placeId);
-    return place ? [{ record, place }] : [];
-  });
-  const provinceCount = new Set(entries.map(({ place }) => place.province)).size;
-  const placeCount = new Set(entries.map(({ place }) => place.id)).size;
-  const photoCount = entries.reduce((total, { record }) => total + record.photos.length, 0);
+  const { entries, counts } = useTravelRecordReadModel(user.id);
+  const { places: placeCount, provinces: provinceCount, photos: photoCount } = counts;
 
   return (
     <div className="mx-auto min-h-screen max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">

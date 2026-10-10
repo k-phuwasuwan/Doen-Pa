@@ -1,37 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { MapPin } from "lucide-react";
 import DynamicThailandMap from "@/components/map/DynamicThailandMap";
-import { useTravelRecords } from "@/lib/use-travel-records";
-import { placeService } from "@/services/place.service";
+import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
 import { userService } from "@/services/user.service";
-import type { Place } from "@/types";
 import { SelectedPlaceCard } from "./SelectedPlaceCard";
 
-function hasCoordinates(place: Place): boolean {
-  return Number.isFinite(place.latitude) && Number.isFinite(place.longitude);
-}
-
 export function MapOverview() {
-  const records = useTravelRecords(userService.getCurrentUser().id);
+  const memories = useTravelRecordReadModel(userService.getCurrentUser().id);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
-
-  const places = useMemo(() => {
-    const uniquePlaces = new Map<string, Place>();
-    for (const record of records) {
-      const place = placeService.getPlaceById(record.placeId);
-      if (place && hasCoordinates(place)) uniquePlaces.set(place.id, place);
-    }
-    return [...uniquePlaces.values()];
-  }, [records]);
-
+  const places = memories.mapPlaces;
   const selectedPlace = places.find((place) => place.id === selectedPlaceId) ?? null;
-  const photo = selectedPlace
-    ? records
-        .filter((record) => record.placeId === selectedPlace.id && record.photos.length > 0)
-        .sort((a, b) => b.visitedAt.getTime() - a.visitedAt.getTime())[0]?.photos[0]
-    : undefined;
+  const photo = selectedPlace ? memories.getPlaceMemory(selectedPlace.id).mapPhoto : undefined;
 
   return (
     <section className={`map-fullscreen fixed inset-0 h-dvh w-full overflow-hidden bg-brand-100${selectedPlace ? " map-fullscreen--place-selected" : ""}`} aria-label="แผนที่สถานที่ที่เคยไป">

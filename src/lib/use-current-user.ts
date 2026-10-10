@@ -1,14 +1,12 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { userService } from "@/services/user.service";
 
 export function useCurrentUser() {
-  const snapshot = useSyncExternalStore(
+  return useSyncExternalStore(
     userService.subscribe,
     userService.getSnapshot,
     userService.getServerSnapshot,
   );
-
-  return useMemo(() => userService.getUserFromSnapshot(snapshot), [snapshot]);
 }

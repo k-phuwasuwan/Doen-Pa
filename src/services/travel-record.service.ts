@@ -1,9 +1,9 @@
 import { placeService } from "@/services/place.service";
+import { browserStorageAdapter, createLocalSnapshot } from "@/lib/storage/local-snapshot";
 import type { TravelRecord } from "@/types";
 
 const STORAGE_KEY = "doen-pa-travel-records-v2";
 const RECORDS_CHANGED_EVENT = "doen-pa-records-changed";
-const SERVER_SNAPSHOT = "__server_snapshot__";
 
 function parseRecords(raw: string | null): TravelRecord[] {
   if (!raw) return [];
@@ -42,93 +42,47 @@ function parseRecords(raw: string | null): TravelRecord[] {
         createdAt,
       }];
     });
-  } catch (error) {
-    console.error("Failed to parse travel records from storage:", error);
+  } catch {
     return [];
   }
 }
 
-function getStorageRecords(): TravelRecord[] {
-  if (typeof window === "undefined") return [];
-  return parseRecords(travelRecordService.getSnapshot());
-}
+const store = createLocalSnapshot<TravelRecord[]>(
+  browserStorageAdapter(STORAGE_KEY, RECORDS_CHANGED_EVENT), [], parseRecords,
+);
+let previousRecords: TravelRecord[] | undefined;
+let visibleRecords: TravelRecord[] = [];
 
-function getVisibleRecords(records: TravelRecord[]): TravelRecord[] {
-  return records.filter((record) => placeService.getPlaceById(record.placeId) !== null);
-}
-
-function setStorageRecords(records: TravelRecord[]): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-  window.dispatchEvent(new Event(RECORDS_CHANGED_EVENT));
+function getVisibleSnapshot(): TravelRecord[] {
+  const records = store.getSnapshot();
+  if (records !== previousRecords) {
+    previousRecords = records;
+    visibleRecords = records.filter((record) => placeService.getPlaceById(record.placeId) !== null);
+  }
+  return visibleRecords;
 }
 
 export const travelRecordService = {
-  subscribe(listener: () => void): () => void {
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY) listener();
-    };
-    window.addEventListener("storage", onStorage);
-    window.addEventListener(RECORDS_CHANGED_EVENT, listener);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener(RECORDS_CHANGED_EVENT, listener);
-    };
-  },
-
-  getSnapshot(): string {
-    try {
-      return localStorage.getItem(STORAGE_KEY) ?? "";
-    } catch {
-      return "";
-    }
-  },
-
-  getServerSnapshot(): string {
-    return SERVER_SNAPSHOT;
-  },
-
-  getRecordsFromSnapshot(snapshot: string): TravelRecord[] {
-    return getVisibleRecords(snapshot === SERVER_SNAPSHOT ? [] : parseRecords(snapshot));
-  },
-
-  getRecordsByUser(userId: string): TravelRecord[] {
-    const records = getStorageRecords();
-    return getVisibleRecords(records).filter((record) => record.userId === userId);
-  },
-
-  getRecordByPlace(userId: string, placeId: string): TravelRecord | null {
-    const records = getVisibleRecords(getStorageRecords());
-    return (
-      records.find(
-        (record) => record.userId === userId && record.placeId === placeId,
-      ) ?? null
-    );
-  },
-
-  getVisitCount(userId: string, placeId: string): number {
-    return getVisibleRecords(getStorageRecords()).filter(
-      (record) => record.userId === userId && record.placeId === placeId,
-    ).length;
-  },
+  subscribe: store.subscribe,
+  getSnapshot: getVisibleSnapshot,
+  getServerSnapshot: store.getServerSnapshot,
 
   createRecord(record: Omit<TravelRecord, "id" | "createdAt">): TravelRecord {
-    const records = getStorageRecords();
+    const records = store.getSnapshot();
     const newRecord: TravelRecord = {
       ...record,
       id: `record-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date(),
     };
 
-    records.push(newRecord);
-    setStorageRecords(records);
+    store.write([...records, newRecord]);
 
     return newRecord;
   },
 
   deleteRecord(recordId: string): void {
-    const records = getStorageRecords();
+    const records = store.getSnapshot();
     const filtered = records.filter((record) => record.id !== recordId);
-    setStorageRecords(filtered);
+    store.write(filtered);
   },
 };

@@ -11,7 +11,7 @@ export function useTravelRecords(userId: string) {
   );
 
   return useMemo(
-    () => travelRecordService.getRecordsFromSnapshot(snapshot).filter((record) => record.userId === userId),
+    () => snapshot.filter((record) => record.userId === userId),
     [snapshot, userId],
   );
 }

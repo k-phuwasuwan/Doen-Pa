@@ -142,3 +142,20 @@ function calculateStats(catalog: readonly Place[], visitedPlaces: Place[], count
   };
 }
 
+/** Share one model per immutable storage snapshot and user; old snapshots can be collected. */
+export function createTravelRecordReader(catalog: readonly Place[]) {
+  const snapshots = new WeakMap<readonly TravelRecord[], Map<string, ReturnType<typeof readTravelRecords>>>();
+  return (userId: string, records: readonly TravelRecord[]) => {
+    let users = snapshots.get(records);
+    if (!users) {
+      users = new Map();
+      snapshots.set(records, users);
+    }
+    let model = users.get(userId);
+    if (!model) {
+      model = readTravelRecords(userId, records, catalog);
+      users.set(userId, model);
+    }
+    return model;
+  };
+}

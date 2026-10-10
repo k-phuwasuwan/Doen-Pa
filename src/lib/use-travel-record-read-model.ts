@@ -1,13 +1,17 @@
 "use client";
 
-import { useMemo } from "react";
-import { readTravelRecords } from "@/domain/travel-record-read-model";
+import { useSyncExternalStore } from "react";
+import { createTravelRecordReader } from "@/domain/travel-record-read-model";
 import { placeService } from "@/services/place.service";
-import { useTravelRecords } from "./use-travel-records";
+import { travelRecordService } from "@/services/travel-record.service";
 
-const catalog = placeService.getAll();
+const readSnapshot = createTravelRecordReader(placeService.getAll());
 
 export function useTravelRecordReadModel(userId: string) {
-  const records = useTravelRecords(userId);
-  return useMemo(() => readTravelRecords(userId, records, catalog), [userId, records]);
+  const snapshot = useSyncExternalStore(
+    travelRecordService.subscribe,
+    travelRecordService.getSnapshot,
+    travelRecordService.getServerSnapshot,
+  );
+  return readSnapshot(userId, snapshot);
 }

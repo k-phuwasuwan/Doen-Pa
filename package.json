@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node scripts/test.mjs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "bench:records": "node scripts/benchmark-records.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

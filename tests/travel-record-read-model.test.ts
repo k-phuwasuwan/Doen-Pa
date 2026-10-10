@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { readTravelRecords } from "../src/domain/travel-record-read-model";
+import { readTravelRecords, createTravelRecordReader } from "../src/domain/travel-record-read-model";
 import type { Place, TravelRecord } from "../src/types";
 
 const catalog: Place[] = [
@@ -91,3 +91,16 @@ test("park denominators follow catalog membership independently of place type", 
   assert.equal(stats.totalByType.cave, 2);
 });
 
+test("readers share a snapshot but isolate users and rebuild when records change", () => {
+  const read = createTravelRecordReader(catalog);
+  const records = [record("first"), record("other", { userId: "other" })];
+  const first = read("local-user", records);
+  assert.equal(read("local-user", records), first);
+  const other = read("other", records);
+  assert.notEqual(other, first);
+  assert.deepEqual(other.entries.map(({ record }) => record.id), ["other"]);
+  const changed = read("local-user", [...records, record("second")]);
+  assert.notEqual(changed, first);
+  assert.equal(changed.counts.records, 2);
+  assert.equal(first.counts.records, 1);
+});

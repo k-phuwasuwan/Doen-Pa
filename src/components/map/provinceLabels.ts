@@ -16,8 +16,6 @@ const LABEL_CHARACTER_WIDTH = 7;
 const LABEL_GAP = 4;
 const PIN_HALF_WIDTH = 22;
 const PIN_HEIGHT = 42;
-const DEFAULT_LABEL_OFFSETS = [[0, 0]] as const;
-const VISITED_LABEL_OFFSETS = [[0, 0], [0, 32]] as const;
 
 interface LabelRect {
   left: number;
@@ -54,27 +52,17 @@ export function updateProvinceLabels(map: L.Map, labels: ProvinceLabel[], places
 
   for (const label of sortedLabels) {
     const point = map.latLngToContainerPoint(label.position);
-    let placement: { center: L.Point; rect: LabelRect } | null = null;
-    const offsets = visitedProvinces.has(label.name) ? VISITED_LABEL_OFFSETS : DEFAULT_LABEL_OFFSETS;
-    for (const [offsetX, offsetY] of offsets) {
-      const center = point.add([offsetX, offsetY]);
-      const rect = {
-        left: center.x - label.width / 2 - LABEL_GAP,
-        right: center.x + label.width / 2 + LABEL_GAP,
-        top: center.y - LABEL_HEIGHT / 2 - LABEL_GAP,
-        bottom: center.y + LABEL_HEIGHT / 2 + LABEL_GAP,
-      };
-      const inView = rect.right > 0 && rect.left < viewport.x && rect.bottom > 0 && rect.top < viewport.y;
-      if (inView && !pins.some((pin) => overlaps(rect, pin)) && !occupied.some((other) => overlaps(rect, other))) {
-        placement = { center, rect };
-        break;
-      }
-    }
+    const rect = {
+      left: point.x - label.width / 2 - LABEL_GAP,
+      right: point.x + label.width / 2 + LABEL_GAP,
+      top: point.y - LABEL_HEIGHT / 2 - LABEL_GAP,
+      bottom: point.y + LABEL_HEIGHT / 2 + LABEL_GAP,
+    };
+    const inView = rect.right > 0 && rect.left < viewport.x && rect.bottom > 0 && rect.top < viewport.y;
+    // Hide colliding labels instead of shifting them across province boundaries.
+    const visible = inView && !pins.some((pin) => overlaps(rect, pin)) && !occupied.some((other) => overlaps(rect, other));
     const element = label.marker.getElement();
-    if (element) element.style.visibility = placement ? "visible" : "hidden";
-    if (placement) {
-      label.marker.setLatLng(map.containerPointToLatLng(placement.center));
-      occupied.push(placement.rect);
-    }
+    if (element) element.style.visibility = visible ? "visible" : "hidden";
+    if (visible) occupied.push(rect);
   }
 }

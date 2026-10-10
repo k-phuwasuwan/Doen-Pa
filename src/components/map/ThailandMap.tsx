@@ -5,6 +5,7 @@ import L from "leaflet";
 import type { FeatureCollection, Geometry } from "geojson";
 import type { Place } from "@/types";
 import { PROVINCE_EN_TO_TH } from "./constants";
+import { PROVINCE_LABEL_POSITIONS } from "./provinceLabelPositions";
 import { provinceLabelWidth, updateProvinceLabels, type ProvinceLabel } from "./provinceLabels";
 import "leaflet/dist/leaflet.css";
 
@@ -117,9 +118,10 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
           style: { fillColor: "#dcf0e2", fillOpacity: 0.14, color: "#2d6a4f", opacity: 0.38, weight: 1 },
           onEachFeature(feature, layer) {
             const name = PROVINCE_EN_TO_TH[feature.properties.name];
-            if (!name || !(layer instanceof L.Polygon)) return;
+            const anchor = PROVINCE_LABEL_POSITIONS[feature.properties.name];
+            if (!name || !anchor || !(layer instanceof L.Polygon)) return;
             const bounds = layer.getBounds();
-            const position = bounds.getCenter();
+            const position = L.latLng(anchor);
             const width = provinceLabelWidth(name);
             const labelText = document.createElement("span");
             labelText.textContent = name;

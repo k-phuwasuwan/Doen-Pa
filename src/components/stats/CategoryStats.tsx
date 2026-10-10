@@ -1,15 +1,14 @@
-import { Mountain, Waves, Castle, Palmtree } from "lucide-react";
 import type { PlaceType, Stats } from "@/types";
 
 interface CategoryStatsProps {
   stats: Stats;
 }
 
-const categories: { type: PlaceType; label: string; icon: typeof Mountain }[] = [
-  { type: "mountain", label: "ภูเขา", icon: Mountain },
-  { type: "waterfall", label: "น้ำตก", icon: Waves },
-  { type: "cave", label: "ถ้ำ", icon: Castle },
-  { type: "island", label: "หมู่เกาะและทะเล", icon: Palmtree },
+const categories: { type: PlaceType; label: string }[] = [
+  { type: "mountain", label: "ภูเขา" },
+  { type: "waterfall", label: "น้ำตก" },
+  { type: "cave", label: "ถ้ำ" },
+  { type: "island", label: "หมู่เกาะและทะเล" },
 ];
 
 export function CategoryStats({ stats }: CategoryStatsProps) {
@@ -17,7 +16,7 @@ export function CategoryStats({ stats }: CategoryStatsProps) {
     <section className="liquid-glass-card p-6" aria-labelledby="category-heading">
       <h2 id="category-heading" className="text-xl font-bold text-brand-800">ประเภทสถานที่</h2>
       <div className="mt-5 space-y-5">
-        {categories.map(({ type, label, icon: Icon }) => {
+        {categories.map(({ type, label }) => {
           const visited = stats.byType[type];
           const total = stats.totalByType[type];
           const remaining = Math.max(0, total - visited);
@@ -26,8 +25,7 @@ export function CategoryStats({ stats }: CategoryStatsProps) {
           return (
             <div key={type}>
               <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="flex items-center gap-2 font-medium text-brand-800">
-                  <Icon className="h-4 w-4" aria-hidden="true" />
+                <span className="font-medium text-brand-800">
                   {label}
                 </span>
                 <span className="shrink-0 text-brand-800/65">{visited}/{total} แห่ง</span>

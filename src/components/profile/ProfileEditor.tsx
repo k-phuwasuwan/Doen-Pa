@@ -8,18 +8,8 @@ import { useCurrentUser } from "@/lib/use-current-user";
 import { userService } from "@/services/user.service";
 import { ProfileHeader } from "./ProfileHeader";
 import type { User } from "@/types";
-
-const MAX_IMAGE_BYTES = 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-
-function readImage(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("อ่านรูปภาพไม่สำเร็จ"));
-    reader.onerror = () => reject(new Error("อ่านรูปภาพไม่สำเร็จ"));
-    reader.readAsDataURL(file);
-  });
-}
+import { IMAGE_ACCEPT, PROFILE_IMAGE_POLICY } from "@/lib/images/image-import";
+import { useImageImport } from "@/lib/use-image-import";
 
 export function ProfileEditor() {
   const user = useCurrentUser();
@@ -29,6 +19,7 @@ export function ProfileEditor() {
 
 function ProfileEditorForm({ initialUser }: { initialUser: User }) {
   const router = useRouter();
+  const { importer, loading: readingImages } = useImageImport();
   const [name, setName] = useState(initialUser.name);
   const [username, setUsername] = useState(initialUser.username);
   const [bio, setBio] = useState(initialUser.bio ?? "");
@@ -49,26 +40,21 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
-    if (!ACCEPTED_IMAGE_TYPES.has(file.type)) {
-      setError("รองรับเฉพาะไฟล์ JPG, PNG และ WebP");
-      return;
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      setError("รูปภาพต้องมีขนาดไม่เกิน 1 MB เพื่อเก็บไว้ในเบราว์เซอร์");
-      return;
-    }
-    try {
-      const image = await readImage(file);
+    await importer.importImages(kind, [file], PROFILE_IMAGE_POLICY, ({ images, errors }) => {
+      if (errors.length) {
+        setError(errors[0].message);
+        return;
+      }
+      const image = images[0]?.dataUrl;
       if (kind === "avatar") setAvatar(image);
       else setCoverImage(image);
       setError("");
-    } catch {
-      setError("อ่านรูปภาพไม่สำเร็จ กรุณาลองอีกครั้ง");
-    }
+    });
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (importer.isPending()) return;
     const cleanName = name.trim();
     const cleanUsername = username.trim().replace(/^@/, "");
     if (!cleanName || !/^[a-zA-Z0-9_]{3,20}$/.test(cleanUsername)) {
@@ -121,20 +107,21 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
           <label htmlFor="profile-avatar" className="liquid-glass flex min-h-20 cursor-pointer items-center gap-3 rounded-2xl p-4 text-brand-800 transition-colors hover:bg-white/90 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-600">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700"><Camera className="h-5 w-5" aria-hidden="true" /></span>
             <span className="text-sm font-medium">เปลี่ยนรูปโปรไฟล์</span>
-            <input id="profile-avatar" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => void handleImageChange(event, "avatar")} className="sr-only" />
+            <input id="profile-avatar" type="file" accept={IMAGE_ACCEPT} onChange={(event) => void handleImageChange(event, "avatar")} className="sr-only" />
           </label>
           <label htmlFor="profile-cover" className="liquid-glass flex min-h-20 cursor-pointer items-center gap-3 rounded-2xl p-4 text-brand-800 transition-colors hover:bg-white/90 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-600">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700"><ImagePlus className="h-5 w-5" aria-hidden="true" /></span>
             <span className="text-sm font-medium">เปลี่ยนภาพปก</span>
-            <input id="profile-cover" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => void handleImageChange(event, "cover")} className="sr-only" />
+            <input id="profile-cover" type="file" accept={IMAGE_ACCEPT} onChange={(event) => void handleImageChange(event, "cover")} className="sr-only" />
           </label>
         </div>
         <p className="mt-2 text-xs text-brand-800/55">JPG, PNG หรือ WebP ขนาดไม่เกิน 1 MB ต่อรูป</p>
+        <p role="status" aria-live="polite" className="sr-only">{readingImages ? "กำลังอ่านรูปภาพ" : ""}</p>
         <p role="alert" className="mt-3 min-h-5 text-sm text-red-700">{error}</p>
 
-        <button type="submit" className="glass-button mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 font-semibold transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+        <button type="submit" disabled={readingImages} className="disabled:cursor-wait disabled:opacity-60 glass-button mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 font-semibold transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
           <Save className="h-5 w-5" aria-hidden="true" />
-          บันทึกการเปลี่ยนแปลง
+          {readingImages ? "กำลังอ่านรูปภาพ…" : "บันทึกการเปลี่ยนแปลง"}
         </button>
         <Link href="/profile" className="mx-auto mt-3 flex min-h-11 w-fit items-center rounded-full px-4 text-sm text-brand-800/65 underline underline-offset-4 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-brand-600">ยกเลิก</Link>
       </form>

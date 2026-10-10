@@ -1,13 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback, useId } from "react";
+import { useState, useRef, useId, type Dispatch, type SetStateAction } from "react";
 import Image from "next/image";
 import { Upload, X, AlertCircle, CheckCircle2 } from "lucide-react";
-
-const MAX_FILES = 5;
-const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
-const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const ACCEPTED_EXTENSIONS = ".jpg,.jpeg,.png,.webp";
+import { IMAGE_ACCEPT, RECORD_PHOTO_LIMIT, RECORD_IMAGE_POLICY, type ImageImporter, type ImageImportError } from "@/lib/images/image-import";
 
 export interface UploadedPhoto {
   /** data-URL from FileReader */
@@ -20,90 +16,35 @@ export interface UploadedPhoto {
 
 interface PhotoUploaderProps {
   value: UploadedPhoto[];
-  onChange: (photos: UploadedPhoto[]) => void;
+  onChange: Dispatch<SetStateAction<UploadedPhoto[]>>;
+  importer: ImageImporter;
+  loading: boolean;
 }
 
-interface PhotoError {
-  filename: string;
-  message: string;
-}
-
-export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
+export function PhotoUploader({ value, onChange, importer, loading }: PhotoUploaderProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [errors, setErrors] = useState<PhotoError[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<ImageImportError[]>([]);
   const [dragging, setDragging] = useState(false);
 
-  const processFiles = useCallback(
-    async (files: FileList | File[]) => {
-      const fileArray = Array.from(files);
-      const newErrors: PhotoError[] = [];
-      const remaining = MAX_FILES - value.length;
-
-      if (remaining <= 0) {
-        setErrors([{ filename: "", message: `อัปโหลดได้สูงสุด ${MAX_FILES} รูป` }]);
-        return;
-      }
-
-      const toProcess = fileArray.slice(0, remaining);
-      const skipped = fileArray.slice(remaining);
-      if (skipped.length > 0) {
-        newErrors.push({
-          filename: "",
-          message: `เลือกได้อีก ${remaining} รูป (ข้ามไป ${skipped.length} รูป)`,
-        });
-      }
-
-      setLoading(true);
-
-      const results = await Promise.all(
-        toProcess.map(
-          (file) =>
-            new Promise<UploadedPhoto | PhotoError>((resolve) => {
-              if (!ACCEPTED_TYPES.includes(file.type)) {
-                resolve({ filename: file.name, message: "รองรับเฉพาะ JPG, PNG, WebP" });
-                return;
-              }
-              if (file.size > MAX_SIZE_BYTES) {
-                resolve({ filename: file.name, message: "ไฟล์ต้องไม่เกิน 5 MB" });
-                return;
-              }
-
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                resolve({
-                  dataUrl: e.target!.result as string,
-                  name: file.name,
-                  alt: "",
-                });
-              };
-              reader.onerror = () => {
-                resolve({ filename: file.name, message: "อ่านไฟล์ไม่ได้ กรุณาลองใหม่" });
-              };
-              reader.readAsDataURL(file);
-            }),
-        ),
-      );
-
-      const successes: UploadedPhoto[] = [];
-      results.forEach((r) => {
-        if ("dataUrl" in r) {
-          successes.push(r);
-        } else {
-          newErrors.push(r);
-        }
-      });
-
-      onChange([...value, ...successes]);
-      setErrors(newErrors);
-      setLoading(false);
-
-      // Reset file input so the same file can be re-selected after removal
-      if (inputRef.current) inputRef.current.value = "";
-    },
-    [value, onChange],
-  );
+  function processFiles(files: FileList | File[]) {
+    if (importer.isPending()) return;
+    const remaining = RECORD_PHOTO_LIMIT - value.length;
+    if (remaining <= 0) {
+      setErrors([{ filename: "", message: `อัปโหลดได้สูงสุด ${RECORD_PHOTO_LIMIT} รูป` }]);
+      return;
+    }
+    const selected = Array.from(files);
+    const skipped: ImageImportError[] = selected.length > remaining
+      ? [{ filename: "", message: `เลือกได้อีก ${remaining} รูป (ข้ามไป ${selected.length - remaining} รูป)` }]
+      : [];
+    if (inputRef.current) inputRef.current.value = "";
+    void importer.importImages("record", selected.slice(0, remaining), RECORD_IMAGE_POLICY, ({ images, errors }) => {
+      // Apply to current photos, preserving edits/removals made while files were read.
+      onChange((current) => [...current, ...images.map((image) => ({ ...image, alt: "" }))].slice(0, RECORD_PHOTO_LIMIT));
+      setErrors([...skipped, ...errors]);
+    });
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -120,18 +61,14 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
   };
 
   const handleRemove = (index: number) => {
-    const next = [...value];
-    next.splice(index, 1);
-    onChange(next);
+    onChange((current) => current.filter((_, photoIndex) => photoIndex !== index));
   };
 
   const handleAltChange = (index: number, alt: string) => {
-    const next = [...value];
-    next[index] = { ...next[index], alt };
-    onChange(next);
+    onChange((current) => current.map((photo, photoIndex) => photoIndex === index ? { ...photo, alt } : photo));
   };
 
-  const canUploadMore = value.length < MAX_FILES;
+  const canUploadMore = value.length < RECORD_PHOTO_LIMIT;
 
   return (
     <div className="space-y-3">
@@ -139,13 +76,13 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
         <label className="text-sm font-medium text-brand-800">
           รูปภาพ
           <span className="ml-1 text-brand-800/65 font-normal">
-            ({value.length}/{MAX_FILES} ต่อบันทึก)
+            ({value.length}/{RECORD_PHOTO_LIMIT} ต่อบันทึก)
           </span>
         </label>
-        {value.length === MAX_FILES && (
+        {value.length === RECORD_PHOTO_LIMIT && (
           <span className="flex items-center gap-1 text-xs text-brand-800">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            ครบ {MAX_FILES} รูปแล้ว
+            ครบ {RECORD_PHOTO_LIMIT} รูปแล้ว
           </span>
         )}
       </div>
@@ -156,6 +93,8 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
           role="button"
           tabIndex={0}
           aria-label="อัปโหลดรูปภาพ"
+          aria-disabled={loading}
+          aria-busy={loading}
           className={`relative flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200
             ${dragging ? "border-brand-600 bg-brand-600/5" : "border-brand-800/10 hover:border-brand-600/50 hover:bg-brand-600/[0.02]"}
             focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
@@ -186,7 +125,7 @@ export function PhotoUploader({ value, onChange }: PhotoUploaderProps) {
             ref={inputRef}
             type="file"
             multiple
-            accept={ACCEPTED_EXTENSIONS}
+            accept={IMAGE_ACCEPT}
             className="sr-only"
             onChange={handleInputChange}
             disabled={loading}

@@ -6,6 +6,7 @@ import { Star, CalendarDays, FileText, CheckCircle2 } from "lucide-react";
 import { PhotoUploader, type UploadedPhoto } from "./PhotoUploader";
 import { travelRecordService } from "@/services/travel-record.service";
 import { userService } from "@/services/user.service";
+import { useImageImport } from "@/lib/use-image-import";
 import type { Place } from "@/types";
 
 interface TravelRecordFormProps {
@@ -14,6 +15,7 @@ interface TravelRecordFormProps {
 
 export function TravelRecordForm({ place }: TravelRecordFormProps) {
   const router = useRouter();
+  const { importer, loading: readingPhotos } = useImageImport();
 
   const today = new Date();
   const todayISO = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
@@ -42,6 +44,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (importer.isPending() || submitting) return;
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
@@ -125,7 +128,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
       </div>
 
       {/* Photo uploader */}
-      <PhotoUploader value={photos} onChange={setPhotos} />
+      <PhotoUploader value={photos} onChange={setPhotos} importer={importer} loading={readingPhotos} />
 
       {/* Note */}
       <div>
@@ -196,10 +199,10 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
       {/* Submit */}
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || readingPhotos}
         className="glass-button w-full py-3 text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {submitting ? "กำลังบันทึก…" : "บันทึกลงพาสปอร์ต"}
+        {readingPhotos ? "กำลังอ่านรูปภาพ…" : submitting ? "กำลังบันทึก…" : "บันทึกลงพาสปอร์ต"}
       </button>
     </form>
   );

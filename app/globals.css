@@ -374,7 +374,6 @@ body {
   .map-fullscreen--place-selected .leaflet-control-zoom { display: none; }
 }
 @media (max-width: 1023px) and (max-height: 520px) {
-  .map-fullscreen--place-selected .map-visited-count { display: none; }
 }
 
 .visited-map-pin-wrapper { background: transparent; border: 0; }

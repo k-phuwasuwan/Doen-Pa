@@ -40,14 +40,14 @@ function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: 
   const user = useCurrentUser();
 
   return (
-    <nav className="sticky top-4 z-40 mx-4 flex items-center md:mx-auto md:w-full md:px-8">
-      <div className="liquid-glass-capsule site-top-nav-surface flex min-h-16 w-full items-center justify-between rounded-full px-5 py-2.5 shadow-glass transition-shadow hover:shadow-glass-hover md:min-h-0 md:px-6 md:py-2" style={{ backdropFilter: "blur(32px) saturate(160%)", WebkitBackdropFilter: "blur(32px) saturate(160%)" }}>
-        <Link href={getNavigationHref("/search", isGuest)} className="flex min-h-11 shrink-0 items-center gap-2 rounded-full text-base font-bold text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 sm:text-xl md:min-h-0">
+    <nav className="sticky top-4 z-40 mx-4 flex items-center lg:mx-auto lg:w-full lg:px-8">
+      <div className="liquid-glass-capsule site-top-nav-surface flex min-h-16 w-full items-center justify-between rounded-full px-5 py-2.5 shadow-glass transition-shadow hover:shadow-glass-hover lg:px-6 lg:py-2" style={{ backdropFilter: "blur(32px) saturate(160%)", WebkitBackdropFilter: "blur(32px) saturate(160%)" }}>
+        <Link href={getNavigationHref("/search", isGuest)} className="flex min-h-11 shrink-0 items-center gap-2 rounded-full text-base font-bold text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 sm:text-xl">
           <Image src="/icon.svg" alt="" width={32} height={32} unoptimized loading="eager" className="h-8 w-8 rounded-lg" />
           <span>Doen Pa</span>
         </Link>
 
-        <div className="hidden min-w-0 rounded-full bg-brand-900/[0.04] p-1.5 md:flex md:gap-2">
+        <div className="hidden min-w-0 rounded-full bg-brand-900/[0.04] p-1.5 lg:flex lg:gap-2">
           {links.map((link) => {
             const isActive = activeHref === link.href;
             return (
@@ -55,7 +55,7 @@ function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: 
                 key={link.href}
                 href={getNavigationHref(link.href, isGuest)}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex items-center rounded-full px-6 py-2 text-sm transition-colors ${
+                className={`flex min-h-11 shrink-0 items-center rounded-full px-6 py-2 text-sm transition-colors ${
                   isActive
                     ? "bg-gradient-to-r from-brand-600 to-emerald-700 font-semibold text-white shadow-glow-emerald"
                     : "text-brand-800/80 hover:bg-white/70"

@@ -36,7 +36,7 @@ function ResolvedBottomNav({ pathname, onActiveChange, onGuestChange }: { pathna
 
 function BottomNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: boolean }) {
   return (
-    <nav aria-label="เมนูหลัก" className="mobile-bottom-nav fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center rounded-full p-1.5 md:hidden" style={{ backdropFilter: "blur(28px) saturate(160%)", WebkitBackdropFilter: "blur(28px) saturate(160%)" }}>
+    <nav aria-label="เมนูหลัก" className="mobile-bottom-nav fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center rounded-full p-1.5 lg:hidden" style={{ backdropFilter: "blur(28px) saturate(160%)", WebkitBackdropFilter: "blur(28px) saturate(160%)" }}>
       {links.map((link) => {
         const isActive = activeHref === link.href;
         const Icon = link.icon;

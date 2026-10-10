@@ -6,7 +6,7 @@ export function SearchHero({ initialQuery = "" }: { initialQuery?: string }) {
   return (
     <section
       aria-labelledby="search-hero-title"
-      className="relative mx-auto mt-16 h-80 w-[calc(100%-2rem)] max-w-[1440px] overflow-hidden rounded-3xl border border-white/85 bg-[#f3f7f1] shadow-glass-card md:h-96"
+      className="relative mx-auto mt-16 w-[calc(100%-2rem)] max-w-[1440px] overflow-hidden rounded-3xl border border-white/85 bg-[#f3f7f1] shadow-glass-card"
     >
       <Image
         src="/images/search-hero-forest.jpg"
@@ -18,11 +18,11 @@ export function SearchHero({ initialQuery = "" }: { initialQuery?: string }) {
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-white/15" aria-hidden="true" />
-      <div className="relative z-10 flex h-full flex-col items-center justify-center gap-5 px-4 text-center">
+      <div className="relative z-10 flex min-h-80 flex-col items-center justify-center gap-5 px-4 py-8 text-center md:min-h-96">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">บันทึกการเดินทางของคุณ</p>
         <h1
           id="search-hero-title"
-          className="text-3xl font-bold text-brand-900 md:text-5xl"
+          className="text-3xl font-bold text-brand-900 sm:text-4xl lg:text-5xl"
         >
           ค้นพบสถานที่ที่เคยอยู่ในความทรงจำ
         </h1>

@@ -11,7 +11,7 @@ interface SelectedPlaceCardProps {
 export function SelectedPlaceCard({ place, photo, onClose }: SelectedPlaceCardProps) {
   return (
     <aside
-      className="absolute bottom-28 left-1/2 z-[1000] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 md:bottom-7"
+      className="absolute bottom-28 left-1/2 z-[1000] max-h-[calc(100dvh-13.5rem)] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 overflow-y-auto overscroll-contain rounded-3xl lg:bottom-7 lg:max-h-[calc(100dvh-8rem)]"
       aria-label={`รายละเอียด ${place.name}`}
     >
       <div className="liquid-glass-card map-place-card overflow-hidden rounded-3xl p-3 shadow-glass-card sm:p-4">

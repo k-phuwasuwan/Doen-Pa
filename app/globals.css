@@ -369,11 +369,11 @@ body {
 .map-place-card {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(245, 250, 247, 0.92));
 }
-@media (max-width: 767px) and (max-height: 620px) {
+@media (max-width: 1023px) and (max-height: 620px) {
   .map-place-photo { height: 7rem; }
   .map-fullscreen--place-selected .leaflet-control-zoom { display: none; }
 }
-@media (max-width: 767px) and (max-height: 520px) {
+@media (max-width: 1023px) and (max-height: 520px) {
   .map-fullscreen--place-selected .map-visited-count { display: none; }
 }
 
@@ -457,9 +457,8 @@ body {
   pointer-events: none;
 }
 .map-fullscreen .leaflet-top.leaflet-right { top: 6rem; }
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .map-fullscreen .leaflet-bottom .leaflet-control-attribution { margin-bottom: 6rem; }
-  .map-fullscreen--place-selected .leaflet-bottom .leaflet-control-attribution { margin-bottom: 20rem; }
 }
 
 @media (max-width: 767px) {

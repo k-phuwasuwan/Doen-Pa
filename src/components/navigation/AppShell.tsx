@@ -21,7 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <RouteLoadingProvider>
       {!isLoginPage && <TopNav />}
-      <main className={`relative z-10 flex-1 ${isLoginPage ? "" : "pb-28 md:pb-0"}`}>
+      <main className={`relative z-10 flex-1 ${isLoginPage ? "" : "pb-28 lg:pb-0"}`}>
         {children}
       </main>
       {!isLoginPage && <BottomNav />}

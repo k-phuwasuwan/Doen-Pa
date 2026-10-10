@@ -66,8 +66,10 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
     });
     mapRef.current = map;
     map.attributionControl.setPrefix(false);
-    map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24] });
-    map.setMinZoom(map.getZoom() + MAP_MIN_ZOOM_INSET);
+    map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24], animate: false });
+    const minimumZoom = map.getZoom() + MAP_MIN_ZOOM_INSET;
+    map.setZoom(minimumZoom, { animate: false });
+    map.setMinZoom(minimumZoom);
 
     L.tileLayer(TERRAIN_URL, {
       maxZoom: 18,
@@ -164,9 +166,10 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
     );
     map.setMaxBounds();
     if (coordinates.length === 0) {
-      map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24] });
+      map.fitBounds(THAILAND_BOUNDS, { padding: [24, 24], animate: false });
     } else {
       map.fitBounds(L.latLngBounds(coordinates), {
+        animate: false,
         paddingTopLeft: [48, 144],
         paddingBottomRight: [48, 112],
         maxZoom: 6,

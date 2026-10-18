@@ -49,5 +49,6 @@ yarn-error.log*
 next-env.d.ts
 
 # browser test artifacts
+/.playwright-mcp/
 /playwright-report/
 /test-results/

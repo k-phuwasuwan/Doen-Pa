@@ -7,7 +7,6 @@ import { PlaceChips } from "./PlaceChips";
 import { PlaceDescription } from "./PlaceDescription";
 import { PlaceGallery } from "./PlaceGallery";
 import { PlaceInfo } from "./PlaceInfo";
-import { PlaceMeta } from "./PlaceMeta";
 import { PlaceRecord } from "./PlaceRecord";
 
 interface PlaceDetailContentProps {
@@ -33,7 +32,6 @@ export function PlaceDetailContent({ place, userId, readOnly = false, initialPho
         <PlaceChips place={place} />
         <div className="mb-5 h-px w-full bg-gradient-to-r from-transparent via-brand-700/15 to-transparent" />
         <PlaceDescription place={place} />
-        <PlaceMeta place={place} />
 
         {placeRecords.length > 0 && (
           <section aria-labelledby="place-records-heading" className="mb-5">

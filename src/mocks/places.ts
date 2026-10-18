@@ -14,9 +14,6 @@ export const mockPlaces: Place[] = [
     isNationalPark: true,
     altitude: "2565 m",
     distance: "8.5 km",
-    bestSeason:
-      "เปิดให้บริการทุกวัน ช่วงที่ดีที่สุดคือ ต.ค. – ก.พ. (อากาศเย็น ทะเลหมอกสวย)",
-    campingInfo: "มีลานกางเต็นท์ให้บริการภายในพื้นที่อุทยาน ต้องจองล่วงหน้า",
     latitude: 18.5327878,
     longitude: 98.5461701,
   },
@@ -32,8 +29,6 @@ export const mockPlaces: Place[] = [
     isNationalPark: true,
     altitude: "2225 m",
     distance: "5.2 km",
-    bestSeason: "เปิดให้บริการทุกวัน ควรหลีกเลี่ยงช่วงฤดูฝน (มิ.ย. – ต.ค.)",
-    campingInfo: "มีลานกางเต็นท์ให้บริการภายในพื้นที่อุทยาน",
     latitude: 19.3777134,
     longitude: 99.661175,
   },

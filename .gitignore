@@ -14,6 +14,10 @@
 AGENTS.md
 CLAUDE.md
 
+# local env
+.env*.local
+.env.local
+
 # testing
 /coverage
 

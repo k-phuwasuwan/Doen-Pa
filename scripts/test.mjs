@@ -1,10 +1,12 @@
-import { mkdtempSync, rmSync, readdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, readdirSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const output = mkdtempSync(join(tmpdir(), 'doen-pa-tests-'));
 try {
+  // Compiled tests live outside the repo but still need installed dependencies.
+  symlinkSync(join(process.cwd(), 'node_modules'), join(output, 'node_modules'), 'junction');
   const compile = spawnSync(process.execPath, [
     'node_modules/typescript/bin/tsc', '--project', 'tsconfig.test.json', '--outDir', output,
   ], { stdio: 'inherit' });

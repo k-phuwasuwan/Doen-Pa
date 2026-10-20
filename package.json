@@ -13,6 +13,8 @@
     "test": "node scripts/test.mjs",
     "test:e2e": "playwright test",
     "import:places": "python3 scripts/import-national-parks.py",
+    "import:places:check": "python3 scripts/import-national-parks.py --check",
+    "db:seed:places": "supabase db query --linked --file supabase/seed.sql",
     "bench:records": "node scripts/benchmark-records.mjs"
   },
   "dependencies": {
@@ -26,6 +28,7 @@
     "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
     "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4",
     "@types/geojson": "^7946.0.16",

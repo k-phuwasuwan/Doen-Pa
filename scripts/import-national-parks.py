@@ -1,8 +1,9 @@
-"""Generate the local place catalog from data/national-parks-156.csv.
+"""Generate the Supabase seed from the reviewed CSV.
 
 Types are editable in the CSV. Missing values stay missing; UI owns placeholders.
 Run with: pnpm import:places
 """
+import argparse
 import csv
 import hashlib
 import json
@@ -12,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "data/national-parks-156.csv"
-OUTPUT = ROOT / "src/data/places.ts"
+SEED_OUTPUT = ROOT / "supabase/seed.sql"
 
 # Six geographical regions, matching the app's existing Region model.
 PROVINCES = {
@@ -81,14 +82,72 @@ def load_places():
     assert len({p["id"] for p in places}) == len({p["name"] for p in places}) == 156
     return places
 
-if __name__ == "__main__":
-    places = load_places()
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(
-        '// Generated from data/national-parks-156.csv by pnpm import:places.\n'
-        '// Edit the CSV and regenerate; do not fill missing values with mock data.\n'
-        'import type { Place } from "../types";\n\n'
-        'export const places: Place[] = ' + json.dumps(places, ensure_ascii=False, indent=2) + ';\n',
-        encoding="utf-8",
+def sql_literal(value):
+    if value is None:
+        return "null"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        if not math.isfinite(value):
+            raise ValueError("SQL numbers must be finite")
+        return str(value)
+    if "\0" in value:
+        raise ValueError("Postgres text cannot contain NUL")
+    # E-strings explicitly escape backslashes as well as quotes.
+    return "E'" + value.replace("\\", "\\\\").replace("'", "''") + "'"
+
+
+def render_seed(places):
+    fields = [
+        ("id", "id"), ("name", "name"), ("location", "location"),
+        ("province", "province"), ("region", "region"),
+        ("description", "description"), ("type", "type"),
+        ("is_national_park", "isNationalPark"), ("latitude", "latitude"),
+        ("longitude", "longitude"), ("altitude", "altitude"),
+        ("distance", "distance"),
+    ]
+    columns = ", ".join(column for column, _ in fields)
+    rows = ",\n".join(
+        "  (" + ", ".join(sql_literal(place.get(field)) for _, field in fields) + ")"
+        for place in places
     )
-    print(f"Imported {len(places)} national parks into {OUTPUT.relative_to(ROOT)}")
+    updates = ",\n".join(
+        f"  {column} = excluded.{column}" for column, _ in fields if column != "id"
+    )
+    return (
+        "-- Generated from data/national-parks-156.csv by pnpm import:places.\n"
+        "-- Run after migrations as a database administrator. No personal data.\n"
+        "-- Rerunning updates matching IDs; it never deletes other places.\n"
+        "begin;\n\n"
+        f"insert into public.places ({columns})\nvalues\n{rows}\n"
+        f"on conflict (id) do update set\n{updates};\n\n"
+        "commit;\n"
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="Check generated files without writing")
+    parser.add_argument("--json", action="store_true", help="Print validated catalog JSON for offline tooling")
+    args = parser.parse_args()
+    places = load_places()
+    if args.json:
+        print(json.dumps(places, ensure_ascii=False))
+        return
+    outputs = {SEED_OUTPUT: render_seed(places)}
+    stale = []
+    for path, content in outputs.items():
+        if args.check:
+            if not path.exists() or path.read_text(encoding="utf-8") != content:
+                stale.append(str(path.relative_to(ROOT)))
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+    if stale:
+        parser.exit(1, "Run pnpm import:places to regenerate: " + ", ".join(stale) + "\n")
+    action = "Checked" if args.check else "Generated"
+    print(f"{action} {len(places)} national parks: Supabase seed")
+
+
+if __name__ == "__main__":
+    main()

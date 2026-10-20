@@ -1,4 +1,5 @@
 import type { Place } from "@/types";
+import { displayPlaceValue } from "@/domain/place-display";
 
 interface PlaceDescriptionProps {
   place: Place;
@@ -11,7 +12,7 @@ export function PlaceDescription({ place }: PlaceDescriptionProps) {
         เกี่ยวกับสถานที่
       </h2>
       <p className="text-sm sm:text-base text-brand-800/65 leading-relaxed">
-        {place.description}
+        {displayPlaceValue(place.description)}
       </p>
     </div>
   );

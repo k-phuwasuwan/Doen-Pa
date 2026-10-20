@@ -22,8 +22,9 @@ export interface PlaceMemory {
 const EMPTY_MEMORY: PlaceMemory = { records: [], photos: [], mapPhoto: undefined };
 
 /** Read personal memories without storage or rendering dependencies. */
-export function readTravelRecords(userId: string, records: readonly TravelRecord[], catalog: readonly Place[]) {
-  const catalogById = new Map(catalog.map((place) => [place.id, place]));
+export function readTravelRecords(userId: string, records: readonly TravelRecord[], catalog: readonly Place[], archive: readonly Place[] = []) {
+  // Archived places can resolve old memories without increasing active catalog totals.
+  const catalogById = new Map([...archive, ...catalog].map((place) => [place.id, place]));
   const entries: TravelRecordEntry[] = [];
   const recordsByPlace = new Map<string, TravelRecord[]>();
 
@@ -143,7 +144,7 @@ function calculateStats(catalog: readonly Place[], visitedPlaces: Place[], count
 }
 
 /** Share one model per immutable storage snapshot and user; old snapshots can be collected. */
-export function createTravelRecordReader(catalog: readonly Place[]) {
+export function createTravelRecordReader(catalog: readonly Place[], archive: readonly Place[] = []) {
   const snapshots = new WeakMap<readonly TravelRecord[], Map<string, ReturnType<typeof readTravelRecords>>>();
   return (userId: string, records: readonly TravelRecord[]) => {
     let users = snapshots.get(records);
@@ -153,7 +154,7 @@ export function createTravelRecordReader(catalog: readonly Place[]) {
     }
     let model = users.get(userId);
     if (!model) {
-      model = readTravelRecords(userId, records, catalog);
+      model = readTravelRecords(userId, records, catalog, archive);
       users.set(userId, model);
     }
     return model;

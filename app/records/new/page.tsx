@@ -19,7 +19,7 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
   }
 
   const place = placeService.getPlaceById(placeId);
-  if (!place) {
+  if (!place || !placeService.isCatalogPlace(place.id)) {
     redirect("/search");
   }
 

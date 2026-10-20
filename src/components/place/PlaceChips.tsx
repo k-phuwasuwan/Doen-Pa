@@ -1,4 +1,5 @@
 import type { Place, PlaceType } from "@/types";
+import { displayPlaceValue } from "@/domain/place-display";
 
 const typeLabels: Record<PlaceType, string> = {
   mountain: "ภูเขา",
@@ -19,26 +20,27 @@ export function PlaceChips({ place }: PlaceChipsProps) {
     },
     {
       key: "altitude",
-      label: place.altitude,
+      label: displayPlaceValue(place.altitude),
+      name: "ความสูง",
     },
     {
       key: "distance",
-      label: place.distance,
+      label: displayPlaceValue(place.distance),
+      name: "ระยะทาง",
     },
   ];
 
   return (
     <div className="flex flex-wrap items-center gap-2.5 mb-5">
-      {chips
-        .filter((chip) => chip.label)
-        .map((chip) => (
-          <span
-            key={chip.key}
-            className="liquid-glass inline-flex items-center rounded-2xl px-4 py-2 text-sm font-semibold text-brand-700"
-          >
-            {chip.label}
-          </span>
-        ))}
+      {chips.map((chip) => (
+        <span
+          key={chip.key}
+          aria-label={chip.name ? `${chip.name}: ${chip.label}` : undefined}
+          className="liquid-glass inline-flex items-center rounded-2xl px-4 py-2 text-sm font-semibold text-brand-700"
+        >
+          {chip.label}
+        </span>
+      ))}
     </div>
   );
 }

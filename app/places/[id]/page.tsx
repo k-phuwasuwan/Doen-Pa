@@ -36,7 +36,7 @@ export default async function PlacePage({ params, searchParams }: PlacePageProps
         <BackButton href={isFromPassport ? "/passport" : isFromProfile ? "/profile" : "/search"} />
       </div>
 
-      <PlaceDetailContent place={place} userId={userService.getCurrentUser().id} readOnly={isFromPassport} initialPhotoIndex={photoIndex} />
+      <PlaceDetailContent place={place} userId={userService.getCurrentUser().id} readOnly={isFromPassport || !placeService.isCatalogPlace(place.id)} initialPhotoIndex={photoIndex} />
     </div>
   );
 }

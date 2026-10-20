@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { MapPin, Mountain, Route, X } from "lucide-react";
 import type { Place } from "@/types";
+import { displayPlaceValue } from "@/domain/place-display";
 
 interface SelectedPlaceCardProps {
   place: Place;
@@ -49,7 +50,7 @@ export function SelectedPlaceCard({ place, photo, onClose }: SelectedPlaceCardPr
               </span>
               <div className="min-w-0">
                 <p className="text-xs text-brand-800/65">ระยะทาง</p>
-                <p className="truncate text-sm font-semibold text-brand-800">{place.distance ?? "—"}</p>
+                <p className="truncate text-sm font-semibold text-brand-800">{displayPlaceValue(place.distance)}</p>
               </div>
             </div>
             <div className="flex min-w-0 items-center gap-2 rounded-2xl border border-white/80 bg-white/60 p-2.5">
@@ -58,7 +59,7 @@ export function SelectedPlaceCard({ place, photo, onClose }: SelectedPlaceCardPr
               </span>
               <div className="min-w-0">
                 <p className="text-xs text-brand-800/65">ความสูง</p>
-                <p className="truncate text-sm font-semibold text-brand-800">{place.altitude ?? "—"}</p>
+                <p className="truncate text-sm font-semibold text-brand-800">{displayPlaceValue(place.altitude)}</p>
               </div>
             </div>
           </div>

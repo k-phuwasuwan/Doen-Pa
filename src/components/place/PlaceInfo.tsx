@@ -1,4 +1,5 @@
 import type { Place } from "@/types";
+import { displayPlaceValue } from "@/domain/place-display";
 
 const regionLabel: Record<string, string> = {
   north: "ภาคเหนือ",
@@ -21,7 +22,7 @@ export function PlaceInfo({ place }: PlaceInfoProps) {
       </h1>
       <div className="flex flex-wrap items-center gap-3">
         <div className="liquid-glass inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-medium text-brand-700">
-          <span>{place.location}, {place.province}</span>
+          <span>{displayPlaceValue(place.location)}, {displayPlaceValue(place.province)}</span>
         </div>
         <div className="liquid-glass inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-medium text-brand-700">
           <span>{regionLabel[place.region] ?? place.region}</span>

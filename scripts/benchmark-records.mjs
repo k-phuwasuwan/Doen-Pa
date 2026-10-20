@@ -11,10 +11,10 @@ try {
   const compile = spawnSync(process.execPath, ["node_modules/typescript/bin/tsc", "--project", "tsconfig.test.json", "--outDir", output], { stdio: "inherit" });
   if (compile.status !== 0) throw new Error("Could not compile benchmark sources");
   const { readTravelRecords, createTravelRecordReader } = createRequire(import.meta.url)(join(output, "src/domain/travel-record-read-model.js"));
-  const compiledCatalog = ts.transpileModule(readFileSync("src/mocks/places.ts", "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } });
+  const compiledCatalog = ts.transpileModule(readFileSync("src/data/places.ts", "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } });
   const catalogPath = join(output, "catalog.cjs");
   writeFileSync(catalogPath, compiledCatalog.outputText);
-  const { mockPlaces: catalog } = createRequire(import.meta.url)(catalogPath);
+  const { places: catalog } = createRequire(import.meta.url)(catalogPath);
   const readShared = createTravelRecordReader(catalog);
   const callers = catalog.length + 1; // One filter plus one VisitCount per card.
   const date = new Date("2026-01-01T12:00:00Z");

@@ -12,6 +12,7 @@
     "lint": "eslint",
     "test": "node scripts/test.mjs",
     "test:e2e": "playwright test",
+    "import:places": "python3 scripts/import-national-parks.py",
     "bench:records": "node scripts/benchmark-records.mjs"
   },
   "dependencies": {

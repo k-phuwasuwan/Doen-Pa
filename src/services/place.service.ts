@@ -1,5 +1,10 @@
-import { mockPlaces } from "@/mocks/places";
+import { places } from "@/data/places";
+import { archivedPlaces } from "@/data/archived-places";
+import { resolvePlaceId } from "@/data/place-identities";
 import type { Place, PlaceType } from "@/types";
+
+const catalogById = new Map(places.map((place) => [place.id, place]));
+const archiveById = new Map(archivedPlaces.map((place) => [place.id, place]));
 
 function matchesQuery(place: Place, query: string): boolean {
   const normalized = query.trim().toLowerCase();
@@ -20,15 +25,24 @@ function matchesType(place: Place, type: PlaceType | "all"): boolean {
 
 export const placeService = {
   searchPlaces(query: string): Place[] {
-    return mockPlaces.filter((place) => matchesQuery(place, query));
+    return places.filter((place) => matchesQuery(place, query));
   },
 
   getPlaceById(id: string): Place | null {
-    return mockPlaces.find((place) => place.id === id) ?? null;
+    const canonicalId = resolvePlaceId(id);
+    return catalogById.get(canonicalId) ?? archiveById.get(canonicalId) ?? null;
+  },
+
+  isCatalogPlace(id: string): boolean {
+    return catalogById.has(resolvePlaceId(id));
+  },
+
+  getArchivedPlaces(): Place[] {
+    return [...archivedPlaces];
   },
 
   filterByType(type: PlaceType | "all"): Place[] {
-    return mockPlaces.filter((place) => matchesType(place, type));
+    return places.filter((place) => matchesType(place, type));
   },
 
   matchesType(place: Place, type: PlaceType | "all"): boolean {
@@ -36,10 +50,10 @@ export const placeService = {
   },
 
   getAll(): Place[] {
-    return [...mockPlaces];
+    return [...places];
   },
 
   getNationalParks(): Place[] {
-    return mockPlaces.filter((place) => place.isNationalPark === true);
+    return places.filter((place) => place.isNationalPark === true);
   },
 };

@@ -5,7 +5,7 @@ import { createTravelRecordReader } from "@/domain/travel-record-read-model";
 import { placeService } from "@/services/place.service";
 import { travelRecordService } from "@/services/travel-record.service";
 
-const readSnapshot = createTravelRecordReader(placeService.getAll());
+const readSnapshot = createTravelRecordReader(placeService.getAll(), placeService.getArchivedPlaces());
 
 export function useTravelRecordReadModel(userId: string) {
   const snapshot = useSyncExternalStore(

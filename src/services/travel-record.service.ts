@@ -1,6 +1,7 @@
 import { placeService } from "@/services/place.service";
 import { browserStorageAdapter, createLocalSnapshot } from "@/lib/storage/local-snapshot";
 import type { TravelRecord } from "@/types";
+import { resolvePlaceId } from "@/data/place-identities";
 
 const STORAGE_KEY = "doen-pa-travel-records-v2";
 const RECORDS_CHANGED_EVENT = "doen-pa-records-changed";
@@ -34,7 +35,7 @@ function parseRecords(raw: string | null): TravelRecord[] {
       return [{
         id: record.id,
         userId: record.userId,
-        placeId: record.placeId,
+        placeId: resolvePlaceId(record.placeId),
         note: record.note,
         photos: record.photos as string[],
         rating: record.rating,

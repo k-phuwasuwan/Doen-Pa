@@ -12,10 +12,10 @@ This file describes the **current implementation and accepted behavior**, not a 
 
 - Next.js **16.3.4** App Router, React **19**, TypeScript strict mode, Tailwind CSS **4**, Lucide React, Leaflet 1.9/react-leaflet 5; package manager **pnpm**.
 - Fonts: Kanit and Plus Jakarta Sans are bundled under `public/fonts/` and declared in `app/globals.css`; the production build uses Webpack so it does not fetch Google Fonts during compilation.
-- Pages and global CSS live in root-level `app/`; components, services, mocks, types, and hooks live in `src/`. Do not create a second `src/app/`.
+- Pages and global CSS live in root-level `app/`; components, services, data, types, and hooks live in `src/`. Do not create a second `src/app/`.
 - State currently uses React hooks, URL query parameters, `useSyncExternalStore`, and localStorage. **Zustand is not installed**; do not assume a store layer exists.
-- Source of truth for types: `src/types/index.ts`; for design tokens/effects: `app/globals.css` and `tailwind.config.ts`; for the searchable place catalog: `src/mocks/places.ts`.
-- The app starts as a **new local user with zero records, photos, and visited places**. `userService.getCurrentUser()` returns a neutral local identity with any locally saved profile edits. There is **no real authentication or backend**. Never reintroduce seeded personal records or sample user photos.
+- Source of truth for types: `src/types/index.ts`; for design tokens/effects: `app/globals.css` and `tailwind.config.ts`; for the running place catalog: Supabase `public.places`, read through `src/services/place.service.ts`.
+- The app starts as a **new local user with zero records, photos, and visited places**. `userService.getCurrentUser()` returns a neutral local identity with any locally saved profile edits. Supabase serves the place catalog; profile and travel records remain local, and real account authentication is not implemented. Never reintroduce seeded personal records or sample user photos.
 
 ## Routes and navigation
 
@@ -49,19 +49,25 @@ Do not add a dialog version of Place Details. The map's selected-place card is d
 
 ## Data and persistence
 
-`Place` has `id`, `name`, `location`, `province`, `region`, `description`, `type`, optional coordinates, altitude, distance, season and camping text. `type` is one of the four Search categories; `isNationalPark` separately marks park membership for statistics. The place catalog has **no sample image URLs**. `TravelRecord` has `userId`, `placeId`, `visitedAt`, `note`, `photos: string[]`, personal `rating`, and `createdAt`. Use the actual interfaces in `src/types/index.ts`; older fields such as `image`, `category`, `rankLabel`, `difficulty`, and `guidelines` are **not in the current Place model**.
+`Place` has `id`, `name`, `location`, `province`, `region`, `description`, `type`, optional coordinates, altitude and distance. `type` is one of the four Search categories; `isNationalPark` separately marks park membership for statistics. The place catalog has **no sample image URLs**. `TravelRecord` has `userId`, `placeId`, `visitedAt`, `note`, `photos: string[]`, personal `rating`, and `createdAt`. Use the actual interfaces in `src/types/index.ts`; older fields such as `image`, `category`, `rankLabel`, `difficulty`, `guidelines`, `season`, and `camping` are **not in the current Place model**.
 
-`travelRecordService` starts with an **empty array** and persists new records under `doen-pa-travel-records-v2` in localStorage. `useTravelRecords` subscribes to changes. `userService` starts with a neutral local identity (`local-user`), stores profile edits under `doen-pa-current-user-v2`, and `useCurrentUser` subscribes so Profile and Passport show saved changes. `AppShell` removes the legacy pre-reset personal-data keys on load. Keep service access out of purely presentational components where practical.
+`getPlaceCatalog()` is server-only and shares one Supabase snapshot within a request using React `cache`. Its loader uses the publishable key, `no-store`, pagination and runtime validation. `CatalogContent` passes successful results through `PlaceCatalogProvider`; `useTravelRecordReadModel` combines that catalog with local personal records for client views. A failed catalog request shows a retry panel, not empty personal statistics. There is no local catalog fallback. Login, Profile editing and guest Passport/Stats/Profile previews do not require catalog reads.
+
+`data/national-parks-156.csv` is the reviewed import source. `pnpm import:places` generates only `supabase/seed.sql`; applying the seed updates the database. `--json` supplies offline tests and benchmarks. The generated application catalog `src/data/places.ts` has been removed. Preserve existing text IDs, the alias in `src/data/place-identities.ts`, and history-only metadata in `src/data/archived-places.ts` so old memories remain readable without adding searchable places or park credit. Before changing catalog loading, imports, database permissions or deployment, read [docs/places-backend.md](docs/places-backend.md).
+
+`travelRecordService` starts with an **empty array** and persists new records under `doen-pa-travel-records-v2` in localStorage. It preserves records independently of catalog availability; the shared read model resolves known place IDs for display. `userService` starts with a neutral local identity (`local-user`), stores profile edits under `doen-pa-current-user-v2`, and `useCurrentUser` subscribes so Profile and Passport show saved changes. `AppShell` removes the legacy pre-reset personal-data keys on load. Keep service access out of purely presentational components where practical.
+
+Supabase session helpers and cookie refresh exist, but they do not implement login or protect personal data. Before changing connection settings, cookies or authentication, read [docs/supabase-setup.md](docs/supabase-setup.md). Public catalog reads use SELECT-only grants and RLS for `anon` and `authenticated`; administrative imports stay outside client code.
 
 Photo rules:
 
 - A **new TravelRecord** accepts up to **5** JPG, PNG, or WebP images, each at most **5 MB**. `PhotoUploader` reads them as data URLs and offers preview/removal and alt-text entry.
-- Revisiting the same place creates another record; do **not** cap the total photos shown for that place at five. `PlaceDetailContent` joins all matching records and passes every photo to `PlaceGallery` and `PhotoLightbox`.
+- Revisiting the same place creates another record; do **not** cap the total photos shown for that place at five. The shared read model joins matching records; `PlaceDetailContent` passes every photo to `PlaceGallery` and `PhotoLightbox`.
 - Passport cards represent records; Passport statistics count unique places/provinces and all saved photos.
 - The current `TravelRecord.photos` schema stores image strings only. Uploader alt text is UI state and is **not persisted**; changing that needs an explicit data-model decision.
 - localStorage is MVP storage and has browser quota limits. Do not claim uploads are backed up or synced.
 
-The searchable place catalog remains local data; its sample image URLs were removed. Place images shown in personal surfaces must come from records the user creates, while empty images use neutral placeholders. Stitch `lh3.googleusercontent.com/aida-public/...` preview URLs must never be added as production image sources. The permanent place-photo strategy is undecided.
+Place images shown in personal surfaces must come from records the user creates, while empty images use neutral placeholders. Stitch `lh3.googleusercontent.com/aida-public/...` preview URLs must never be added as production image sources. The permanent place-photo strategy is undecided.
 
 ## Design system and references
 
@@ -75,14 +81,14 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 ### Search
 
-- `app/search/page.tsx` filters mock places with `q`, `type`, and `visited` URL parameters. `SearchResults` combines server-rendered place cards with the current user's records for visited status.
+- `app/search/page.tsx` filters the server-provided Supabase catalog with `q` and `type` URL parameters. `SearchResults` applies the `visited` parameter using the current user's local records and server-rendered place cards.
 - Search category options show only their names. On mobile, choosing a category scrolls to the first result area below the floating nav; desktop keeps its scroll position.
 - Place cards link to full Place Details. Their green type chip is a place category, not booking status. The personal visit count appears only when positive. The card's Stamp action opens the record form with `returnTo=search`.
 - No public aggregate rating, review count, booking badge, or popularity recommendation.
 
 ### Place Details and records
 
-- Desktop Place Details uses a gallery column and a `.liquid-glass-card` info column. Show text-only type → altitude → distance chips, description, optional season/camping tiles, and **all** matching personal records. Location, region, and record-date chips also have no icons.
+- Desktop Place Details uses a gallery column and a `.liquid-glass-card` info column. Show text-only type → altitude → distance chips, description, and **all** matching personal records. Location, region, and record-date chips also have no icons.
 - Gallery shows one large photo at a time. Previous/next controls are dark frosted vertical rectangles, vertically centered and inset from the photo edges; a position counter sits near the top. No thumbnail row and no image zoom on hover.
 - Clicking a gallery photo opens a fixed full-screen lightbox. Use the same style of controls; close by clicking outside the displayed photo or pressing Escape. There is no visible X button.
 - If the user entered from Passport, suppress `PlaceActions` but keep the records and gallery visible.
@@ -90,7 +96,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 ### Map
 
-- `MapOverview` uses client-side records and deduplicates visited places by `placeId` when valid coordinates exist. `DynamicThailandMap` loads Leaflet without SSR.
+- `MapOverview` combines client-side records with the server-provided catalog and deduplicates visited places by `placeId` when valid coordinates exist. `DynamicThailandMap` loads Leaflet without SSR.
 - Map fills the viewport **behind** the floating nav. Terrain tiles use Stadia Maps' Stamen Terrain Background. Deployed domains need `NEXT_PUBLIC_STADIA_MAPS_API_KEY` or Stadia domain authentication.
 - Keep Stadia Maps, Stamen Design, OpenMapTiles, and OpenStreetMap attribution visible; only Leaflet's optional prefix is hidden.
 - Constrain panning to Thailand and its nearby region. Show visited-place pins only, neutral province outlines and small Thai province names from `public/data/thailand.json`, and noninteractive Thai labels for neighboring countries. Do not shade provinces by visit status.
@@ -124,8 +130,10 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 - Use `pnpm dev` only if a dev server is not already running. Reuse the user's existing localhost server when available; do not stop it without a reason.
 - Run `pnpm exec tsc --noEmit`, `pnpm lint`, and `git diff --check` for code changes. `pnpm build` is the production build check when appropriate. There is **no `pnpm type-check` script** in `package.json`.
+- Before changing or running test workflows, read [docs/testing.md](docs/testing.md). `pnpm test` checks catalog reads and runs migration/seed/RLS tests in isolated PGlite; browser tests require a configured Supabase catalog. `pnpm import:places:check` verifies the generated seed without uploading it.
 - For rendered UI changes, verify the actual route and interaction on desktop and mobile; source inspection and lint alone are not visual QA.
 - The project history uses separate commits with `feat:`, `fix:`, `style:`, or `copy:` prefixes for distinct changes. Check the worktree before editing and do not include unrelated changes.
+- When accepted changes alter storage, data flow or page behavior, update the affected instructions here in the same implementation change.
 
 ---
 

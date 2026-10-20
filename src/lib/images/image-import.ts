@@ -24,7 +24,7 @@ export const RECORD_IMAGE_POLICY: ImagePolicy = {
 };
 export const PROFILE_IMAGE_POLICY: ImagePolicy = {
   maxBytes: 1024 * 1024,
-  sizeMessage: "รูปภาพต้องมีขนาดไม่เกิน 1 MB เพื่อเก็บไว้ในเบราว์เซอร์",
+  sizeMessage: "รูปภาพต้องมีขนาดไม่เกิน 1 MB",
 };
 const EMPTY_PENDING: string[] = [];
 

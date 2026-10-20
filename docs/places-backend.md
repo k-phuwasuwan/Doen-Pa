@@ -2,9 +2,9 @@
 
 The app reads the `public.places` table on the server. Search, Place Details,
 stamping, Passport, Map, Stats and Profile use the same per-request catalog
-snapshot. `src/data/places.ts` has been removed. Profile edits and travel records
-remain in account-scoped localStorage; real Auth and initial profile reads are
-described in [Auth setup](supabase-setup.md).
+snapshot. `src/data/places.ts` has been removed. Profiles, travel records and
+private photos persist in Supabase; see [Auth setup](supabase-setup.md) and
+[private account data](private-data-backend.md).
 
 ## Hosted rollout status — 2026-10-20
 

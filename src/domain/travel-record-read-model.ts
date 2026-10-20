@@ -1,4 +1,5 @@
 import type { Place, Stats, TravelRecord } from "../types";
+import { resolvePlaceId } from "../data/place-identities";
 
 export interface TravelRecordEntry {
   record: TravelRecord;
@@ -29,7 +30,7 @@ export function readTravelRecords(userId: string, records: readonly TravelRecord
   const recordsByPlace = new Map<string, TravelRecord[]>();
 
   for (const record of records) {
-    const place = catalogById.get(record.placeId);
+    const place = catalogById.get(resolvePlaceId(record.placeId));
     if (record.userId !== userId || !place) continue;
     entries.push({ record, place });
     const group = recordsByPlace.get(place.id) ?? [];

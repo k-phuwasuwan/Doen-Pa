@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/navigation/AppShell";
 import { AuthProvider } from "@/components/auth/AuthProvider";
-import { getAuthUser } from "@/lib/auth/server";
+import { getAuthAccount } from "@/lib/auth/server";
 
 export const metadata: Metadata = {
   title: "Doen Pa — พาสปอร์ตเดินป่า",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const user = await getAuthUser();
+  const account = await getAuthAccount();
   return (
     <html lang="th" className="h-full antialiased">
       <body className="relative min-h-full flex flex-col bg-canvas contour-pattern">
@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="ambient-glow-mesh-2 right-[-18rem] top-[20rem]" />
           <div className="ambient-glow-mesh-3 bottom-[-22rem] left-[30%]" />
         </div>
-        <AuthProvider key={user?.id ?? "guest"} initialUser={user}>
+        <AuthProvider key={account?.user.id ?? "guest"} initialData={account}>
           <AppShell>{children}</AppShell>
         </AuthProvider>
       </body>

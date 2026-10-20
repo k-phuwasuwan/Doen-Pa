@@ -16,9 +16,12 @@ test("latest avatar wins while cover and cross-tab profile update independently"
   await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง" }).click();
   await expect(page).toHaveURL(/\/profile$/);
   await expect(observer.getByRole("heading", { name: "QA Local User", exact: true })).toBeVisible();
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(`doen-pa-current-user-account-v1:${window.doenPaTestAccountId}`) ?? "null"));
-  expect(saved.avatar).toBe(urls[1]);
-  expect(saved.coverImage).toBe(urls[2]);
+  const saved = (await (await page.request.get("/api/account")).json()).user;
+  expect(saved.avatar).toMatch(/^\/api\/photos\//);
+  expect(saved.coverImage).toMatch(/^\/api\/photos\//);
+  const avatar = await page.request.get(saved.avatar), cover = await page.request.get(saved.coverImage);
+  expect((await avatar.body()).equals(png("check",1).buffer)).toBe(true);
+  expect((await cover.body()).equals(png("check",2).buffer)).toBe(true);
 });
 
 test("removal and alt edits survive pending reads and record save updates another tab", async ({ page, context }) => {
@@ -26,7 +29,7 @@ test("removal and alt edits survive pending reads and record save updates anothe
   const observer = await context.newPage();
   await openPage(observer, "/passport");
   await openPage(page, "/records/new?placeId=place-doi-inthanon");
-  const { urls, png } = await imageFixtures(page);
+  const { png } = await imageFixtures(page);
   const input = page.getByLabel("เลือกไฟล์รูปภาพ", { exact: true });
   await input.setInputFiles([png("remove.png", 0), png("keep.png", 1)]);
   await expect(page.getByRole("button", { name: "ลบรูป keep.png" })).toBeAttached();
@@ -43,9 +46,10 @@ test("removal and alt edits survive pending reads and record save updates anothe
   await page.getByRole("button", { name: "บันทึกลงพาสปอร์ต" }).click();
   await expect(page).toHaveURL(/\/passport$/);
   await expect(observer.getByText("1 บันทึก", { exact: true })).toBeVisible();
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`) ?? "[]"));
+  const saved = (await (await page.request.get("/api/account")).json()).records;
   expect(saved).toHaveLength(1);
-  expect(saved[0].photos).toEqual([urls[1], urls[2]]);
+  expect(saved[0].photos).toHaveLength(2);
+  for (let i=0; i<2; i++) expect((await (await page.request.get(saved[0].photos[i])).body()).equals(png("check",i+1).buffer)).toBe(true);
 });
 
 test("file validation keeps separate profile and record limits", async ({ page }, testInfo) => {
@@ -53,7 +57,7 @@ test("file validation keeps separate profile and record limits", async ({ page }
   await page.locator("#profile-avatar").setInputFiles({ name: "invalid.txt", mimeType: "text/plain", buffer: Buffer.from("invalid") });
   await expect(page.getByText("รองรับเฉพาะ JPG, PNG, WebP", { exact: true })).toBeVisible();
   await page.locator("#profile-avatar").setInputFiles({ name: "large.png", mimeType: "image/png", buffer: Buffer.alloc(1024 * 1024 + 1) });
-  await expect(page.getByText("รูปภาพต้องมีขนาดไม่เกิน 1 MB เพื่อเก็บไว้ในเบราว์เซอร์", { exact: true })).toBeVisible();
+  await expect(page.getByText("รูปภาพต้องมีขนาดไม่เกิน 1 MB", { exact: true })).toBeVisible();
   await openPage(page, "/records/new?placeId=place-doi-inthanon");
   const { png } = await imageFixtures(page);
   const input = page.getByLabel("เลือกไฟล์รูปภาพ", { exact: true });
@@ -66,23 +70,27 @@ test("file validation keeps separate profile and record limits", async ({ page }
   await page.screenshot({ path: testInfo.outputPath("record-form.png") });
 });
 
-test("storage quota failure shows error without publishing unsaved data", async ({ page, context }) => {
-  const observer = await context.newPage();
-  await openPage(observer, "/passport");
-  await openPage(page, "/profile/edit");
-  await page.getByLabel("ชื่อที่แสดง").fill("Unsaved Name");
-  const failWrites = () => {
-    Storage.prototype.setItem = () => { throw new DOMException("Quota full", "QuotaExceededError"); };
-  };
-  await page.evaluate(failWrites);
-  await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง" }).click();
-  await expect(page.getByText("บันทึกไม่สำเร็จ พื้นที่จัดเก็บในเบราว์เซอร์อาจเต็ม กรุณาใช้รูปภาพที่เล็กลง", { exact: true })).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem(`doen-pa-current-user-account-v1:${window.doenPaTestAccountId}`))).toBeNull();
-  await openPage(page, "/records/new?placeId=place-doi-inthanon");
-  await page.evaluate(failWrites);
-  await page.getByRole("button", { name: "บันทึกลงพาสปอร์ต" }).click();
-  await expect(page.getByText("เกิดข้อผิดพลาด กรุณาลองใหม่", { exact: true })).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`))).toBeNull();
-  await expect(observer.getByText("พาสปอร์ตของคุณยังว่างเปล่า")).toBeVisible();
-  await expect(observer.getByRole("heading", { name: "ผู้ใช้ใหม่", exact: true })).toBeVisible();
+test.describe("failed cloud writes", () => {
+  test.use({ expectedConsoleErrors: ["/rest/v1/rpc/save_account_profile", "/rest/v1/rpc/save_travel_record"] });
+  test("database failure retains drafts and does not publish unsaved data", async ({ page, context }) => {
+    const observer = await context.newPage();
+    await openPage(observer, "/passport");
+    await openPage(page, "/profile/edit");
+    await page.getByLabel("ชื่อที่แสดง").fill("Unsaved Name");
+    const fail = async (route: import("@playwright/test").Route) => route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ message: "Simulated database failure", code: "QA_FAILURE" }) });
+    await page.route("**/rest/v1/rpc/save_account_profile", fail);
+    await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง" }).click();
+    await expect(page.getByText("บันทึกโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("ชื่อที่แสดง")).toHaveValue("Unsaved Name");
+    await openPage(page, "/records/new?placeId=place-doi-inthanon");
+    await page.getByLabel("บันทึกความทรงจำ").fill("unsaved note");
+    await page.route("**/rest/v1/rpc/save_travel_record", fail);
+    await page.getByRole("button", { name: "บันทึกลงพาสปอร์ต" }).click();
+    await expect(page.getByText("บันทึกไม่สำเร็จ กรุณาลองใหม่", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("บันทึกความทรงจำ")).toHaveValue("unsaved note");
+    const saved = await (await page.request.get("/api/account")).json();
+    expect(saved.records).toEqual([]);
+    expect(saved.user.name).toBe("ผู้ใช้ใหม่");
+    await expect(observer.getByText("พาสปอร์ตของคุณยังว่างเปล่า")).toBeVisible();
+  });
 });

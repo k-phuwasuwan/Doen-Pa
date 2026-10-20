@@ -17,10 +17,13 @@ The earlier `rls_auto_enable()` warnings remain resolved. Performance Advisors
 reported only INFO notices for newly created, unused query/FK indexes; keep
 these indexes for account-scoped queries and cascading record deletion.
 
-This migration supplies the database foundation. Real email/password Auth is now
-implemented; see [Auth setup](supabase-setup.md). Initial profile text comes from
-`profiles`; profile edits and travel records remain in account-scoped browser
-storage. Cloud saves, Storage and local import remain deferred.
+Migration `20261020080657_connect_private_storage.sql` is also applied to the
+linked project. It creates private `travel-photos` and `profile-photos` buckets,
+owner policies and transactional save functions. Profiles, travel records and
+photos now persist in Supabase using real email/password Auth; see
+[Auth setup](supabase-setup.md). Local import is out of scope by user decision:
+there is no local data to migrate. Security Advisors
+still report only the existing leaked-password-protection warning.
 
 ## Ownership and schema contracts
 
@@ -33,7 +36,7 @@ no table grants; there are no anonymous policies. TRUNCATE, REFERENCES and
 TRIGGER privileges are not granted to either client role.
 
 Trusted administrators and `service_role` can bypass RLS. Use the signed-in
-user's SSR client for future personal operations; a service-role client would
+user's client for personal operations; a service-role client would
 remove these ownership checks. Never put an administrative key in browser code.
 
 - `profiles`: one row per Auth user; name, username, bio and creation time.
@@ -71,17 +74,51 @@ Object paths must be owned by the row's user:
 ```
 
 File IDs accept ASCII letters, numbers, `_` and `-`; supported extensions are
-`jpg`, `jpeg`, `png` and `webp`. Travel images use `record-photos`; avatar/cover
-use `profile`. Paths are unique. These are schema contracts for a future private
-bucket, not proof that an object exists or that the bytes match the metadata.
-The upload integration must independently validate files and enforce Storage
-bucket limits and owner policies. Deleting metadata does not delete Storage
-bytes; later cloud mutations need an explicit upload/cleanup lifecycle.
+`jpg`, `jpeg`, `png` and `webp`. Travel images use the `travel-photos` bucket and
+`record-photos` folder; avatar/cover use `profile-photos` and `profile`. Paths
+are unique. Bucket limits enforce MIME types and the respective 5 MiB / 1 MiB
+limits. Browser uploads also validate size, type and image decodability.
 
-Account-scoped text IDs allow a future importer to use `(user_id, id)` as a
-conflict target without changing local source IDs. An importer still needs to
-choose the destination account, assign stable photo IDs/paths, report partial
-failures and preserve local originals. This schema alone is not an import flow.
+## Cloud reads, writes and photo lifecycle
+
+`getAuthAccount` verifies the Auth user before loading a paginated account
+snapshot through the user's SSR client. `/api/account` repeats this verification
+for refreshes; account rows never use an administrative key. `AuthProvider`
+publishes the snapshot through `createAccountStore`. Cross-tab signals carry
+only an account UUID and nonce; focus/visibility also refresh data from Supabase.
+Failed refreshes retain the previous snapshot with a retry notice; initial
+failures show the global error screen rather than empty personal statistics.
+
+Uploads use new UUID paths with `upsert: false`. Storage permits owner reads,
+owner inserts into the expected folder and deletion of unreferenced objects;
+ordinary clients cannot overwrite uploaded bytes or delete referenced objects.
+`save_travel_record` inserts the record and photo metadata in one transaction,
+using `(user_id, id)` for idempotent submissions. `save_account_profile` commits
+profile text and replacement photo metadata together, serializing replacements
+on the profile row and retaining images omitted from the payload. Both functions
+run as SECURITY INVOKER and derive ownership from `auth.uid()`.
+`attach_account_photo` checks the private object's path, size and MIME metadata
+before attaching it. Direct table clients remain subject to the existing RLS
+and schema constraints; the application uses these RPCs for atomic saves.
+
+After confirmed profile replacement, the client removes obsolete bytes. Failed
+mutations attempt cleanup only after verifying that each uploaded path is not
+referenced. Ambiguous record responses are checked against cloud data; retrying
+the same form reuses the submission ID and removes unused retry uploads. Failed
+cleanup can leave private orphan bytes; scheduled reclamation is not implemented.
+Local originals remain untouched, including both account-v1 keys.
+
+Images are delivered by `/api/photos/[id]?owner=<uuid>`, which verifies the
+session, matches the requested owner and reads the metadata and Storage bytes
+through RLS. Successful responses use `private, no-store` and `nosniff`; guests,
+other owners and missing images receive 404. Personal Next Images use
+`unoptimized` to avoid an image optimizer cache of authenticated content. No
+public URLs or reusable bearer links are exposed by this delivery route.
+
+Account-scoped text IDs preserve record identities independently in each account.
+No local import flow is planned; manual local testing uses existing accounts and
+creates new data directly in their cloud storage. Legacy local keys remain
+untouched.
 
 ## Existing auto-RLS warning
 
@@ -122,9 +159,11 @@ reassignment, cross-owner record/photo references, anonymous and missing
 identity, repeated record upserts, revisits, five-photo slots, MIME/size/path
 validation, cascades, and auto-RLS execution revocation. See [testing](testing.md).
 
-Auth browser tests now exercise real login/logout, confirmation/recovery tokens,
-SSR refresh and authenticated Data API isolation. SMTP delivery, Storage access
-and production-domain configuration still require separate verification.
+Browser tests exercise real login/logout, confirmation/recovery tokens, SSR
+refresh and authenticated Data API isolation. Cloud tests additionally cover
+private Storage access, cross-browser reads and failure/retry cleanup; see
+[testing](testing.md). SMTP delivery and production-domain configuration still
+require separate verification.
 
 References: [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security),
 [user data](https://supabase.com/docs/guides/auth/managing-user-data),

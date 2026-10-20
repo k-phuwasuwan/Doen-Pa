@@ -1,3 +1,4 @@
+import { storageSchema } from "./helpers/storage-schema";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
@@ -28,6 +29,7 @@ async function prepare(db: PGlite) {
     alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
     insert into auth.users values ('${accountA}'), ('${accountB}');
   `);
+  await db.exec(storageSchema);
 }
 
 async function asAccount(db: PGlite, userId: string | null, run: () => Promise<void>, role = "authenticated") {

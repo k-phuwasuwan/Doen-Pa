@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { loginHref } from "./redirects";
-import type { User } from "@/types";
+import { loadAccountData } from "@/lib/account/server";
 
 export async function ensureAccountProfile(supabase: SupabaseClient, userId: string) {
   const { error } = await supabase.from("profiles").upsert({ user_id: userId }, { onConflict: "user_id", ignoreDuplicates: true });
@@ -13,7 +13,7 @@ export async function ensureAccountProfile(supabase: SupabaseClient, userId: str
 }
 
 /** Request-scoped only: never cache an authenticated identity across requests. */
-export const getAuthUser = cache(async (): Promise<User | null> => {
+export const getAuthAccount = cache(async () => {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error) {
@@ -21,11 +21,10 @@ export const getAuthUser = cache(async (): Promise<User | null> => {
     throw new Error("ตรวจสอบการเข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่");
   }
   if (!user) return null;
-  const { data: profile, error: profileError } = await supabase.from("profiles")
-    .select("name, username, bio").eq("user_id", user.id).maybeSingle();
-  if (profileError) throw new Error("โหลดโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่");
-  return { id: user.id, name: profile?.name ?? "ผู้ใช้ใหม่", username: profile?.username ?? "new_hiker", bio: profile?.bio ?? "" };
+  return loadAccountData(supabase, user.id);
 });
+
+export const getAuthUser = cache(async () => (await getAuthAccount())?.user ?? null);
 
 export async function requireAuthUser(next: string) {
   const user = await getAuthUser();

@@ -13,9 +13,9 @@ This file describes the **current implementation and accepted behavior**, not a 
 - Next.js **16.3.4** App Router, React **19**, TypeScript strict mode, Tailwind CSS **4**, Lucide React, Leaflet 1.9/react-leaflet 5; package manager **pnpm**.
 - Fonts: Kanit and Plus Jakarta Sans are bundled under `public/fonts/` and declared in `app/globals.css`; the production build uses Webpack so it does not fetch Google Fonts during compilation.
 - Pages and global CSS live in root-level `app/`; components, services, data, types, and hooks live in `src/`. Do not create a second `src/app/`.
-- State currently uses React hooks, URL query parameters, `useSyncExternalStore`, and localStorage. **Zustand is not installed**; do not assume a store layer exists.
+- State uses React hooks, URL query parameters and `useSyncExternalStore` over verified Supabase account snapshots. localStorage carries cross-tab change signals only. **Zustand is not installed**; do not assume a store layer exists.
 - Source of truth for types: `src/types/index.ts`; for design tokens/effects: `app/globals.css` and `tailwind.config.ts`; for the running place catalog: Supabase `public.places`, read through `src/services/place.service.ts`.
-- The app starts **logged out**. Supabase SSR implements email/password signup, confirmation, login, recovery and logout. New accounts start with zero memories. Initial profile text comes from `public.profiles`; profile edits and travel records currently persist only in account-scoped browser storage. Google login, cloud saves and local import remain deferred. Never reintroduce seeded personal records or sample user photos.
+- The app starts **logged out**. Supabase SSR implements email/password signup, confirmation, login, recovery and logout. New accounts start with zero memories. Profiles and travel records persist in Supabase; photos use private Storage with owner-only access. Google login remains deferred. Never reintroduce seeded personal records or sample user photos.
 
 - Deployment decision: deploy on **Vercel** using its provided **`*.vercel.app` URL**. The current plan requires no purchased custom domain. Configure Supabase Auth Site URL and allowed redirect URLs for the actual deployed HTTPS address before production verification.
 - Auth email decision: use **Gmail SMTP** with a dedicated Gmail sender account, 2-Step Verification and an App Password stored in Supabase's custom SMTP settings. Keep the App Password out of source control and browser code. Deployment and SMTP setup remain pending until configured and verified; this decision does not mean email delivery is already working.
@@ -38,7 +38,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/stats` | Personal travel statistics by province, place type, and region. Badge UI is deferred. |
 | `/stats?view=guest` | Optional guest Stats preview with a Search link; anonymous `/stats` shows the same guest screen. |
 | `/profile` | Personal profile and photo gallery. |
-| `/profile/edit` | Requires authentication; edit the account's display name, username, bio, avatar and cover with a live preview. Changes persist in this browser only. |
+| `/profile/edit` | Requires authentication; edit the account's display name, username, bio, avatar and cover with a live preview. Changes save to the account in Supabase. |
 | `/profile?view=guest` | Optional guest Profile preview with a Search link; anonymous `/profile` shows the same guest screen. |
 
 Place Details receives an explicit origin when needed:
@@ -57,17 +57,17 @@ Do not add a dialog version of Place Details. The map's selected-place card is d
 
 `Place` has `id`, `name`, `location`, `province`, `region`, `description`, `type`, optional coordinates, altitude and distance. `type` is one of the four Search categories; `isNationalPark` separately marks park membership for statistics. The place catalog has **no sample image URLs**. `TravelRecord` has `userId`, `placeId`, `visitedAt`, `note`, `photos: string[]`, personal `rating`, and `createdAt`. Use the actual interfaces in `src/types/index.ts`; older fields such as `image`, `category`, `rankLabel`, `difficulty`, `guidelines`, `season`, and `camping` are **not in the current Place model**.
 
-`getPlaceCatalog()` is server-only and shares one Supabase snapshot within a request using React `cache`. Its loader uses the publishable key, `no-store`, pagination and runtime validation. `CatalogContent` passes successful results through `PlaceCatalogProvider`; `useTravelRecordReadModel` combines that catalog with local personal records for client views. A failed catalog request shows a retry panel, not empty personal statistics. There is no local catalog fallback. Login, Profile editing and guest Passport/Stats/Profile previews do not require catalog reads.
+`getPlaceCatalog()` is server-only and shares one Supabase snapshot within a request using React `cache`. Its loader uses the publishable key, `no-store`, pagination and runtime validation. `CatalogContent` passes successful results through `PlaceCatalogProvider`; `useTravelRecordReadModel` combines that catalog with the account's cloud records for client views and resolves legacy place aliases without rewriting saved IDs. A failed catalog request shows a retry panel, not empty personal statistics. There is no local catalog fallback. Login, Profile editing and guest Passport/Stats/Profile previews do not require catalog reads.
 
 `data/national-parks-156.csv` is the reviewed import source. `pnpm import:places` generates only `supabase/seed.sql`; applying the seed updates the database. `--json` supplies offline tests and benchmarks. The generated application catalog `src/data/places.ts` has been removed. Preserve existing text IDs, the alias in `src/data/place-identities.ts`, and history-only metadata in `src/data/archived-places.ts` so old memories remain readable without adding searchable places or park credit. Before changing catalog loading, imports, database permissions or deployment, read [docs/places-backend.md](docs/places-backend.md).
 
-`AuthProvider` owns `createUserService` and `createTravelRecordService` instances for the verified Auth UUID. Records start empty under `doen-pa-travel-records-account-v1:<uuid>`; profile edits use `doen-pa-current-user-account-v1:<uuid>`. Hooks subscribe to these services. Anonymous services expose empty data and reject writes. Account scoping prevents accidental mixing; it is not a security boundary against someone inspecting this browser's storage. Keep service access out of presentational components where practical.
+`getAuthAccount` verifies Auth before loading the account's profile, records and photo metadata with the user's SSR client. `AuthProvider` owns `createAccountStore` from `src/lib/account/browser.ts`; hooks subscribe to its in-memory snapshots. `/api/account` refreshes on cross-tab change signals, window focus and visibility; read failures retain the last snapshot with a retry notice. Initial read failures use the global error screen. Anonymous stores expose empty data and reject writes. Keep data operations out of presentational components where practical.
 
-All legacy local keys, including `doen-pa-travel-records-v2` and `doen-pa-current-user-v2`, remain untouched and are never automatically assigned to a signed-in account. `AppShell` no longer removes old keys. Import requires the later explicit destination-account flow.
+All legacy local keys, including `doen-pa-travel-records-v2`, `doen-pa-current-user-v2` and both `*-account-v1:<uuid>` keys, remain untouched and are never automatically imported. **User decision — 2026-10-20:** there is no local data to migrate, so local import is removed from the plan. Manual local testing uses the accounts already created for this project. Reopen local import only if explicitly requested.
 
 Proxy refreshes via `getClaims`; request-scoped `getAuthUser` verifies with `getUser` before personal rendering. Auth handlers carry SDK cookies to the final response with `private, no-store`, and accept same-origin JSON mutations only. Before changing connection settings, cookies or authentication, read [docs/supabase-setup.md](docs/supabase-setup.md). Public catalog reads use SELECT-only grants and RLS for `anon` and `authenticated`; administrative imports stay outside client code.
 
-The hosted `profiles`, `travel_records` and `photos` tables have owner-only RLS, but the app still saves personal data locally. Before changing personal tables, integrating cloud writes/Storage or implementing local imports, read [docs/private-data-backend.md](docs/private-data-backend.md) for ownership, account-scoped text IDs, history-only places, photo paths and verification. The `rls_auto_enable()` API execution warnings are resolved while its event trigger remains active.
+The hosted `profiles`, `travel_records`, `photos` and private Storage buckets enforce owner-only access. Before changing personal tables, cloud writes/Storage or local imports, read [docs/private-data-backend.md](docs/private-data-backend.md) for transactions, upload cleanup, account-scoped IDs and verification. Images use session-checked `/api/photos/[id]?owner=<uuid>` responses with `private, no-store`; render them with unoptimized Next Images so authenticated bytes are never placed in the image optimizer cache. The `rls_auto_enable()` API execution warnings are resolved while its event trigger remains active.
 
 Photo rules:
 
@@ -75,7 +75,7 @@ Photo rules:
 - Revisiting the same place creates another record; do **not** cap the total photos shown for that place at five. The shared read model joins matching records; `PlaceDetailContent` passes every photo to `PlaceGallery` and `PhotoLightbox`.
 - Passport cards represent records; Passport statistics count unique places/provinces and all saved photos.
 - The current `TravelRecord.photos` schema stores image strings only. Uploader alt text is UI state and is **not persisted**; changing that needs an explicit data-model decision.
-- localStorage is MVP storage and has browser quota limits. Do not claim uploads are backed up or synced.
+- Saved data is account-scoped in Supabase. New photos upload to private Storage before metadata commits atomically; failed uploads retain the form draft and attempt safe cleanup. A stable submission ID prevents duplicate records on retry. Cleanup failures can leave private orphan objects for later reclamation. This is cloud persistence, not a separate backup service.
 
 Place images shown in personal surfaces must come from records the user creates, while empty images use neutral placeholders. Stitch `lh3.googleusercontent.com/aida-public/...` preview URLs must never be added as production image sources. The permanent place-photo strategy is undecided.
 
@@ -85,13 +85,13 @@ The current visual language is **Design System v2**: forest-green `brand` tokens
 
 Use Figma mobile mockups as **structure/content references**. Stitch desktop mockups established the visual language. More recent accepted screenshots and explicit user decisions override older visual references. Do not copy generic booking, social, aggregate-rating, or recommendation UI from a mockup.
 
-Desktop TopNav is a broad floating glass capsule with five links and a green active pill. Mobile has a full-width capsule **without a hamburger**: logo on the left and a Login link on guest previews or a linked local-user avatar and name on the right. A floating Liquid Glass BottomNav provides the same five routes, icons, labels, and safe-area spacing. Neither nav should lose its active state on Place Details. Keep mobile touch targets at least 44 × 44 px, visible focus states, readable contrast, and reduced-motion support.
+Desktop TopNav is a broad floating glass capsule with five links and a green active pill. Mobile has a full-width capsule **without a hamburger**: logo on the left and a Login link on guest previews or a linked account avatar and name on the right. A floating Liquid Glass BottomNav provides the same five routes, icons, labels, and safe-area spacing. Neither nav should lose its active state on Place Details. Keep mobile touch targets at least 44 × 44 px, visible focus states, readable contrast, and reduced-motion support.
 
 ## Current page behavior
 
 ### Search
 
-- `app/search/page.tsx` filters the server-provided Supabase catalog with `q` and `type` URL parameters. `SearchResults` applies the `visited` parameter using the current user's local records and server-rendered place cards.
+- `app/search/page.tsx` filters the server-provided Supabase catalog with `q` and `type` URL parameters. `SearchResults` applies the `visited` parameter using the current user's records and server-rendered place cards.
 - Search category options show only their names. On mobile, choosing a category scrolls to the first result area below the floating nav; desktop keeps its scroll position.
 - Place cards link to full Place Details. Their green type chip is a place category, not booking status. The personal visit count appears only when positive. The card's Stamp action opens the record form with `returnTo=search`.
 - No public aggregate rating, review count, booking badge, or popularity recommendation.
@@ -117,13 +117,13 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 - Passport lists all travel records without a category filter. Cards open read-only Place Details with `from=passport`; they do not offer stamping there.
 - `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are optional guest design previews alongside real authentication. Keep them distinct from signed-in empty-data states.
 - Stats and Profile derive personal counts from the current user's records. Stats shows travel, place, province, region, national park, and place-type counts; the badge teaser and collection are deferred. The national-park progress card sits below province progress. Its total comes from catalog places marked `isNationalPark`, independent of their display type. Visited progress counts each eligible place once; adding another park changes the total automatically. The place-type section uses progress bars and remaining catalog counts. Region progress bars and remaining counts use national parks in each region. Profile uses a real photo count in place of the former badge count. Profile photo tiles link to Place Details with `from=profile`.
-- The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves locally. The form verifies the account before saving; cloud profile updates and Storage remain deferred.
+- The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves to Supabase. The form verifies the account before saving; profile text and photo metadata commit together, and replaced objects are cleaned afterward.
 - Profile logout revokes the current session with `scope: local`, clears its cookies, notifies other tabs and reloads the guest Profile. It preserves local originals and account-scoped memories; other device sessions are not intentionally signed out.
 - Keep ratings personal, avoid public review or social features.
 
 ## Architecture and quality rules
 
-- Server Components by default; use client components for browser APIs, localStorage-backed subscriptions, Leaflet, form/filter state, and active navigation. Keep `PlaceCard` a Server Component with a Next `Link`.
+- Server Components by default; use client components for browser APIs, account-snapshot subscriptions, Leaflet, form/filter state, and active navigation. Keep `PlaceCard` a Server Component with a Next `Link`.
 - Keep data operations in services/hooks. Use strict TypeScript; avoid `any`, magic constants, huge components, and unnecessary client fetching.
 - Every changed interaction should handle its relevant loading, empty, error, focus, and disabled states. Use semantic elements, image alt text, keyboard-accessible controls, and WCAG AA contrast.
 - Avoid new global scrolling caused by decorative glows; the mobile bottom bar needs content clearance. Test responsive changes on desktop and a mobile viewport.

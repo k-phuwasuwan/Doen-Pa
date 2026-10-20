@@ -1,0 +1,17 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { createRouteClient } from "@/lib/supabase/route";
+
+/** Session-checked image delivery: no bearer links remain usable after logout. */
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { supabase, finish } = createRouteClient(request);
+  const missing = () => finish(new NextResponse(null, { status: 404 }));
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || request.nextUrl.searchParams.get("owner") !== user.id) return missing();
+  const { id } = await params;
+  const { data: photo, error } = await supabase.from("photos").select("object_path,mime_type,kind").eq("user_id", user.id).eq("id", id).maybeSingle();
+  if (error) return finish(new NextResponse(null, { status: 503 }));
+  if (!photo) return missing();
+  const { data: file, error: downloadError } = await supabase.storage.from(photo.kind === "travel" ? "travel-photos" : "profile-photos").download(photo.object_path);
+  if (downloadError || !file) return missing();
+  return finish(new NextResponse(file, { headers: { "Content-Type": photo.mime_type, "X-Content-Type-Options": "nosniff", "Content-Disposition": "inline" } }));
+}

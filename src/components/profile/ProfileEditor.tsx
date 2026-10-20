@@ -14,7 +14,7 @@ import { useImageImport } from "@/lib/use-image-import";
 
 export function ProfileEditor() {
   const user = useCurrentUser();
-  const userKey = [user.id, user.name, user.username, user.bio, user.avatar?.length, user.coverImage?.length].join("|");
+  const userKey = JSON.stringify([user.id, user.name, user.username, user.bio, user.avatar, user.coverImage]);
   return <ProfileEditorForm key={userKey} initialUser={user} />;
 }
 
@@ -72,10 +72,10 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
         setError("กรุณาเข้าสู่ระบบอีกครั้งก่อนบันทึก");
         return;
       }
-      profile.updateCurrentUser({ name: cleanName, username: cleanUsername, bio: bio.trim(), avatar, coverImage });
+      await profile.updateCurrentUser({ name: cleanName, username: cleanUsername, bio: bio.trim(), avatar, coverImage });
       router.push("/profile");
-    } catch {
-      setError("บันทึกไม่สำเร็จ พื้นที่จัดเก็บในเบราว์เซอร์อาจเต็ม กรุณาใช้รูปภาพที่เล็กลง");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "บันทึกโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่");
     } finally { setSaving(false); }
   }
 
@@ -128,7 +128,7 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
         <p role="status" aria-live="polite" className="sr-only">{readingImages ? "กำลังอ่านรูปภาพ" : ""}</p>
         <p role="alert" className="mt-3 min-h-5 text-sm text-red-700">{error}</p>
 
-        <p className="mt-3 text-sm text-brand-800/75">การเปลี่ยนแปลงนี้ยังบันทึกเฉพาะในเบราว์เซอร์นี้</p>
+        <p className="mt-3 text-sm text-brand-800/75">บันทึกโปรไฟล์และรูปภาพในบัญชีของคุณ</p>
         <button type="submit" disabled={readingImages || saving} className="disabled:cursor-wait disabled:opacity-60 glass-button mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 font-semibold transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
           <Save className="h-5 w-5" aria-hidden="true" />
           {readingImages ? "กำลังอ่านรูปภาพ…" : saving ? "กำลังบันทึก…" : "บันทึกการเปลี่ยนแปลง"}

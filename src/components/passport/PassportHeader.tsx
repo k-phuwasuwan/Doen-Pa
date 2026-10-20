@@ -23,7 +23,7 @@ export function PassportHeader({
         <div className="flex items-center gap-4">
           <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600 text-2xl font-bold text-white ring-4 ring-white/70">
             {user.avatar ? (
-              <Image src={user.avatar} alt={user.name} fill className="object-cover" />
+              <Image unoptimized src={user.avatar} alt={user.name} fill className="object-cover" />
             ) : (
               initials
             )}

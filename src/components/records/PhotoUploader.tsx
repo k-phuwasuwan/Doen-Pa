@@ -155,7 +155,7 @@ export function PhotoUploader({ value, onChange, importer, loading }: PhotoUploa
           {value.map((photo, index) => (
             <div key={index} className="group relative rounded-xl overflow-hidden bg-beige-100/20">
               <div className="relative aspect-square">
-                <Image
+                <Image unoptimized
                   src={photo.dataUrl}
                   alt={photo.alt || photo.name}
                   fill

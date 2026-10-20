@@ -49,10 +49,12 @@ node scripts/setup-auth-test-users.mjs
 
 The human-readable credentials are in `.local/auth-test-accounts.md`; both files
 are ignored by Git and owner-readable only. Login uses email, not profile username.
-The fixture signs each browser context into a real QA account, with a separate
-session per test. Tests read the catalog through the app server and keep ordinary
-profile/record test data in isolated, account-scoped localStorage. Auth RLS tests
-write uniquely named temporary database records and remove them afterward.
+Signed-in fixtures create a fresh temporary account and session for each test.
+Tests read the catalog through the app server and write profile/record data to
+the real account's Supabase tables and private Storage. Cleanup removes its
+objects before deleting the account; cascading deletes remove its metadata.
+Reusable QA accounts remain for manual login and targeted Auth checks. Auth RLS
+tests write uniquely named temporary database records and remove them afterward.
 Email-flow tests use an administrative key read into memory through the linked
 CLI, create temporary Auth users/tokens, and delete those users in cleanup. These
 tests do not modify the hosted catalog or send email. They do not prove SMTP
@@ -60,7 +62,10 @@ delivery or production-domain configuration. Unit
 tests cover public catalog response decoding, pagination through project row
 caps, empty tables, unavailable/invalid responses, and legacy ID resolution.
 
-Each test gets an isolated browser context. Test profile edits and travel records do not affect a developer's usual browser data. Two pages inside a context exercise real cross-tab storage events.
+Each test gets an isolated browser context and cloud identity. Test profile edits
+and travel records do not affect a developer's account. Two pages inside a
+context exercise cross-tab change signals; an additional fresh context verifies
+that cloud data is independent of browser storage.
 
 Covered journeys:
 
@@ -70,11 +75,16 @@ Covered journeys:
 - Confirmation/recovery with real single-use Auth tokens, rejected unconfirmed
   login, changed passwords, and ownership enforced through two real JWTs.
 - Revisits, six photos across two records, Profile photo selection, lightbox and Passport read-only details.
-- Corrupt saved records, external profile changes and storage clear.
+- Corrupt legacy local data and storage clear leave cloud memories intact.
 - Latest avatar selection, independent cover reads, and save disabled while reading.
+- Avatar replacement removes old bytes, retains the cover and updates another open editor.
+- Delayed background reads cannot overwrite a confirmed profile save.
 - Photo removal and alt edits during a pending read, then save and cross-tab Passport update.
 - Profile/record file limits and maximum five photos per record.
-- Storage quota failures without publishing unsaved records or profile changes.
+- Failed cloud writes retain drafts without publishing unsaved data.
+- Fresh-browser persistence, private image delivery and logout access revocation.
+- Two real accounts cannot read, overwrite or delete each other's Storage objects.
+- Partial upload cleanup and idempotent retry after a lost commit response.
 - Catalog search, category counts, missing measurements, old record references,
   404s, invalid stamp redirects and deduplicated visited pins on the map.
 

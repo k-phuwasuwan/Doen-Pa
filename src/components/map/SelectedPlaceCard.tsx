@@ -18,7 +18,7 @@ export function SelectedPlaceCard({ place, photo, onClose }: SelectedPlaceCardPr
       <div className="liquid-glass-card map-place-card overflow-hidden rounded-3xl p-3 shadow-glass-card sm:p-4">
         <div className="map-place-photo relative h-36 overflow-hidden rounded-2xl bg-beige-100 sm:h-40">
           {photo && (
-            <Image
+            <Image unoptimized
               src={photo}
               alt={`ภาพบันทึกการเดินทางที่${place.name}`}
               fill

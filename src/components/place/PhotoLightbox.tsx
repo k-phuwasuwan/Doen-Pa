@@ -124,7 +124,7 @@ export function PhotoLightbox({ photos, activeIndex, onIndexChange, onClose }: P
           {imageStatus === "error" ? (
             <p role="alert" className="absolute inset-0 flex items-center justify-center text-sm text-white/75">โหลดรูปภาพไม่ได้</p>
           ) : (
-            <Image
+            <Image unoptimized
               ref={imageRef}
               key={`${activeIndex}-${photos[activeIndex]}`}
               src={photos[activeIndex]}

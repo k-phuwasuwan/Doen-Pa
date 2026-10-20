@@ -47,7 +47,7 @@ export function PlaceGallery({ recordPhotos, initialPhotoIndex = 0 }: PlaceGalle
             className="absolute inset-0 h-full w-full focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-brand-500"
             aria-label={`ดูภาพจากการเดินทาง รูปที่ ${visibleIndex + 1} แบบเต็มจอ`}
           >
-            <Image
+            <Image unoptimized
               key={visiblePhoto}
               src={visiblePhoto}
               alt={`ภาพจากการเดินทางของคุณ รูปที่ ${visibleIndex + 1}`}

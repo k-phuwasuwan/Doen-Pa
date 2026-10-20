@@ -1,3 +1,4 @@
+import { createTemporaryAccount, removeTemporaryAccount } from "../helpers/auth-admin";
 import { test, expect, openPage, testAccounts, appOrigin, type TestAccount } from "./fixtures";
 import type { Page } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
@@ -79,7 +80,9 @@ test("an expired session snapshot refreshes with the real refresh token before S
 
 test("switching accounts in the same browser isolates new data and preserves originals", async ({ page }) => {
   test.setTimeout(120_000);
-  await login(page, testAccounts[0]);
+  const isolated = [await createTemporaryAccount(), await createTemporaryAccount()];
+  try {
+  await login(page, isolated[0]);
   await page.evaluate(() => localStorage.setItem("doen-pa-travel-records-v2", "untouched-original"));
   await openPage(page, "/profile/edit");
   await page.getByLabel("ชื่อที่แสดง").fill("QA Account A Private");
@@ -93,17 +96,18 @@ test("switching accounts in the same browser isolates new data and preserves ori
   await openPage(page, "/profile");
   await page.getByRole("button", { name: "ออกจากระบบ", exact: true }).click();
   await expect(page.getByRole("link", { name: "เข้าสู่ระบบ", exact: true }).last()).toBeVisible();
-  await login(page, testAccounts[1], "/passport");
+  await login(page, isolated[1], "/passport");
   await expect(page.getByText("0 บันทึก", { exact: true })).toBeVisible();
   await expect(page.getByText("QA Account A Private", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Account A private memory")).toHaveCount(0);
   await openPage(page, "/profile");
   await page.getByRole("button", { name: "ออกจากระบบ", exact: true }).click();
   await expect(page.getByRole("link", { name: "เข้าสู่ระบบ", exact: true }).last()).toBeVisible();
-  await login(page, testAccounts[0], "/passport");
+  await login(page, isolated[0], "/passport");
   await expect(page.getByRole("heading", { name: "QA Account A Private", exact: true })).toBeVisible();
   await expect(page.getByText("1 บันทึก", { exact: true })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem("doen-pa-travel-records-v2"))).toBe("untouched-original");
+  } finally { for (const account of isolated) await removeTemporaryAccount(account.id); }
 });
 
 test("Auth endpoints reject cross-origin mutations and unsafe callback destinations", async ({ page }) => {

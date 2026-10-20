@@ -21,6 +21,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
   const today = new Date();
   const todayISO = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
+  const [submissionId] = useState(() => crypto.randomUUID());
   const [visitedAt, setVisitedAt] = useState(todayISO);
   const [note, setNote] = useState("");
   const [rating, setRating] = useState(0);
@@ -62,7 +63,8 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
         setSubmitting(false);
         return;
       }
-      records.createRecord({
+      await records.createRecord({
+        id: submissionId,
         placeId: place.id,
         visitedAt: new Date(`${visitedAt}T12:00:00Z`),
         note: note.trim(),
@@ -73,8 +75,8 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
       setSuccess(true);
       // Brief success flash before redirect
       setTimeout(() => router.push("/passport"), 800);
-    } catch {
-      setErrors({ submit: "เกิดข้อผิดพลาด กรุณาลองใหม่" });
+    } catch (error) {
+      setErrors({ submit: error instanceof Error ? error.message : "เกิดข้อผิดพลาด กรุณาลองใหม่" });
       setSubmitting(false);
     }
   };
@@ -197,7 +199,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
       )}
 
       {/* Submit */}
-      <p className="text-sm text-brand-800/75">บันทึกและรูปภาพยังเก็บเฉพาะในเบราว์เซอร์นี้</p>
+      <p className="text-sm text-brand-800/75">บันทึกและรูปภาพจะเก็บในบัญชีของคุณ</p>
       <button
         type="submit"
         disabled={submitting || readingPhotos}

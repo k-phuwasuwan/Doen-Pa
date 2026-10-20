@@ -24,7 +24,7 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
       <Link href={`/places/${place.id}?from=passport`} className="group flex h-full flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset">
         <div className="relative h-56 w-full shrink-0 overflow-hidden bg-beige-100/20">
           {image ? (
-            <Image
+            <Image unoptimized
               src={image}
               alt={`ภาพความทรงจำจาก ${place.name}`}
               fill

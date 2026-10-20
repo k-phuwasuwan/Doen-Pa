@@ -1,6 +1,6 @@
-import { test, expect, openPage, imageFixtures } from "./fixtures";
+import { test, expect, openPage, imageFixtures, seedRecords } from "./fixtures";
 
-test("signed-in account starts with empty browser memories", async ({ page }) => {
+test("signed-in account starts with empty cloud memories", async ({ page }) => {
   await openPage(page, "/passport");
   await expect(page.getByText("พาสปอร์ตของคุณยังว่างเปล่า")).toBeVisible();
   await openPage(page, "/profile");
@@ -9,16 +9,13 @@ test("signed-in account starts with empty browser memories", async ({ page }) =>
   await expect(page.getByRole("heading", { name: "0 การเดินทาง" })).toBeVisible();
 });
 
-test("revisit counts and Profile photo positions agree across personal pages", async ({ page }) => {
+test("revisit counts and Profile photo positions agree across personal pages", async ({ page, account }) => {
   await openPage(page, "/profile");
   const { urls } = await imageFixtures(page);
-  await page.evaluate((photos) => {
-    const record = { userId: window.doenPaTestAccountId, placeId: "place-doi-inthanon", visitedAt: "2026-01-01T12:00:00Z", note: "memory", rating: 0 };
-    localStorage.setItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`, JSON.stringify([
-      { ...record, id: "old", createdAt: "2026-01-02T12:00:00Z", photos: [photos[0],photos[1],photos[2]] },
-      { ...record, id: "new", createdAt: "2026-01-03T12:00:00Z", photos: [photos[2],photos[1],photos[0]] },
-    ]));
-  }, urls);
+  await seedRecords(account, [
+    { id: "old", placeId: "place-doi-inthanon", note: "memory", createdAt: "2026-01-02T12:00:00Z", photos: urls },
+    { id: "new", placeId: "place-doi-inthanon", note: "memory", createdAt: "2026-01-03T12:00:00Z", photos: [...urls].reverse() },
+  ]);
   await openPage(page, "/profile");
   await expect(page.getByText("6 รูป", { exact: true })).toBeVisible();
   const photo = page.locator('main a[href*="from=profile&photo="]').nth(4);
@@ -45,17 +42,20 @@ test("revisit counts and Profile photo positions agree across personal pages", a
   await expect(page.locator('main a[href="/places/place-doi-inthanon"]')).toHaveCount(1);
 });
 
-test("corrupt data and cross-tab storage clear restore neutral empty states", async ({ page, context }) => {
-  await openPage(page, "/passport");
+test("legacy corrupt local data and storage clear do not alter cloud memories", async ({ page, context }) => {
+  await openPage(page, "/profile/edit");
+  await page.getByLabel("ชื่อที่แสดง").fill("Cloud Name");
+  await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง" }).click();
+  await expect(page).toHaveURL(/\/profile$/);
   const writer = await context.newPage();
   await openPage(writer, "/profile");
   await writer.evaluate(() => {
-    localStorage.setItem(`doen-pa-current-user-account-v1:${window.doenPaTestAccountId}`, JSON.stringify({ id: window.doenPaTestAccountId, name: "Cross Tab", username: "cross_tab" }));
+    localStorage.setItem(`doen-pa-current-user-account-v1:${window.doenPaTestAccountId}`, "{corrupt");
     localStorage.setItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`, "{corrupt");
   });
-  await expect(page.getByRole("heading", { name: "Cross Tab", exact: true })).toBeVisible();
-  await expect(page.getByText("พาสปอร์ตของคุณยังว่างเปล่า")).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Cloud Name", exact: true })).toBeVisible();
   await writer.evaluate(() => localStorage.clear());
-  await expect(page.getByRole("heading", { name: "ผู้ใช้ใหม่", exact: true })).toBeVisible();
-  await expect(page.getByText("พาสปอร์ตของคุณยังว่างเปล่า")).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Cloud Name", exact: true })).toBeVisible();
 });

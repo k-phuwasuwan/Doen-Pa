@@ -98,22 +98,18 @@ identity is being reconciled.
 
 ## Personal data during this rollout
 
-Supabase serves the catalog and initial profile text. Profile edits, travel
-records and image data still persist only in browser storage, under the verified
-Auth UUID:
+Supabase serves profiles, travel records and private photos as well as the
+catalog. SSR verifies the account before reading personal data. Browser saves
+use the account's JWT and RLS-protected transactional RPCs; private photo
+responses verify the session and owner on every request and suppress caching.
+Cross-tab change signals and focus/visibility refresh the in-memory snapshot.
 
-- `doen-pa-current-user-account-v1:<uuid>`
-- `doen-pa-travel-records-account-v1:<uuid>`
-
-New accounts start empty. Legacy local keys remain untouched and are never
-automatically assigned to a signed-in account. Local scoping prevents accidental
-account mixing, but someone inspecting this browser can still read its storage.
-Cloud saves, private Storage and explicit local import are the following phases.
-
-The hosted `profiles`, `travel_records` and `photos` tables already have owner-only
-RLS. Read [private account data](private-data-backend.md) before integrating cloud
-writes, Storage or imports. The `rls_auto_enable()` API-execution warnings are
-resolved.
+New accounts start empty. Legacy v2 keys and both account-v1 localStorage keys
+remain untouched and are never automatically imported. The user confirmed there
+is no local data to migrate, so local import is removed from the plan.
+See [private account data](private-data-backend.md) before
+changing cloud writes, Storage or imports. The `rls_auto_enable()` API-execution
+warnings remain resolved.
 
 ## Email delivery and production URL setup still required
 
@@ -154,6 +150,9 @@ client and provider configuration.
 
 ## Reusable QA accounts
 
+For manual local runs, use the accounts already created for this project.
+New profile edits, records and photos save directly to that signed-in account.
+
 Run with Node 22+ and the authenticated CLI linked to the intended project:
 
 ```sh
@@ -172,8 +171,10 @@ Administrative keys are never stored in these files or in application code.
 
 These reserved example.com addresses do not receive email. Their confirmed
 status allows manual login testing but does not validate SMTP delivery.
-Email-flow browser tests create separate temporary users and real tokens through
-Admin API, then delete those users. See [testing](testing.md) for coverage.
+Signed-in browser tests create isolated temporary users through Admin API and
+remove their uploaded objects and accounts afterward. Email-flow tests create
+temporary users and real tokens without sending email. The reusable QA accounts
+remain available for manual login and targeted Auth checks. See [testing](testing.md).
 
 References: [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/creating-a-client),
 [SMTP](https://supabase.com/docs/guides/auth/auth-smtp),

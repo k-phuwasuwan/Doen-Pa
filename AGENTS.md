@@ -15,7 +15,10 @@ This file describes the **current implementation and accepted behavior**, not a 
 - Pages and global CSS live in root-level `app/`; components, services, data, types, and hooks live in `src/`. Do not create a second `src/app/`.
 - State currently uses React hooks, URL query parameters, `useSyncExternalStore`, and localStorage. **Zustand is not installed**; do not assume a store layer exists.
 - Source of truth for types: `src/types/index.ts`; for design tokens/effects: `app/globals.css` and `tailwind.config.ts`; for the running place catalog: Supabase `public.places`, read through `src/services/place.service.ts`.
-- The app starts as a **new local user with zero records, photos, and visited places**. `userService.getCurrentUser()` returns a neutral local identity with any locally saved profile edits. Supabase serves the place catalog; profile and travel records remain local, and real account authentication is not implemented. Never reintroduce seeded personal records or sample user photos.
+- The app starts **logged out**. Supabase SSR implements email/password signup, confirmation, login, recovery and logout. New accounts start with zero memories. Initial profile text comes from `public.profiles`; profile edits and travel records currently persist only in account-scoped browser storage. Google login, cloud saves and local import remain deferred. Never reintroduce seeded personal records or sample user photos.
+
+- Deployment decision: deploy on **Vercel** using its provided **`*.vercel.app` URL**. The current plan requires no purchased custom domain. Configure Supabase Auth Site URL and allowed redirect URLs for the actual deployed HTTPS address before production verification.
+- Auth email decision: use **Gmail SMTP** with a dedicated Gmail sender account, 2-Step Verification and an App Password stored in Supabase's custom SMTP settings. Keep the App Password out of source control and browser code. Deployment and SMTP setup remain pending until configured and verified; this decision does not mean email delivery is already working.
 
 ## Routes and navigation
 
@@ -24,16 +27,19 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/` | Redirects to `/search`. |
 | `/search` | Search, category cards, visited filter, place cards. |
 | `/places/[id]` | Full Place Details page. Missing IDs call `notFound()`. |
-| `/records/new?placeId=[id]` | New travel record for the given place; invalid/missing place redirects to Search. |
+| `/records/new?placeId=[id]` | Requires real authentication and preserves stamp intent through Login. Missing place redirects to Search; authenticated invalid places do too. |
 | `/map` | Full-viewport visited-place terrain map. |
-| `/passport` | Local user's Passport and travel-record cards; initially empty. |
-| `/passport?view=guest` | **Preview** of the logged-out Passport screen. Login button opens `/login`; this URL is not a security boundary. |
-| `/login` | Standalone login design with email/password and Google controls. Auth is not implemented; attempts show an unavailable message without sending or storing credentials. `from` keeps Back linked to the originating guest preview. |
+| `/passport` | Account's Passport and travel-record cards, initially empty; logged-out visitors see the guest screen. |
+| `/passport?view=guest` | Optional guest design preview; this parameter is not a security boundary. |
+| `/signup` | Email/password signup, confirmation notice and resend. |
+| `/forgot-password` | Request a password recovery link. |
+| `/reset-password` | Requires a verified session; sets a new password, signs out the current session and returns to Login. |
+| `/login` | Real email/password login. `next` accepts allowed app destinations only; legacy `from` links Back to the originating main route. Signed-in users return to their destination. |
 | `/stats` | Personal travel statistics by province, place type, and region. Badge UI is deferred. |
-| `/stats?view=guest` | Logged-out Stats preview with an empty state and a link to the local-user Stats page. |
+| `/stats?view=guest` | Optional guest Stats preview with a Search link; anonymous `/stats` shows the same guest screen. |
 | `/profile` | Personal profile and photo gallery. |
-| `/profile/edit` | Edit the local user's display name, username, bio, avatar, and cover image, with a live preview. Changes persist in this browser's localStorage. |
-| `/profile?view=guest` | Logged-out Profile preview with an empty state and a link to the local-user Profile page. |
+| `/profile/edit` | Requires authentication; edit the account's display name, username, bio, avatar and cover with a live preview. Changes persist in this browser only. |
+| `/profile?view=guest` | Optional guest Profile preview with a Search link; anonymous `/profile` shows the same guest screen. |
 
 Place Details receives an explicit origin when needed:
 
@@ -41,8 +47,8 @@ Place Details receives an explicit origin when needed:
 - Passport cards open `/places/[id]?from=passport`: Back → `/passport`; the Passport nav item remains active; **read-only**, so no Stamp button.
 - Profile photos open `/places/[id]?from=profile&photo=[index]` at the selected image: Back → `/profile`; the Profile nav item remains active.
 - `src/components/navigation/activeNav.ts` owns active-tab mapping for TopNav and BottomNav. Preserve a visible active tab on nested pages and during client navigation.
-- On `?view=guest` previews, TopNav shows a Login link instead of the local-user pill. TopNav and BottomNav preserve `view=guest` when navigating between main routes. This query parameter is a design preview, not real authentication or access control.
-- Outside guest previews, the TopNav user pill reads the current local profile. Do not hardcode a sample person's name or avatar.
+- Logged-out users and `?view=guest` previews see the Login link. Navigation preserves explicit `view=guest`; server authentication and RLS enforce access independently.
+- Signed-in TopNav reads the account-scoped profile through `useCurrentUser`. Do not hardcode a sample person's name or avatar.
 - `BackButton` uses an explicit href, never browser history. In the record form, `returnTo=search` returns to Search; otherwise Back returns to the place page. A successful record submission redirects to Passport.
 
 Do not add a dialog version of Place Details. The map's selected-place card is display-only and does not navigate.
@@ -55,9 +61,13 @@ Do not add a dialog version of Place Details. The map's selected-place card is d
 
 `data/national-parks-156.csv` is the reviewed import source. `pnpm import:places` generates only `supabase/seed.sql`; applying the seed updates the database. `--json` supplies offline tests and benchmarks. The generated application catalog `src/data/places.ts` has been removed. Preserve existing text IDs, the alias in `src/data/place-identities.ts`, and history-only metadata in `src/data/archived-places.ts` so old memories remain readable without adding searchable places or park credit. Before changing catalog loading, imports, database permissions or deployment, read [docs/places-backend.md](docs/places-backend.md).
 
-`travelRecordService` starts with an **empty array** and persists new records under `doen-pa-travel-records-v2` in localStorage. It preserves records independently of catalog availability; the shared read model resolves known place IDs for display. `userService` starts with a neutral local identity (`local-user`), stores profile edits under `doen-pa-current-user-v2`, and `useCurrentUser` subscribes so Profile and Passport show saved changes. `AppShell` removes the legacy pre-reset personal-data keys on load. Keep service access out of purely presentational components where practical.
+`AuthProvider` owns `createUserService` and `createTravelRecordService` instances for the verified Auth UUID. Records start empty under `doen-pa-travel-records-account-v1:<uuid>`; profile edits use `doen-pa-current-user-account-v1:<uuid>`. Hooks subscribe to these services. Anonymous services expose empty data and reject writes. Account scoping prevents accidental mixing; it is not a security boundary against someone inspecting this browser's storage. Keep service access out of presentational components where practical.
 
-Supabase session helpers and cookie refresh exist, but they do not implement login or protect personal data. Before changing connection settings, cookies or authentication, read [docs/supabase-setup.md](docs/supabase-setup.md). Public catalog reads use SELECT-only grants and RLS for `anon` and `authenticated`; administrative imports stay outside client code.
+All legacy local keys, including `doen-pa-travel-records-v2` and `doen-pa-current-user-v2`, remain untouched and are never automatically assigned to a signed-in account. `AppShell` no longer removes old keys. Import requires the later explicit destination-account flow.
+
+Proxy refreshes via `getClaims`; request-scoped `getAuthUser` verifies with `getUser` before personal rendering. Auth handlers carry SDK cookies to the final response with `private, no-store`, and accept same-origin JSON mutations only. Before changing connection settings, cookies or authentication, read [docs/supabase-setup.md](docs/supabase-setup.md). Public catalog reads use SELECT-only grants and RLS for `anon` and `authenticated`; administrative imports stay outside client code.
+
+The hosted `profiles`, `travel_records` and `photos` tables have owner-only RLS, but the app still saves personal data locally. Before changing personal tables, integrating cloud writes/Storage or implementing local imports, read [docs/private-data-backend.md](docs/private-data-backend.md) for ownership, account-scoped text IDs, history-only places, photo paths and verification. The `rls_auto_enable()` API execution warnings are resolved while its event trigger remains active.
 
 Photo rules:
 
@@ -105,10 +115,10 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 ### Passport, Stats, Profile
 
 - Passport lists all travel records without a category filter. Cards open read-only Place Details with `from=passport`; they do not offer stamping there.
-- `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are logged-out design previews while auth is absent. Keep them distinct from signed-in empty-data states.
+- `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are optional guest design previews alongside real authentication. Keep them distinct from signed-in empty-data states.
 - Stats and Profile derive personal counts from the current user's records. Stats shows travel, place, province, region, national park, and place-type counts; the badge teaser and collection are deferred. The national-park progress card sits below province progress. Its total comes from catalog places marked `isNationalPark`, independent of their display type. Visited progress counts each eligible place once; adding another park changes the total automatically. The place-type section uses progress bars and remaining catalog counts. Region progress bars and remaining counts use national parks in each region. Profile uses a real photo count in place of the former badge count. Profile photo tiles link to Place Details with `from=profile`.
-- The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves locally. There is no backend sync or account authentication.
-- The Profile logout control opens `/profile?view=guest` in the current auth-preview design, preserving local profile and travel records. It does not claim to end a real server session because authentication is not implemented yet.
+- The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves locally. The form verifies the account before saving; cloud profile updates and Storage remain deferred.
+- Profile logout revokes the current session with `scope: local`, clears its cookies, notifies other tabs and reloads the guest Profile. It preserves local originals and account-scoped memories; other device sessions are not intentionally signed out.
 - Keep ratings personal, avoid public review or social features.
 
 ## Architecture and quality rules
@@ -130,7 +140,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 - Use `pnpm dev` only if a dev server is not already running. Reuse the user's existing localhost server when available; do not stop it without a reason.
 - Run `pnpm exec tsc --noEmit`, `pnpm lint`, and `git diff --check` for code changes. `pnpm build` is the production build check when appropriate. There is **no `pnpm type-check` script** in `package.json`.
-- Before changing or running test workflows, read [docs/testing.md](docs/testing.md). `pnpm test` checks catalog reads and runs migration/seed/RLS tests in isolated PGlite; browser tests require a configured Supabase catalog. `pnpm import:places:check` verifies the generated seed without uploading it.
+- Before changing or running test workflows, read [docs/testing.md](docs/testing.md). `pnpm test` checks catalog reads and runs migration/seed/RLS tests in isolated PGlite; browser tests require the configured catalog and local QA account file. Email-token tests create temporary users through Admin API and delete them afterward; credentials and administrative keys never belong in Git or app bundles. `pnpm import:places:check` verifies the generated seed without uploading it.
 - For rendered UI changes, verify the actual route and interaction on desktop and mobile; source inspection and lint alone are not visual QA.
 - The project history uses separate commits with `feat:`, `fix:`, `style:`, or `copy:` prefixes for distinct changes. Check the worktree before editing and do not include unrelated changes.
 - When accepted changes alter storage, data flow or page behavior, update the affected instructions here in the same implementation change.

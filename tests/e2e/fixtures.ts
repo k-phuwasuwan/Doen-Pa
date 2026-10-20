@@ -1,6 +1,28 @@
 import { test as base, expect, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
 
-export const test = base.extend<{ appHealth: void }>({
+export interface TestAccount { id: string; email: string; password: string; username: string }
+export const appOrigin = new URL(process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000").origin;
+// Credentials stay local and are never attached to traces or test reports.
+export const testAccounts: TestAccount[] = JSON.parse(readFileSync(".local/auth-test-accounts.json", "utf8"));
+
+export const test = base.extend<{ appHealth: void; signedIn: boolean; account: TestAccount; accountSession: void }>({
+  signedIn: [true, { option: true }],
+  account: async ({}, provide) => { await provide(testAccounts[0]); },
+  accountSession: [async ({ page, context, account, signedIn }, use) => {
+    await context.addInitScript((id) => { window.doenPaTestAccountId = id; }, account.id);
+    if (signedIn) {
+      const response = await page.request.post("/auth/login", {
+        headers: { Origin: appOrigin },
+        data: { email: account.email, password: account.password },
+      });
+      expect(response.status(), "QA account login must succeed").toBe(200);
+    }
+    await use();
+    // End only this context's Auth session; reusable QA identities are retained.
+    const logout = await page.request.post("/auth/logout", { headers: { Origin: appOrigin }, data: {} });
+    expect(logout.status(), "QA context session cleanup must succeed").toBe(200);
+  }, { auto: true }],
   appHealth: [async ({ context }, use) => {
     const errors: string[] = [];
     const watch = (page: Page) => {
@@ -16,7 +38,7 @@ export const test = base.extend<{ appHealth: void }>({
 export { expect };
 
 declare global {
-  interface Window { releaseImageReads: () => void }
+  interface Window { releaseImageReads: () => void; doenPaTestAccountId: string }
 }
 
 export async function openPage(page: Page, route: string) {

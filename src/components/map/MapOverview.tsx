@@ -3,11 +3,11 @@
 import { useState } from "react";
 import DynamicThailandMap from "@/components/map/DynamicThailandMap";
 import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
-import { userService } from "@/services/user.service";
+import { useCurrentUser } from "@/lib/use-current-user";
 import { SelectedPlaceCard } from "./SelectedPlaceCard";
 
 export function MapOverview() {
-  const memories = useTravelRecordReadModel(userService.getCurrentUser().id);
+  const memories = useTravelRecordReadModel(useCurrentUser().id);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const places = memories.mapPlaces;
   const selectedPlace = places.find((place) => place.id === selectedPlaceId) ?? null;

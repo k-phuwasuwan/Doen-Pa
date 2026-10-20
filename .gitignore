@@ -15,6 +15,7 @@ AGENTS.md
 CLAUDE.md
 
 # local env
+.local/
 .env*.local
 .env.local
 

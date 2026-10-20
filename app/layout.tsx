@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/navigation/AppShell";
+import { AuthProvider } from "@/components/auth/AuthProvider";
+import { getAuthUser } from "@/lib/auth/server";
 
 export const metadata: Metadata = {
   title: "Doen Pa — พาสปอร์ตเดินป่า",
   description: "บันทึกการเดินป่า สะสมทริป สร้างพาสปอร์ตที่ไม่ซ้ำใคร",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const user = await getAuthUser();
   return (
     <html lang="th" className="h-full antialiased">
       <body className="relative min-h-full flex flex-col bg-canvas contour-pattern">
@@ -16,7 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="ambient-glow-mesh-2 right-[-18rem] top-[20rem]" />
           <div className="ambient-glow-mesh-3 bottom-[-22rem] left-[30%]" />
         </div>
-        <AppShell>{children}</AppShell>
+        <AuthProvider key={user?.id ?? "guest"} initialUser={user}>
+          <AppShell>{children}</AppShell>
+        </AuthProvider>
       </body>
     </html>
   );

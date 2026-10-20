@@ -12,6 +12,15 @@ pnpm build
 
 `pnpm test` runs the read-model, storage-snapshot, image-import, session and place-database tests with Node's test runner. TypeScript compilation goes into a temporary directory and is removed when the command completes. The place-database tests require Python 3 to check generated files and use test-only PGlite to execute Postgres migrations, seed imports and RLS checks in memory; they do not connect to Supabase or need Docker. See [catalog verification](places-backend.md#automated-verification) for coverage and hosted verification limits.
 
+Private-data database tests apply the full migration history with simulated
+Supabase roles and `auth.uid()`. They check two-account isolation, ownership
+forgery/reassignment, photo/record ownership, anonymous access, metadata limits,
+repeated record upserts, revisits, cascades and the auto-RLS trigger. They also
+validate the administrator-only hosted smoke script and its rollback. To run
+that script against the linked project, follow
+[private-data verification](private-data-backend.md#apply-and-verify). Database
+role tests do not validate Auth signup, real JWTs/cookies or Storage objects.
+
 ## Browser regression tests
 
 First-time setup:
@@ -31,8 +40,23 @@ The suite runs Chromium at desktop (1440 × 1000) and mobile (390 × 844) sizes.
 
 The running server needs the Supabase environment settings and the reviewed
 156-place seed described in [catalog setup](places-backend.md). Browser tests
-read the catalog through the app server and write personal test data only in
-isolated localStorage contexts; they do not modify the hosted catalog. Unit
+also require `.local/auth-test-accounts.json`. Create it once with Node 22+ and
+the authenticated, linked CLI:
+
+```sh
+node scripts/setup-auth-test-users.mjs
+```
+
+The human-readable credentials are in `.local/auth-test-accounts.md`; both files
+are ignored by Git and owner-readable only. Login uses email, not profile username.
+The fixture signs each browser context into a real QA account, with a separate
+session per test. Tests read the catalog through the app server and keep ordinary
+profile/record test data in isolated, account-scoped localStorage. Auth RLS tests
+write uniquely named temporary database records and remove them afterward.
+Email-flow tests use an administrative key read into memory through the linked
+CLI, create temporary Auth users/tokens, and delete those users in cleanup. These
+tests do not modify the hosted catalog or send email. They do not prove SMTP
+delivery or production-domain configuration. Unit
 tests cover public catalog response decoding, pagination through project row
 caps, empty tables, unavailable/invalid responses, and legacy ID resolution.
 
@@ -40,7 +64,11 @@ Each test gets an isolated browser context. Test profile edits and travel record
 
 Covered journeys:
 
-- New user's empty Passport, Profile and Stats.
+- Guest screens, protected forms and a signed-in account's empty personal pages.
+- Real login, reload persistence, expired-session refresh, logout across tabs,
+  account switching, preserved legacy local data and permitted return destinations.
+- Confirmation/recovery with real single-use Auth tokens, rejected unconfirmed
+  login, changed passwords, and ownership enforced through two real JWTs.
 - Revisits, six photos across two records, Profile photo selection, lightbox and Passport read-only details.
 - Corrupt saved records, external profile changes and storage clear.
 - Latest avatar selection, independent cover reads, and save disabled while reading.
@@ -55,6 +83,27 @@ it preserves and checks attribution but does not validate Stadia credentials.
 
 Held image reads are released explicitly by tests; race checks do not depend on arbitrary sleep durations. Browser console errors and uncaught page errors fail the test.
 
-Artifacts are ignored by git: `playwright-report/` and `test-results/`. Traces and failure screenshots are retained, and the file-limit test records the rendered form for each viewport. Open the report with `pnpm exec playwright show-report`.
+Artifacts are ignored by git: `playwright-report/` and `test-results/`. Traces are
+disabled because real Auth request bodies contain QA passwords. Failure
+screenshots are retained, and the file-limit test records the form for each
+viewport. Auth screenshots used for visual QA are saved under `/tmp/doen-pa-auth-*`.
+Open the report with `pnpm exec playwright show-report`.
+
+For an already-running production build on a separate local port:
+
+```sh
+pnpm build
+pnpm exec next start --port 3001
+# In another terminal:
+PLAYWRIGHT_BASE_URL=http://localhost:3001 PLAYWRIGHT_PRODUCTION=1 pnpm exec playwright test tests/e2e/auth.spec.ts tests/e2e/auth-email.spec.ts
+```
+
+`PLAYWRIGHT_PRODUCTION=1` checks the production `no-store` page headers. Next's
+dev server overrides page headers with `no-cache, must-revalidate`; Auth JSON
+and callback handlers independently require `private, no-store` in both modes.
 
 The mobile project emulates Chromium. This suite does not validate Safari/WebKit, Firefox, or deployed map tile credentials.
+
+The Auth rollout's rendered QA used regular Playwright because the Browser
+plugin was not available in the session. Desktop (1440 × 1000) and mobile
+(390 × 844) screenshots and real interactions were inspected.

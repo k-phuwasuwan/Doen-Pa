@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Camera, ImagePlus, Save } from "lucide-react";
 import { useCurrentUser } from "@/lib/use-current-user";
-import { userService } from "@/services/user.service";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
 import { ProfileHeader } from "./ProfileHeader";
 import type { User } from "@/types";
 import { IMAGE_ACCEPT, PROFILE_IMAGE_POLICY } from "@/lib/images/image-import";
@@ -13,11 +14,12 @@ import { useImageImport } from "@/lib/use-image-import";
 
 export function ProfileEditor() {
   const user = useCurrentUser();
-  const userKey = [user.name, user.username, user.bio, user.avatar?.length, user.coverImage?.length].join("|");
+  const userKey = [user.id, user.name, user.username, user.bio, user.avatar?.length, user.coverImage?.length].join("|");
   return <ProfileEditorForm key={userKey} initialUser={user} />;
 }
 
 function ProfileEditorForm({ initialUser }: { initialUser: User }) {
+  const { profile } = useAuth();
   const router = useRouter();
   const { importer, loading: readingImages } = useImageImport();
   const [name, setName] = useState(initialUser.name);
@@ -26,6 +28,7 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
   const [avatar, setAvatar] = useState(initialUser.avatar);
   const [coverImage, setCoverImage] = useState(initialUser.coverImage);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const previewUser: User = {
     ...initialUser,
@@ -52,9 +55,9 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
     });
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (importer.isPending()) return;
+    if (importer.isPending() || saving) return;
     const cleanName = name.trim();
     const cleanUsername = username.trim().replace(/^@/, "");
     if (!cleanName || !/^[a-zA-Z0-9_]{3,20}$/.test(cleanUsername)) {
@@ -63,11 +66,17 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
     }
 
     try {
-      userService.updateCurrentUser({ name: cleanName, username: cleanUsername, bio: bio.trim(), avatar, coverImage });
+      setSaving(true);
+      const { data: { user }, error: authError } = await createClient().auth.getUser();
+      if (authError || user?.id !== initialUser.id) {
+        setError("กรุณาเข้าสู่ระบบอีกครั้งก่อนบันทึก");
+        return;
+      }
+      profile.updateCurrentUser({ name: cleanName, username: cleanUsername, bio: bio.trim(), avatar, coverImage });
       router.push("/profile");
     } catch {
       setError("บันทึกไม่สำเร็จ พื้นที่จัดเก็บในเบราว์เซอร์อาจเต็ม กรุณาใช้รูปภาพที่เล็กลง");
-    }
+    } finally { setSaving(false); }
   }
 
   return (
@@ -119,9 +128,10 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
         <p role="status" aria-live="polite" className="sr-only">{readingImages ? "กำลังอ่านรูปภาพ" : ""}</p>
         <p role="alert" className="mt-3 min-h-5 text-sm text-red-700">{error}</p>
 
-        <button type="submit" disabled={readingImages} className="disabled:cursor-wait disabled:opacity-60 glass-button mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 font-semibold transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+        <p className="mt-3 text-sm text-brand-800/75">การเปลี่ยนแปลงนี้ยังบันทึกเฉพาะในเบราว์เซอร์นี้</p>
+        <button type="submit" disabled={readingImages || saving} className="disabled:cursor-wait disabled:opacity-60 glass-button mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 font-semibold transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
           <Save className="h-5 w-5" aria-hidden="true" />
-          {readingImages ? "กำลังอ่านรูปภาพ…" : "บันทึกการเปลี่ยนแปลง"}
+          {readingImages ? "กำลังอ่านรูปภาพ…" : saving ? "กำลังบันทึก…" : "บันทึกการเปลี่ยนแปลง"}
         </button>
         <Link href="/profile" className="mx-auto mt-3 flex min-h-11 w-fit items-center rounded-full px-4 text-sm text-brand-800/65 underline underline-offset-4 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-brand-600">ยกเลิก</Link>
       </form>

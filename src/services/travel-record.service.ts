@@ -2,7 +2,6 @@ import { browserStorageAdapter, createLocalSnapshot } from "@/lib/storage/local-
 import type { TravelRecord } from "@/types";
 import { resolvePlaceId } from "@/data/place-identities";
 
-const STORAGE_KEY = "doen-pa-travel-records-v2";
 const RECORDS_CHANGED_EVENT = "doen-pa-records-changed";
 
 function parseRecords(raw: string | null): TravelRecord[] {
@@ -47,31 +46,37 @@ function parseRecords(raw: string | null): TravelRecord[] {
   }
 }
 
-const store = createLocalSnapshot<TravelRecord[]>(
-  browserStorageAdapter(STORAGE_KEY, RECORDS_CHANGED_EVENT), [], parseRecords,
-);
-export const travelRecordService = {
-  subscribe: store.subscribe,
-  // Resolve place IDs in the read model using its server-provided catalog.
-  getSnapshot: store.getSnapshot,
-  getServerSnapshot: store.getServerSnapshot,
+export function createTravelRecordService(userId: string) {
+  const adapter = userId ? browserStorageAdapter(`doen-pa-travel-records-account-v1:${userId}`, RECORDS_CHANGED_EVENT) : {
+    read: () => null,
+    write: () => { throw new Error("Sign in before saving travel records"); },
+    subscribe: () => () => {},
+  };
+  const store = createLocalSnapshot<TravelRecord[]>(adapter, [], (raw) => parseRecords(raw).filter((record) => record.userId === userId));
+  return {
+    subscribe: store.subscribe,
+    // Resolve place IDs in the read model using its server-provided catalog.
+    getSnapshot: store.getSnapshot,
+    getServerSnapshot: store.getServerSnapshot,
 
-  createRecord(record: Omit<TravelRecord, "id" | "createdAt">): TravelRecord {
-    const records = store.getSnapshot();
-    const newRecord: TravelRecord = {
-      ...record,
-      id: `record-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date(),
-    };
+    createRecord(record: Omit<TravelRecord, "id" | "createdAt" | "userId">): TravelRecord {
+      const records = store.getSnapshot();
+      const newRecord: TravelRecord = {
+        ...record,
+        userId,
+        id: `record-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        createdAt: new Date(),
+      };
 
-    store.write([...records, newRecord]);
+      store.write([...records, newRecord]);
 
-    return newRecord;
-  },
+      return newRecord;
+    },
 
-  deleteRecord(recordId: string): void {
-    const records = store.getSnapshot();
-    const filtered = records.filter((record) => record.id !== recordId);
-    store.write(filtered);
-  },
-};
+    deleteRecord(recordId: string): void {
+      const records = store.getSnapshot();
+      const filtered = records.filter((record) => record.id !== recordId);
+      store.write(filtered);
+    },
+  };
+}

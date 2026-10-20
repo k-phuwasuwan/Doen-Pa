@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
 import { PostGallery } from "@/components/profile/PostGallery";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
@@ -24,15 +23,8 @@ export function ProfileContent() {
               provinceCount={provinceCount}
               photoCount={photoCount}
             />
-            <Link
-              href="/profile?view=guest"
-              className="liquid-glass-card group order-last flex items-center gap-4 rounded-3xl px-5 py-3 text-brand-800 transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 lg:order-none"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-700 transition-colors group-hover:bg-brand-600/15">
-                <LogOut className="h-5 w-5" aria-hidden="true" />
-              </span>
-              <span className="font-semibold leading-6">ออกจากระบบ</span>
-            </Link>
+            <p className="px-2 text-sm text-brand-800/75">ข้อมูลการเดินทางและรูปยังบันทึกเฉพาะในเบราว์เซอร์นี้</p>
+            <LogoutButton />
           </div>
           <PostGallery posts={posts} />
         </div>

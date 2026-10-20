@@ -1,6 +1,6 @@
 import { test, expect, openPage, imageFixtures } from "./fixtures";
 
-test("new local user starts with empty memories", async ({ page }) => {
+test("signed-in account starts with empty browser memories", async ({ page }) => {
   await openPage(page, "/passport");
   await expect(page.getByText("พาสปอร์ตของคุณยังว่างเปล่า")).toBeVisible();
   await openPage(page, "/profile");
@@ -13,8 +13,8 @@ test("revisit counts and Profile photo positions agree across personal pages", a
   await openPage(page, "/profile");
   const { urls } = await imageFixtures(page);
   await page.evaluate((photos) => {
-    const record = { userId: "local-user", placeId: "place-doi-inthanon", visitedAt: "2026-01-01T12:00:00Z", note: "memory", rating: 0 };
-    localStorage.setItem("doen-pa-travel-records-v2", JSON.stringify([
+    const record = { userId: window.doenPaTestAccountId, placeId: "place-doi-inthanon", visitedAt: "2026-01-01T12:00:00Z", note: "memory", rating: 0 };
+    localStorage.setItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`, JSON.stringify([
       { ...record, id: "old", createdAt: "2026-01-02T12:00:00Z", photos: [photos[0],photos[1],photos[2]] },
       { ...record, id: "new", createdAt: "2026-01-03T12:00:00Z", photos: [photos[2],photos[1],photos[0]] },
     ]));
@@ -50,8 +50,8 @@ test("corrupt data and cross-tab storage clear restore neutral empty states", as
   const writer = await context.newPage();
   await openPage(writer, "/profile");
   await writer.evaluate(() => {
-    localStorage.setItem("doen-pa-current-user-v2", JSON.stringify({ id: "local-user", name: "Cross Tab", username: "cross_tab" }));
-    localStorage.setItem("doen-pa-travel-records-v2", "{corrupt");
+    localStorage.setItem(`doen-pa-current-user-account-v1:${window.doenPaTestAccountId}`, JSON.stringify({ id: window.doenPaTestAccountId, name: "Cross Tab", username: "cross_tab" }));
+    localStorage.setItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`, "{corrupt");
   });
   await expect(page.getByRole("heading", { name: "Cross Tab", exact: true })).toBeVisible();
   await expect(page.getByText("พาสปอร์ตของคุณยังว่างเปล่า")).toBeVisible();

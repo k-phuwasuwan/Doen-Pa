@@ -6,10 +6,10 @@ import { NationalParkProgress } from "@/components/stats/NationalParkProgress";
 import { ProvinceProgress } from "@/components/stats/ProvinceProgress";
 import { RegionStats } from "@/components/stats/RegionStats";
 import { StatsHero } from "@/components/stats/StatsHero";
-import { userService } from "@/services/user.service";
+import { useCurrentUser } from "@/lib/use-current-user";
 
 export function StatsContent() {
-  const currentUser = userService.getCurrentUser();
+  const currentUser = useCurrentUser();
   const memories = useTravelRecordReadModel(currentUser.id);
   const stats = memories.getStats();
 

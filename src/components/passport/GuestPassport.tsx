@@ -26,8 +26,8 @@ export function GuestPassport() {
           <LogIn className="h-5 w-5" aria-hidden="true" />
           เข้าสู่ระบบ
         </Link>
-        <Link href="/passport" className="mt-5 rounded-full px-4 py-2 text-sm font-medium text-brand-700 underline underline-offset-4 transition hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-          ดูตัวอย่างพาสปอร์ต
+        <Link href="/search" className="mt-5 rounded-full px-4 py-2 text-sm font-medium text-brand-700 underline underline-offset-4 transition hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+          ค้นหาสถานที่
         </Link>
       </section>
     </div>

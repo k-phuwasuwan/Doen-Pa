@@ -52,6 +52,8 @@ test("expired sessions refresh cookies for both server rendering and the browser
   assert.ok(calls.some((url) => url.includes("/token?grant_type=refresh_token")));
   const cookie = response.cookies.get(cookieName);
   assert.ok(cookie);
+  assert.equal(cookie.secure, true);
+  assert.equal(cookie.sameSite, "lax");
   assert.equal(request.cookies.get(cookieName)?.value, cookie.value);
   assert.ok(response.headers.get("x-middleware-request-cookie")?.includes(cookie.value));
   assert.match(response.headers.get("cache-control") ?? "", /private.*no-store/);

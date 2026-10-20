@@ -2,8 +2,9 @@
 
 The app reads the `public.places` table on the server. Search, Place Details,
 stamping, Passport, Map, Stats and Profile use the same per-request catalog
-snapshot. `src/data/places.ts` has been removed. Profile and travel records
-remain in localStorage.
+snapshot. `src/data/places.ts` has been removed. Profile edits and travel records
+remain in account-scoped localStorage; real Auth and initial profile reads are
+described in [Auth setup](supabase-setup.md).
 
 ## Hosted rollout status — 2026-10-20
 
@@ -14,10 +15,10 @@ key returned all 156 rows with every field matching the generated local catalog.
 The `anon` and `authenticated` roles have SELECT access and no INSERT, UPDATE,
 DELETE or TRUNCATE grants. Catalog reads now use Supabase throughout the app.
 
-Security Advisors reported two warnings about public execution of the project's
-`public.rls_auto_enable()` SECURITY DEFINER function, one per public API role.
-This function is outside the places migration; its permissions were not changed
-in this rollout and require a separate review.
+The two prior Security Advisor warnings about API execution of
+`public.rls_auto_enable()` were resolved in the subsequent private-data
+migration. The auto-RLS event trigger still works; see
+[private account data](private-data-backend.md#existing-auto-rls-warning).
 
 ## Files and source of truth
 

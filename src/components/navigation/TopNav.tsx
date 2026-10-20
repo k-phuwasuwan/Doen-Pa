@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LogIn } from "lucide-react";
 import { useCurrentUser } from "@/lib/use-current-user";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { getActiveNavHref, getNavigationHref, type NavHref } from "./activeNav";
 
 const links: { href: NavHref; label: string }[] = [
@@ -36,8 +37,10 @@ function ResolvedTopNav({ pathname, onActiveChange, onGuestChange }: { pathname:
   return <TopNavContent activeHref={activeHref} isGuest={isGuest} />;
 }
 
-function TopNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: boolean }) {
+function TopNavContent({ activeHref, isGuest: previewGuest }: { activeHref: NavHref; isGuest: boolean }) {
   const user = useCurrentUser();
+  const { user: account } = useAuth();
+  const isGuest = previewGuest || !account;
 
   return (
     <nav className="sticky top-4 z-40 mx-4 flex items-center lg:mx-auto lg:w-full lg:px-8">

@@ -7,6 +7,7 @@ export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(url, publishableKey, {
+    cookieOptions: { sameSite: "lax", secure: request.nextUrl.protocol === "https:" },
     cookies: {
       getAll() {
         return request.cookies.getAll();

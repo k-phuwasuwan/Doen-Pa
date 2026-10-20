@@ -1,13 +1,14 @@
 "use client";
 
 import { useMemo, useSyncExternalStore } from "react";
-import { travelRecordService } from "@/services/travel-record.service";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export function useTravelRecords(userId: string) {
+  const { records } = useAuth();
   const snapshot = useSyncExternalStore(
-    travelRecordService.subscribe,
-    travelRecordService.getSnapshot,
-    travelRecordService.getServerSnapshot,
+    records.subscribe,
+    records.getSnapshot,
+    records.getServerSnapshot,
   );
 
   return useMemo(

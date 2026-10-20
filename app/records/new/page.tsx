@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { CatalogContent } from "@/components/place/CatalogContent";
 import { TravelRecordForm } from "@/components/records/TravelRecordForm";
 import { BackButton } from "@/components/place/BackButton";
+import { requireAuthUser } from "@/lib/auth/server";
 
 export const metadata = {
   title: "สแตมป์ | Doen Pa",
@@ -17,6 +18,8 @@ export default async function RecordsNewPage({ searchParams }: RecordsNewPagePro
   if (!placeId) {
     redirect("/search");
   }
+
+  await requireAuthUser(`/records/new?${new URLSearchParams({ placeId, ...(returnTo === "search" ? { returnTo } : {}) })}`);
 
   return (
     <CatalogContent>{(catalog) => {

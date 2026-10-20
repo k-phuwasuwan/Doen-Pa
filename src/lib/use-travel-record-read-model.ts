@@ -2,14 +2,15 @@
 
 import { useSyncExternalStore } from "react";
 import { useCatalogReader } from "@/components/place/PlaceCatalogProvider";
-import { travelRecordService } from "@/services/travel-record.service";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export function useTravelRecordReadModel(userId: string) {
   const readSnapshot = useCatalogReader();
+  const { records } = useAuth();
   const snapshot = useSyncExternalStore(
-    travelRecordService.subscribe,
-    travelRecordService.getSnapshot,
-    travelRecordService.getServerSnapshot,
+    records.subscribe,
+    records.getSnapshot,
+    records.getServerSnapshot,
   );
   return readSnapshot(userId, snapshot);
 }

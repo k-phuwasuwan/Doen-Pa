@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Star, CalendarDays, FileText, CheckCircle2 } from "lucide-react";
 import { PhotoUploader, type UploadedPhoto } from "./PhotoUploader";
-import { travelRecordService } from "@/services/travel-record.service";
-import { userService } from "@/services/user.service";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
 import { useImageImport } from "@/lib/use-image-import";
 import type { Place } from "@/types";
 
@@ -14,6 +14,7 @@ interface TravelRecordFormProps {
 }
 
 export function TravelRecordForm({ place }: TravelRecordFormProps) {
+  const { user: account, records } = useAuth();
   const router = useRouter();
   const { importer, loading: readingPhotos } = useImageImport();
 
@@ -55,8 +56,13 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
     setErrors({});
 
     try {
-      travelRecordService.createRecord({
-        userId: userService.getCurrentUser().id,
+      const { data: { user }, error: authError } = await createClient().auth.getUser();
+      if (authError || !account || user?.id !== account.id) {
+        setErrors({ submit: "กรุณาเข้าสู่ระบบอีกครั้งก่อนบันทึก" });
+        setSubmitting(false);
+        return;
+      }
+      records.createRecord({
         placeId: place.id,
         visitedAt: new Date(`${visitedAt}T12:00:00Z`),
         note: note.trim(),
@@ -191,6 +197,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
       )}
 
       {/* Submit */}
+      <p className="text-sm text-brand-800/75">บันทึกและรูปภาพยังเก็บเฉพาะในเบราว์เซอร์นี้</p>
       <button
         type="submit"
         disabled={submitting || readingPhotos}

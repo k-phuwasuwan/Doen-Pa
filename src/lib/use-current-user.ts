@@ -1,12 +1,13 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { userService } from "@/services/user.service";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export function useCurrentUser() {
+  const { profile } = useAuth();
   return useSyncExternalStore(
-    userService.subscribe,
-    userService.getSnapshot,
-    userService.getServerSnapshot,
+    profile.subscribe,
+    profile.getSnapshot,
+    profile.getServerSnapshot,
   );
 }

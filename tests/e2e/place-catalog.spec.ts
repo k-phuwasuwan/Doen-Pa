@@ -24,8 +24,8 @@ test("real catalog supports search, classification and missing-value display", a
 test("old duplicate IDs share one park while memories outside the new catalog survive", async ({ page }) => {
   await openPage(page, "/passport");
   await page.evaluate(() => {
-    const base = { userId: "local-user", visitedAt: "2026-01-01T12:00:00Z", createdAt: "2026-01-02T12:00:00Z", note: "original memory", photos: [], rating: 0 };
-    localStorage.setItem("doen-pa-travel-records-v2", JSON.stringify([
+    const base = { userId: window.doenPaTestAccountId, visitedAt: "2026-01-01T12:00:00Z", createdAt: "2026-01-02T12:00:00Z", note: "original memory", photos: [], rating: 0 };
+    localStorage.setItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`, JSON.stringify([
       { ...base, id: "old-card", placeId: "place-khao-sam-rok" },
       { ...base, id: "second-card", placeId: "place-khao-sam-roi-yod" },
       { ...base, id: "archived", placeId: "place-doi-chiang-dao" },
@@ -45,7 +45,7 @@ test("old duplicate IDs share one park while memories outside the new catalog su
   await openPage(page, "/search?visited=visited");
   await expect(page.locator('main a[href^="/places/"]')).toHaveCount(1);
   await expect(page.getByText("เคยไปแล้ว 2 ครั้ง")).toBeVisible();
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("doen-pa-travel-records-v2") ?? "[]"));
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`) ?? "[]"));
   expect(saved.map((r: {placeId: string}) => r.placeId)).toEqual(["place-khao-sam-rok", "place-khao-sam-roi-yod", "place-doi-chiang-dao"]);
 });
 
@@ -66,8 +66,8 @@ test("map resolves saved IDs from the server catalog and deduplicates revisits",
   }));
   await openPage(page, "/passport");
   await page.evaluate(() => {
-    const base = { userId: "local-user", placeId: "place-doi-inthanon", visitedAt: "2026-01-01T12:00:00Z", createdAt: "2026-01-02T12:00:00Z", note: "map memory", photos: [], rating: 0 };
-    localStorage.setItem("doen-pa-travel-records-v2", JSON.stringify([
+    const base = { userId: window.doenPaTestAccountId, placeId: "place-doi-inthanon", visitedAt: "2026-01-01T12:00:00Z", createdAt: "2026-01-02T12:00:00Z", note: "map memory", photos: [], rating: 0 };
+    localStorage.setItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`, JSON.stringify([
       { ...base, id: "visit-one" }, { ...base, id: "visit-two" },
     ]));
   });

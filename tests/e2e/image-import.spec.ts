@@ -16,7 +16,7 @@ test("latest avatar wins while cover and cross-tab profile update independently"
   await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง" }).click();
   await expect(page).toHaveURL(/\/profile$/);
   await expect(observer.getByRole("heading", { name: "QA Local User", exact: true })).toBeVisible();
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("doen-pa-current-user-v2") ?? "null"));
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(`doen-pa-current-user-account-v1:${window.doenPaTestAccountId}`) ?? "null"));
   expect(saved.avatar).toBe(urls[1]);
   expect(saved.coverImage).toBe(urls[2]);
 });
@@ -43,7 +43,7 @@ test("removal and alt edits survive pending reads and record save updates anothe
   await page.getByRole("button", { name: "บันทึกลงพาสปอร์ต" }).click();
   await expect(page).toHaveURL(/\/passport$/);
   await expect(observer.getByText("1 บันทึก", { exact: true })).toBeVisible();
-  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("doen-pa-travel-records-v2") ?? "[]"));
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`) ?? "[]"));
   expect(saved).toHaveLength(1);
   expect(saved[0].photos).toEqual([urls[1], urls[2]]);
 });
@@ -77,12 +77,12 @@ test("storage quota failure shows error without publishing unsaved data", async 
   await page.evaluate(failWrites);
   await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง" }).click();
   await expect(page.getByText("บันทึกไม่สำเร็จ พื้นที่จัดเก็บในเบราว์เซอร์อาจเต็ม กรุณาใช้รูปภาพที่เล็กลง", { exact: true })).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem("doen-pa-current-user-v2"))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem(`doen-pa-current-user-account-v1:${window.doenPaTestAccountId}`))).toBeNull();
   await openPage(page, "/records/new?placeId=place-doi-inthanon");
   await page.evaluate(failWrites);
   await page.getByRole("button", { name: "บันทึกลงพาสปอร์ต" }).click();
   await expect(page.getByText("เกิดข้อผิดพลาด กรุณาลองใหม่", { exact: true })).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem("doen-pa-travel-records-v2"))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem(`doen-pa-travel-records-account-v1:${window.doenPaTestAccountId}`))).toBeNull();
   await expect(observer.getByText("พาสปอร์ตของคุณยังว่างเปล่า")).toBeVisible();
   await expect(observer.getByRole("heading", { name: "ผู้ใช้ใหม่", exact: true })).toBeVisible();
 });

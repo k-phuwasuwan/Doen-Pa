@@ -3,7 +3,7 @@ import { SearchHero } from "@/components/search/SearchHero";
 import { SearchResults } from "@/components/search/SearchResults";
 import { PlaceCard } from "@/components/search/PlaceCard";
 import { CatalogContent } from "@/components/place/CatalogContent";
-import { userService } from "@/services/user.service";
+import { getAuthUser } from "@/lib/auth/server";
 import type { PlaceType } from "@/types";
 
 export const metadata = {
@@ -26,7 +26,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = params.q || "";
   const type = isPlaceType(params.type) ? params.type : "all";
   const visited = params.visited === "visited" || params.visited === "unvisited" ? params.visited : "all";
-  const currentUser = userService.getCurrentUser();
+  const currentUser = await getAuthUser();
 
   return (
     <>
@@ -38,8 +38,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           const places = catalog.search(query, type);
           return <SearchResults
             places={places}
-            cards={places.map((place) => <PlaceCard key={place.id} place={place} userId={currentUser.id} />)}
-            userId={currentUser.id}
+            cards={places.map((place) => <PlaceCard key={place.id} place={place} userId={currentUser?.id ?? ""} />)}
+            userId={currentUser?.id ?? ""}
             query={query}
             type={type}
             visited={visited}

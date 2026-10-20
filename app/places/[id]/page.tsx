@@ -3,7 +3,7 @@ import { getPlaceCatalog } from "@/services/place.service";
 import { CatalogContent } from "@/components/place/CatalogContent";
 import { BackButton } from "@/components/place/BackButton";
 import { PlaceDetailContent } from "@/components/place/PlaceDetailContent";
-import { userService } from "@/services/user.service";
+import { getAuthUser } from "@/lib/auth/server";
 
 interface PlacePageProps {
   params: Promise<{ id: string }>;
@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: PlacePageProps) {
 }
 
 export default async function PlacePage({ params, searchParams }: PlacePageProps) {
+  const user = await getAuthUser();
   const { id } = await params;
   const { from, photo } = await searchParams;
   const isFromPassport = from === "passport";
@@ -45,7 +46,7 @@ export default async function PlacePage({ params, searchParams }: PlacePageProps
             <BackButton href={isFromPassport ? "/passport" : isFromProfile ? "/profile" : "/search"} />
           </div>
 
-          <PlaceDetailContent place={place} userId={userService.getCurrentUser().id} readOnly={isFromPassport || !catalog.isCatalogPlace(place.id)} initialPhotoIndex={photoIndex} />
+          <PlaceDetailContent place={place} userId={user?.id ?? ""} readOnly={isFromPassport || !catalog.isCatalogPlace(place.id)} initialPhotoIndex={photoIndex} />
         </div>
       );
     }}</CatalogContent>

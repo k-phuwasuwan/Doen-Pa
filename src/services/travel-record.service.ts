@@ -1,4 +1,3 @@
-import { placeService } from "@/services/place.service";
 import { browserStorageAdapter, createLocalSnapshot } from "@/lib/storage/local-snapshot";
 import type { TravelRecord } from "@/types";
 import { resolvePlaceId } from "@/data/place-identities";
@@ -51,21 +50,10 @@ function parseRecords(raw: string | null): TravelRecord[] {
 const store = createLocalSnapshot<TravelRecord[]>(
   browserStorageAdapter(STORAGE_KEY, RECORDS_CHANGED_EVENT), [], parseRecords,
 );
-let previousRecords: TravelRecord[] | undefined;
-let visibleRecords: TravelRecord[] = [];
-
-function getVisibleSnapshot(): TravelRecord[] {
-  const records = store.getSnapshot();
-  if (records !== previousRecords) {
-    previousRecords = records;
-    visibleRecords = records.filter((record) => placeService.getPlaceById(record.placeId) !== null);
-  }
-  return visibleRecords;
-}
-
 export const travelRecordService = {
   subscribe: store.subscribe,
-  getSnapshot: getVisibleSnapshot,
+  // Resolve place IDs in the read model using its server-provided catalog.
+  getSnapshot: store.getSnapshot,
   getServerSnapshot: store.getServerSnapshot,
 
   createRecord(record: Omit<TravelRecord, "id" | "createdAt">): TravelRecord {

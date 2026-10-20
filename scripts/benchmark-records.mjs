@@ -1,20 +1,18 @@
-import { mkdtempSync, rmSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { performance } from "node:perf_hooks";
-import ts from "typescript";
 
 const output = mkdtempSync(join(tmpdir(), "doen-pa-benchmark-"));
 try {
   const compile = spawnSync(process.execPath, ["node_modules/typescript/bin/tsc", "--project", "tsconfig.test.json", "--outDir", output], { stdio: "inherit" });
   if (compile.status !== 0) throw new Error("Could not compile benchmark sources");
   const { readTravelRecords, createTravelRecordReader } = createRequire(import.meta.url)(join(output, "src/domain/travel-record-read-model.js"));
-  const compiledCatalog = ts.transpileModule(readFileSync("src/data/places.ts", "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } });
-  const catalogPath = join(output, "catalog.cjs");
-  writeFileSync(catalogPath, compiledCatalog.outputText);
-  const { places: catalog } = createRequire(import.meta.url)(catalogPath);
+  const source = spawnSync("python3", ["scripts/import-national-parks.py", "--json"], { encoding: "utf8" });
+  if (source.status !== 0) throw new Error(source.stderr || "Could not read benchmark catalog");
+  const catalog = JSON.parse(source.stdout);
   const readShared = createTravelRecordReader(catalog);
   const callers = catalog.length + 1; // One filter plus one VisitCount per card.
   const date = new Date("2026-01-01T12:00:00Z");

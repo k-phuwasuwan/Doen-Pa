@@ -48,3 +48,32 @@ test("old duplicate IDs share one park while memories outside the new catalog su
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("doen-pa-travel-records-v2") ?? "[]"));
   expect(saved.map((r: {placeId: string}) => r.placeId)).toEqual(["place-khao-sam-rok", "place-khao-sam-roi-yod", "place-doi-chiang-dao"]);
 });
+
+test("missing places keep 404 behavior and invalid stamping returns to Search", async ({ page }) => {
+  await openPage(page, "/records/new?placeId=unknown-place");
+  await expect(page).toHaveURL(/\/search$/);
+  await openPage(page, "/records/new?placeId=place-doi-chiang-dao");
+  await expect(page).toHaveURL(/\/search$/);
+  await page.goto("/places/unknown-place");
+  await expect(page.getByRole("heading", { name: "404", exact: true })).toBeVisible();
+});
+
+test("map resolves saved IDs from the server catalog and deduplicates revisits", async ({ page }) => {
+  // Tile availability is independent of catalog reads; keep this test deterministic.
+  await page.route("https://tiles.stadiamaps.com/**", (route) => route.fulfill({
+    contentType: "image/png",
+    body: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j9WQAAAAASUVORK5CYII=", "base64"),
+  }));
+  await openPage(page, "/passport");
+  await page.evaluate(() => {
+    const base = { userId: "local-user", placeId: "place-doi-inthanon", visitedAt: "2026-01-01T12:00:00Z", createdAt: "2026-01-02T12:00:00Z", note: "map memory", photos: [], rating: 0 };
+    localStorage.setItem("doen-pa-travel-records-v2", JSON.stringify([
+      { ...base, id: "visit-one" }, { ...base, id: "visit-two" },
+    ]));
+  });
+  await openPage(page, "/map");
+  await expect(page.locator(".visited-map-pin-wrapper")).toHaveCount(1);
+  await page.locator(".visited-map-pin-wrapper").click();
+  await expect(page.getByRole("heading", { name: "อุทยานแห่งชาติดอยอินทนนท์", exact: true })).toBeVisible();
+  await expect(page.locator(".leaflet-control-attribution")).toContainText("OpenStreetMap");
+});

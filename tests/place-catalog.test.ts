@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { places } from "../src/data/places";
+import { readReviewedCatalog } from "./helpers/place-catalog";
 import { archivedPlaces } from "../src/data/archived-places";
 import { resolvePlaceId } from "../src/data/place-identities";
 import { displayPlaceValue } from "../src/domain/place-display";
 import { readTravelRecords } from "../src/domain/travel-record-read-model";
+
+const places = readReviewedCatalog();
 
 test("real catalog has 156 unique parks and preserves missing measurements", () => {
   assert.equal(places.length, 156);

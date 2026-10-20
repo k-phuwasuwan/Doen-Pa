@@ -1,5 +1,6 @@
 import { BarChart3, ChartNoAxesCombined } from "lucide-react";
 import { StatsContent } from "@/components/stats/StatsContent";
+import { CatalogContent } from "@/components/place/CatalogContent";
 import { GuestPrivatePage } from "@/components/ui/GuestPrivatePage";
 
 export const metadata = {
@@ -28,5 +29,5 @@ export default async function StatsPage({ searchParams }: StatsPageProps) {
     );
   }
 
-  return <StatsContent />;
+  return <CatalogContent>{() => <StatsContent />}</CatalogContent>;
 }

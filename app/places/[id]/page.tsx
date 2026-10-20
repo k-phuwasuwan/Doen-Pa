@@ -1,5 +1,6 @@
-import { notFound } from "next/navigation";
-import { placeService } from "@/services/place.service";
+import { notFound, unstable_rethrow } from "next/navigation";
+import { getPlaceCatalog } from "@/services/place.service";
+import { CatalogContent } from "@/components/place/CatalogContent";
 import { BackButton } from "@/components/place/BackButton";
 import { PlaceDetailContent } from "@/components/place/PlaceDetailContent";
 import { userService } from "@/services/user.service";
@@ -11,7 +12,14 @@ interface PlacePageProps {
 
 export async function generateMetadata({ params }: PlacePageProps) {
   const { id } = await params;
-  const place = placeService.getPlaceById(id);
+  let catalog;
+  try {
+    catalog = await getPlaceCatalog();
+  } catch (error) {
+    unstable_rethrow(error);
+    return { title: "สถานที่ | Doen Pa" };
+  }
+  const place = catalog.getById(id);
   if (!place) return { title: "ไม่พบสถานที่ | Doen Pa" };
   return {
     title: `${place.name} | Doen Pa`,
@@ -22,21 +30,24 @@ export async function generateMetadata({ params }: PlacePageProps) {
 export default async function PlacePage({ params, searchParams }: PlacePageProps) {
   const { id } = await params;
   const { from, photo } = await searchParams;
-  const place = placeService.getPlaceById(id);
   const isFromPassport = from === "passport";
   const isFromProfile = from === "profile";
   const photoIndex = photo && /^\d+$/.test(photo) && Number.isSafeInteger(Number(photo)) ? Number(photo) : 0;
 
-  if (!place) notFound();
-
   return (
-    <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 overflow-x-hidden">
-      {/* Back button */}
-      <div className="mb-6">
-        <BackButton href={isFromPassport ? "/passport" : isFromProfile ? "/profile" : "/search"} />
-      </div>
+    <CatalogContent>{(catalog) => {
+      const place = catalog.getById(id);
+      if (!place) notFound();
+      return (
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 overflow-x-hidden">
+          {/* Back button */}
+          <div className="mb-6">
+            <BackButton href={isFromPassport ? "/passport" : isFromProfile ? "/profile" : "/search"} />
+          </div>
 
-      <PlaceDetailContent place={place} userId={userService.getCurrentUser().id} readOnly={isFromPassport || !placeService.isCatalogPlace(place.id)} initialPhotoIndex={photoIndex} />
-    </div>
+          <PlaceDetailContent place={place} userId={userService.getCurrentUser().id} readOnly={isFromPassport || !catalog.isCatalogPlace(place.id)} initialPhotoIndex={photoIndex} />
+        </div>
+      );
+    }}</CatalogContent>
   );
 }

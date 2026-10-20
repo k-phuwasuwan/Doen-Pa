@@ -1,13 +1,11 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { createTravelRecordReader } from "@/domain/travel-record-read-model";
-import { placeService } from "@/services/place.service";
+import { useCatalogReader } from "@/components/place/PlaceCatalogProvider";
 import { travelRecordService } from "@/services/travel-record.service";
 
-const readSnapshot = createTravelRecordReader(placeService.getAll(), placeService.getArchivedPlaces());
-
 export function useTravelRecordReadModel(userId: string) {
+  const readSnapshot = useCatalogReader();
   const snapshot = useSyncExternalStore(
     travelRecordService.subscribe,
     travelRecordService.getSnapshot,

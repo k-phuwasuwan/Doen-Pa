@@ -53,13 +53,19 @@ also return `Cache-Control: private, no-store`.
 
 ## Current rollout stage
 
-This change establishes connection helpers and cookie refresh only. Login still
-shows the existing unavailable message, and profile/travel data still live in
-localStorage. There are no database migrations or Storage uploads yet. Existing
-local records must be preserved until an explicit import flow is implemented.
+Connection helpers and cookie refresh are implemented. A `places` migration
+and generated seed for 156 national parks have been applied to the configured
+`doen-pa` project and verified through an anonymous Data API read; see
+[Place catalog in Supabase](places-backend.md) for deployment and verification.
+The app reads places on the server and sends that snapshot to personal views.
+The generated local application catalog has been removed. Catalog request errors
+show a retry state rather than empty personal statistics or a local fallback.
+Login still shows the existing unavailable message, and profile/travel data
+still live in localStorage. There are no Storage uploads yet. Existing local
+records must be preserved until an explicit import flow is implemented.
 
-Next: migrations and RLS for profiles, places, travel records and photo metadata;
-then signup/login/logout; then private Storage and record import. Real session
+Next: migrations and RLS for profiles, travel records and photo metadata; then
+signup/login/logout; then private Storage and record import. Real session
 persistence and account isolation require integration testing once Auth and RLS
 are connected.
 

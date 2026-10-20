@@ -1,5 +1,6 @@
 import { UserRound, UserRoundPen } from "lucide-react";
 import { ProfileContent } from "@/components/profile/ProfileContent";
+import { CatalogContent } from "@/components/place/CatalogContent";
 import { GuestPrivatePage } from "@/components/ui/GuestPrivatePage";
 
 export const metadata = {
@@ -28,5 +29,5 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     );
   }
 
-  return <ProfileContent />;
+  return <CatalogContent>{() => <ProfileContent />}</CatalogContent>;
 }

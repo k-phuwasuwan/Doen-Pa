@@ -1,4 +1,4 @@
-export const PROVINCE_TH_TO_EN: Record<string, string> = {
+const PROVINCE_TH_TO_EN: Record<string, string> = {
   เชียงใหม่: "Chiang Mai",
   เชียงราย: "Chiang Rai",
   แม่ฮ่องสอน: "Mae Hong Son",

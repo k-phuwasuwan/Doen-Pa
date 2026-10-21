@@ -2,14 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, ChevronRight, MapPin, Star } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import { PLACE_TYPE_LABELS } from "@/domain/place-display";
 import type { Place, TravelRecord } from "@/types";
-
-const typeLabels: Record<Place["type"], string> = {
-  mountain: "ภูเขา",
-  waterfall: "น้ำตก",
-  cave: "ถ้ำ",
-  island: "หมู่เกาะ & ทะเล",
-};
 
 interface TravelRecordCardProps {
   record: TravelRecord;
@@ -35,7 +29,7 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
             <div className="flex h-full items-center justify-center text-brand-800/65">ไม่มีรูปภาพ</div>
           )}
           <span className="absolute left-4 top-4 rounded-full bg-brand-600/90 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-            {typeLabels[place.type]}
+            {PLACE_TYPE_LABELS[place.type]}
           </span>
         </div>
 

@@ -26,13 +26,21 @@ export function AuthProvider({ initialData, children }: { initialData: AccountDa
   useEffect(() => {
     if (!initialData) return;
     let active = true;
-    const refresh = () => { void store.refresh().then(() => { if (active) setDataError(false); }, () => { if (active) setDataError(true); }); };
-    const onStorage = (event: StorageEvent) => { if (event.key === ACCOUNT_CHANGED_KEY) refresh(); };
+    let latestRefresh = 0;
+    const refresh = (afterChange = false) => {
+      const version = ++latestRefresh;
+      void store.refresh({ afterChange }).then(
+        () => { if (active && version === latestRefresh) setDataError(false); },
+        () => { if (active && version === latestRefresh) setDataError(true); },
+      );
+    };
+    const onStorage = (event: StorageEvent) => { if (event.key === ACCOUNT_CHANGED_KEY) refresh(true); };
+    const onFocus = () => refresh();
     const onVisible = () => { if (document.visibilityState === "visible") refresh(); };
     window.addEventListener("storage", onStorage);
-    window.addEventListener("focus", refresh);
+    window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onVisible);
-    return () => { active = false; window.removeEventListener("storage", onStorage); window.removeEventListener("focus", refresh); document.removeEventListener("visibilitychange", onVisible); };
+    return () => { active = false; window.removeEventListener("storage", onStorage); window.removeEventListener("focus", onFocus); document.removeEventListener("visibilitychange", onVisible); };
   }, [initialData, store]);
   const serverIdentity = initialUser?.id ?? null;
 

@@ -17,13 +17,14 @@ interface SearchResultsProps {
 export function SearchResults({ places, cards, userId }: SearchResultsProps) {
   const { query, type, visited } = useSearchFilters();
   const catalog = useMemo(() => createPlaceCatalog(places), [places]);
-  const matchingIds = new Set(catalog.search(query, type).map((place) => place.id));
+  const matchingIds = useMemo(() => new Set(catalog.search(query, type).map((place) => place.id)), [catalog, query, type]);
   const memories = useTravelRecordReadModel(userId);
 
   const visibleCards = cards.filter((_, index) => {
     const place = places[index];
-    const hasVisited = memories.getVisitCount(place.id) > 0;
-    return matchingIds.has(place.id) && (visited === "all" || (visited === "visited" ? hasVisited : !hasVisited));
+    if (!matchingIds.has(place.id)) return false;
+    if (visited === "all") return true;
+    return (memories.getVisitCount(place.id) > 0) === (visited === "visited");
   });
 
   return (

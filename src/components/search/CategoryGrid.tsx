@@ -1,15 +1,16 @@
 "use client";
 
+import { PLACE_TYPE_LABELS } from "@/domain/place-display";
 import type { PlaceType } from "@/types";
 import { CategoryCard } from "./CategoryCard";
 import { useSearchFilters } from "./useSearchFilters";
 
 const categories: { label: string; type: PlaceType | "all" }[] = [
   { label: "ทั้งหมด", type: "all" },
-  { label: "ภูเขา", type: "mountain" },
-  { label: "น้ำตก", type: "waterfall" },
-  { label: "ถ้ำ", type: "cave" },
-  { label: "หมู่เกาะ & ทะเล", type: "island" },
+  { label: PLACE_TYPE_LABELS.mountain, type: "mountain" },
+  { label: PLACE_TYPE_LABELS.waterfall, type: "waterfall" },
+  { label: PLACE_TYPE_LABELS.cave, type: "cave" },
+  { label: PLACE_TYPE_LABELS.island, type: "island" },
 ];
 
 export function CategoryGrid() {

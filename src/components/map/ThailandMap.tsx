@@ -43,10 +43,14 @@ function pinIcon(selected: boolean): L.DivIcon {
   });
 }
 
+const PIN_ICONS = { normal: pinIcon(false), selected: pinIcon(true) };
+
 export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: ThailandMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.LayerGroup | null>(null);
+  const placeMarkersRef = useRef(new Map<string, L.Marker>());
+  const selectedMarkerRef = useRef<L.Marker | null>(null);
   const provinceLabelsRef = useRef<ProvinceLabel[]>([]);
   const placesRef = useRef(places);
   const onSelectRef = useRef(onSelectPlace);
@@ -57,6 +61,7 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    const placeMarkers = placeMarkersRef.current;
 
     const map = L.map(containerRef.current, {
       center: [13, 101],
@@ -157,6 +162,8 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
       map.remove();
       mapRef.current = null;
       markersRef.current = null;
+      placeMarkers.clear();
+      selectedMarkerRef.current = null;
       provinceLabelsRef.current = [];
     };
   }, []);
@@ -194,10 +201,12 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
     if (!layer) return;
 
     layer.clearLayers();
+    placeMarkersRef.current.clear();
+    selectedMarkerRef.current = null;
     for (const place of places) {
       if (place.latitude === undefined || place.longitude === undefined) continue;
-      L.marker([place.latitude, place.longitude], {
-        icon: pinIcon(place.id === selectedPlaceId),
+      const marker = L.marker([place.latitude, place.longitude], {
+        icon: PIN_ICONS.normal,
         title: place.name,
         alt: `สถานที่ที่เคยไป ${place.name}`,
         keyboard: true,
@@ -207,8 +216,23 @@ export default function ThailandMap({ places, selectedPlaceId, onSelectPlace }: 
           L.DomEvent.stopPropagation(event);
           onSelectRef.current(place.id);
         })
+        .on("keydown", (event: L.LeafletKeyboardEvent) => {
+          if (event.originalEvent.key !== "Enter" && event.originalEvent.key !== " ") return;
+          event.originalEvent.preventDefault();
+          L.DomEvent.stopPropagation(event);
+          onSelectRef.current(place.id);
+        })
         .addTo(layer);
+      placeMarkersRef.current.set(place.id, marker);
     }
+  }, [places]);
+
+  useEffect(() => {
+    const selected = selectedPlaceId ? placeMarkersRef.current.get(selectedPlaceId) ?? null : null;
+    if (selected === selectedMarkerRef.current) return;
+    selectedMarkerRef.current?.setIcon(PIN_ICONS.normal);
+    selected?.setIcon(PIN_ICONS.selected);
+    selectedMarkerRef.current = selected;
   }, [places, selectedPlaceId]);
 
   return (

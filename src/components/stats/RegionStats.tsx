@@ -1,3 +1,4 @@
+import { REGION_LABELS } from "@/domain/place-display";
 import type { Region, Stats } from "@/types";
 
 interface RegionStatsProps {
@@ -5,12 +6,12 @@ interface RegionStatsProps {
 }
 
 const regions: { key: Region; label: string }[] = [
-  { key: "north", label: "ภาคเหนือ" },
-  { key: "central", label: "ภาคกลาง" },
-  { key: "south", label: "ภาคใต้" },
-  { key: "northeast", label: "ภาคตะวันออกเฉียงเหนือ" },
-  { key: "east", label: "ภาคตะวันออก" },
-  { key: "west", label: "ภาคตะวันตก" },
+  { key: "north", label: REGION_LABELS.north },
+  { key: "central", label: REGION_LABELS.central },
+  { key: "south", label: REGION_LABELS.south },
+  { key: "northeast", label: REGION_LABELS.northeast },
+  { key: "east", label: REGION_LABELS.east },
+  { key: "west", label: REGION_LABELS.west },
 ];
 
 export function RegionStats({ stats }: RegionStatsProps) {

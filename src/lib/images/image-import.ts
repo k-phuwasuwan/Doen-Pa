@@ -11,7 +11,7 @@ export interface ImageImportError {
   filename: string;
   message: string;
 }
-export interface ImagePolicy {
+interface ImagePolicy {
   maxBytes: number;
   sizeMessage: string;
 }

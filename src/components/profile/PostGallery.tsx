@@ -1,17 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Images } from "lucide-react";
-import type { Place } from "@/types";
-
-interface GalleryPost {
-  photo: string;
-  place: Place;
-  recordId: string;
-  photoIndex: number;
-}
+import type { TravelPhoto } from "@/domain/travel-record-read-model";
 
 interface PostGalleryProps {
-  posts: GalleryPost[];
+  posts: TravelPhoto[];
 }
 
 export function PostGallery({ posts }: PostGalleryProps) {

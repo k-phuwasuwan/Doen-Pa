@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { decodeAccountData, photoUrl, type AccountData } from "@/domain/account-data";
 import type { TravelRecord, User } from "@/types";
+import { PROFILE_IMAGE_POLICY, RECORD_IMAGE_POLICY, RECORD_PHOTO_LIMIT } from "@/lib/images/image-import";
 
 export const ACCOUNT_CHANGED_KEY = "doen-pa-cloud-account-changed-v1";
 interface UploadedPhoto { id: string; kind: "travel" | "avatar" | "cover"; object_path: string; mime_type: string; size_bytes: number }
@@ -9,7 +10,7 @@ const bucketFor = (kind: UploadedPhoto["kind"]) => kind === "travel" ? "travel-p
 async function imageBlob(dataUrl: string, kind: UploadedPhoto["kind"]) {
   if (!/^data:image\/(jpeg|png|webp);base64,/.test(dataUrl)) throw new Error("รองรับเฉพาะ JPG, PNG, WebP");
   const blob = await (await fetch(dataUrl)).blob();
-  const limit = kind === "travel" ? 5 * 1024 * 1024 : 1024 * 1024;
+  const limit = (kind === "travel" ? RECORD_IMAGE_POLICY : PROFILE_IMAGE_POLICY).maxBytes;
   if (!blob.size || blob.size > limit) throw new Error("รูปภาพมีขนาดเกินที่กำหนด");
   // Verify the image is decodable before sending bytes to Storage.
   const bitmap = await createImageBitmap(blob);
@@ -22,6 +23,7 @@ export function createAccountStore(initialData: AccountData | null) {
   const initial = initialData ? decodeAccountData(initialData, userId) : { user: { id: "", name: "ผู้ใช้ใหม่", username: "new_hiker" }, records: [] };
   let snapshot = initial;
   let revision = 0;
+  let pendingRefresh: { revision: number; promise: Promise<void> } | undefined;
   const listeners = new Set<() => void>();
   const client = () => createClient();
   const emit = () => { for (const listener of listeners) listener(); };
@@ -30,13 +32,23 @@ export function createAccountStore(initialData: AccountData | null) {
     const { data: { user }, error } = await client().auth.getUser();
     if (error || !userId || user?.id !== userId) throw new Error("กรุณาเข้าสู่ระบบอีกครั้งก่อนบันทึก");
   }
-  async function refresh() {
-    if (!userId) return;
-    const version = ++revision;
+  async function readAccount(version: number) {
     const response = await fetch("/api/account", { cache: "no-store", signal: AbortSignal.timeout(20000) });
     if (!response.ok) throw new Error("โหลดข้อมูลบัญชีไม่สำเร็จ กรุณาลองใหม่");
     const data = decodeAccountData(await response.json(), userId);
     if (version === revision) { snapshot = data; emit(); }
+  }
+  function refresh({ afterChange = false } = {}): Promise<void> {
+    if (!userId) return Promise.resolve();
+    if (afterChange) revision += 1;
+    // Share background reads only while they describe the same account state.
+    if (pendingRefresh?.revision === revision) return pendingRefresh.promise;
+    const version = revision;
+    const promise: Promise<void> = readAccount(version).finally(() => {
+      if (pendingRefresh?.promise === promise) pendingRefresh = undefined;
+    });
+    pendingRefresh = { revision: version, promise };
+    return promise;
   }
   async function upload(source: string, kind: UploadedPhoto["kind"]) {
     const blob = await imageBlob(source, kind);
@@ -84,9 +96,17 @@ export function createAccountStore(initialData: AccountData | null) {
           committed = true; signal();
           if (Array.isArray(obsolete)) await cleanup(obsolete.map((path: string) => ({ kind: "avatar", object_path: path })));
           // A refresh failure must not turn a confirmed save into a failed mutation.
-          snapshot = { ...snapshot, user: { ...snapshot.user, ...changes,
-            avatar: uploaded.find((p) => p.kind === "avatar") ? photoUrl(userId, uploaded.find((p) => p.kind === "avatar")!.id) : snapshot.user.avatar,
-            coverImage: uploaded.find((p) => p.kind === "cover") ? photoUrl(userId, uploaded.find((p) => p.kind === "cover")!.id) : snapshot.user.coverImage } };
+          const avatar = uploaded.find((photo) => photo.kind === "avatar");
+          const cover = uploaded.find((photo) => photo.kind === "cover");
+          snapshot = {
+            ...snapshot,
+            user: {
+              ...snapshot.user,
+              ...changes,
+              avatar: avatar ? photoUrl(userId, avatar.id) : snapshot.user.avatar,
+              coverImage: cover ? photoUrl(userId, cover.id) : snapshot.user.coverImage,
+            },
+          };
           emit();
           return snapshot.user;
         } finally { if (!committed) await cleanup(uploaded); }
@@ -96,7 +116,7 @@ export function createAccountStore(initialData: AccountData | null) {
       subscribe, getSnapshot: () => snapshot.records, getServerSnapshot: () => initial.records,
       async createRecord(record: Omit<TravelRecord, "createdAt" | "userId">) {
         await verifyIdentity();
-        if (record.photos.length > 5) throw new Error("บันทึกได้สูงสุด 5 รูปต่อครั้ง");
+        if (record.photos.length > RECORD_PHOTO_LIMIT) throw new Error(`บันทึกได้สูงสุด ${RECORD_PHOTO_LIMIT} รูปต่อครั้ง`);
         const uploaded: UploadedPhoto[] = [];
         let committed = false;
         try {
@@ -106,6 +126,9 @@ export function createAccountStore(initialData: AccountData | null) {
           const { error } = await client().rpc("save_travel_record", {
             p_record: { id: record.id, place_id: record.placeId, visited_at: record.visitedAt.toISOString(), note: record.note, rating: record.rating }, p_photos: uploaded,
           });
+          // A post-write read must never join a pre-write background request,
+          // including when the commit response was lost.
+          revision += 1;
           if (error) {
             // The server may have committed before the response was lost.
             await refresh();

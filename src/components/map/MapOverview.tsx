@@ -11,7 +11,7 @@ export function MapOverview() {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const places = memories.mapPlaces;
   const selectedPlace = places.find((place) => place.id === selectedPlaceId) ?? null;
-  const photo = selectedPlace ? memories.getPlaceMemory(selectedPlace.id).mapPhoto : undefined;
+  const photo = selectedPlace ? memories.getMapPhoto(selectedPlace.id) : undefined;
 
   return (
     <section className={`map-fullscreen fixed inset-0 h-dvh w-full overflow-hidden bg-brand-100${selectedPlace ? " map-fullscreen--place-selected" : ""}`} aria-label="แผนที่สถานที่ที่เคยไป">

@@ -1,12 +1,5 @@
-import type { Place, PlaceType } from "@/types";
-import { displayPlaceValue } from "@/domain/place-display";
-
-const typeLabels: Record<PlaceType, string> = {
-  mountain: "ภูเขา",
-  waterfall: "น้ำตก",
-  cave: "ถ้ำ",
-  island: "หมู่เกาะ & ทะเล",
-};
+import type { Place } from "@/types";
+import { displayPlaceValue, PLACE_TYPE_LABELS } from "@/domain/place-display";
 
 interface PlaceChipsProps {
   place: Place;
@@ -16,7 +9,7 @@ export function PlaceChips({ place }: PlaceChipsProps) {
   const chips = [
     {
       key: "type",
-      label: typeLabels[place.type],
+      label: PLACE_TYPE_LABELS[place.type],
     },
     {
       key: "altitude",

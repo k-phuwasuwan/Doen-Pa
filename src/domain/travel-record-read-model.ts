@@ -1,7 +1,7 @@
 import type { Place, Stats, TravelRecord } from "../types";
 import { resolvePlaceId } from "../data/place-identities";
 
-export interface TravelRecordEntry {
+interface TravelRecordEntry {
   record: TravelRecord;
   place: Place;
 }
@@ -14,7 +14,7 @@ export interface TravelPhoto {
   photoIndex: number;
 }
 
-export interface PlaceMemory {
+interface PlaceMemory {
   records: TravelRecord[];
   photos: string[];
   mapPhoto: string | undefined;
@@ -39,7 +39,21 @@ export function readTravelRecords(userId: string, records: readonly TravelRecord
   }
 
   const memories = new Map<string, PlaceMemory>();
+  const mapPhotos = new Map<string, string | undefined>();
   let photos: TravelPhoto[] | undefined;
+
+  function getMapPhoto(placeId: string): string | undefined {
+    if (mapPhotos.has(placeId)) return mapPhotos.get(placeId);
+    let latest: TravelRecord | undefined;
+    for (const record of recordsByPlace.get(placeId) ?? []) {
+      if (record.photos.length === 0) continue;
+      // Strictly newer dates retain storage order when visit dates tie.
+      if (!latest || record.visitedAt.getTime() > latest.visitedAt.getTime()) latest = record;
+    }
+    const photo = latest?.photos[0];
+    mapPhotos.set(placeId, photo);
+    return photo;
+  }
 
   const visitedPlaces = [...recordsByPlace.keys()].flatMap((id) => {
     const place = catalogById.get(id);
@@ -60,7 +74,8 @@ export function readTravelRecords(userId: string, records: readonly TravelRecord
     get photos(): TravelPhoto[] {
       if (photos) return photos;
       const photoCounts = new Map<string, number>();
-      photos = [...entries]
+      photos = entries
+        .filter(({ record }) => record.photos.length > 0)
         .sort((a, b) => compareRecords(a.record, b.record))
         .flatMap(({ record, place }) => record.photos.map((photo) => {
           const photoIndex = photoCounts.get(place.id) ?? 0;
@@ -70,6 +85,7 @@ export function readTravelRecords(userId: string, records: readonly TravelRecord
       return photos;
     },
     mapPlaces: visitedPlaces.filter((place) => Number.isFinite(place.latitude) && Number.isFinite(place.longitude)),
+    getMapPhoto,
     getVisitCount(placeId: string): number {
       return recordsByPlace.get(placeId)?.length ?? 0;
     },
@@ -78,12 +94,8 @@ export function readTravelRecords(userId: string, records: readonly TravelRecord
       if (cached) return cached;
       const group = recordsByPlace.get(placeId);
       if (!group) return EMPTY_MEMORY;
-      // The map historically breaks equal visit dates by storage order.
-      const mapPhoto = [...group]
-        .filter((record) => record.photos.length > 0)
-        .sort((a, b) => b.visitedAt.getTime() - a.visitedAt.getTime())[0]?.photos[0];
       const ordered = [...group].sort(compareRecords);
-      const memory = { records: ordered, photos: ordered.flatMap((record) => record.photos), mapPhoto };
+      const memory = { records: ordered, photos: ordered.flatMap((record) => record.photos), mapPhoto: getMapPhoto(placeId) };
       memories.set(placeId, memory);
       return memory;
     },
@@ -115,19 +127,19 @@ function calculateStats(catalog: readonly Place[], visitedPlaces: Place[], count
 
   for (const place of catalog) {
     totalByType[place.type]++;
-    if (!place.isNationalPark) continue;
-    totalNationalParks++;
-    byRegion[place.region].totalNationalParks++;
-    if (visitedIds.has(place.id)) {
-      visitedNationalParks++;
-      byRegion[place.region].visitedNationalParks++;
-    }
-  }
-  // Preserve catalog order for region province labels.
-  for (const place of catalog) {
-    if (!visitedIds.has(place.id)) continue;
-    byType[place.type]++;
+    const visited = visitedIds.has(place.id);
     const region = byRegion[place.region];
+    if (place.isNationalPark) {
+      totalNationalParks++;
+      region.totalNationalParks++;
+      if (visited) {
+        visitedNationalParks++;
+        region.visitedNationalParks++;
+      }
+    }
+    // Preserve catalog order for region province labels.
+    if (!visited) continue;
+    byType[place.type]++;
     region.count++;
     if (!region.provinces.includes(place.province)) region.provinces.push(place.province);
   }

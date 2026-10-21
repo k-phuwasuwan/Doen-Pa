@@ -19,6 +19,8 @@ test("empty passport keeps catalog progress without personal data", () => {
   assert.deepEqual(memories.mapPlaces, []);
   assert.deepEqual(memories.getPlaceMemory("mountain"), { records: [], photos: [], mapPhoto: undefined });
   assert.equal(memories.getVisitCount("missing"), 0);
+  assert.equal(memories.getMapPhoto("mountain"), undefined);
+  assert.equal(memories.getMapPhoto("missing"), undefined);
   const stats = memories.getStats();
   assert.equal(stats.totalNationalParks, 2);
   assert.equal(stats.visitedNationalParks, 0);
@@ -74,7 +76,27 @@ test("map retains storage-order date ties and skips newer photo-less records", (
     record("no-photo", { visitedAt: new Date("2026-02-01T12:00:00Z") }),
   ], catalog);
   assert.equal(memories.getPlaceMemory("mountain").mapPhoto, "first-photo");
+  assert.equal(memories.getMapPhoto("mountain"), "first-photo");
   assert.deepEqual(memories.getPlaceMemory("mountain").photos, ["second-photo", "first-photo"]);
+});
+
+test("map photos select the latest photographed visit independently of gallery ordering and account", () => {
+  const records = [
+    record("older", { photos: ["old"] }),
+    record("latest-photo", { visitedAt: new Date("2026-02-01T12:00:00Z"), photos: ["latest", "second"] }),
+    record("photo-less", { visitedAt: new Date("2026-03-01T12:00:00Z") }),
+    record("other-account", { userId: "other", visitedAt: new Date("2026-04-01T12:00:00Z"), photos: ["private"] }),
+    record("other-place", { placeId: "cave", photos: ["cave-photo"] }),
+  ];
+  const read = createTravelRecordReader(catalog);
+  const memories = read("local-user", records);
+  assert.equal(memories.getMapPhoto("mountain"), "latest");
+  assert.equal(memories.getMapPhoto("cave"), "cave-photo");
+  assert.equal(memories.getMapPhoto("waterfall"), undefined);
+  assert.deepEqual(memories.getPlaceMemory("mountain").photos, ["latest", "second", "old"]);
+  const refreshed = read("local-user", [...records, record("new", { visitedAt: new Date("2026-05-01T12:00:00Z"), photos: ["new"] })]);
+  assert.equal(refreshed.getMapPhoto("mountain"), "new");
+  assert.equal(memories.getMapPhoto("mountain"), "latest");
 });
 
 test("park denominators follow catalog membership independently of place type", () => {

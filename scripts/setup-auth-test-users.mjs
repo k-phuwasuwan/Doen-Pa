@@ -53,7 +53,7 @@ for (const account of accounts) {
 writeFileSync(accountsFile, JSON.stringify(accounts, null, 2) + "\n", { mode: 0o600 });
 const notes = ["# บัญชีทดสอบ Doen Pa", "", `Supabase project: ${projectRef}`, "", "ใช้ช่องอีเมลในการเข้าสู่ระบบ; username เป็นชื่อในโปรไฟล์", "", ...accounts.flatMap((account, index) => [
   `## บัญชี ${index + 1}`, `- Email: ${account.email}`, `- Username: ${account.username}`, `- Password: ${account.password}`, `- User ID: ${account.id}`, "",
-]), "บัญชีเหล่านี้ยืนยันอีเมลด้วย Admin API สำหรับ QA โดยไม่ส่งเมล จึงไม่ได้พิสูจน์การส่งเมล SMTP", "ข้อมูลการเดินทางและการแก้โปรไฟล์ยังแยกเก็บตามบัญชีในเบราว์เซอร์จนกว่าจะต่อ cloud ในขั้นตอนที่ 3", "ไฟล์นี้และไฟล์ JSON อยู่ใน .local/ ที่ Git ไม่ติดตาม อย่าใช้รหัสผ่านเหล่านี้กับบัญชีส่วนตัว", ""].join("\n");
+]), "บัญชีเหล่านี้ยืนยันอีเมลด้วย Admin API สำหรับ QA โดยไม่ส่งเมล จึงไม่ได้พิสูจน์การส่งเมล SMTP", "ข้อมูลการเดินทาง โปรไฟล์ และรูปภาพจัดเก็บใน Supabase แยกตามบัญชี", "ไฟล์นี้และไฟล์ JSON อยู่ใน .local/ ที่ Git ไม่ติดตาม อย่าใช้รหัสผ่านเหล่านี้กับบัญชีส่วนตัว", ""].join("\n");
 writeFileSync(".local/auth-test-accounts.md", notes, { mode: 0o600 });
 chmodSync(".local/auth-test-accounts.md", 0o600);
 console.log("Saved credentials to .local/auth-test-accounts.md (ignored by Git).");

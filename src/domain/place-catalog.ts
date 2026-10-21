@@ -5,15 +5,22 @@ import type { Place, PlaceType } from "../types";
 export function createPlaceCatalog(places: Place[], archive: Place[] = []) {
   const catalogById = new Map(places.map((place) => [place.id, place]));
   const archiveById = new Map(archive.map((place) => [place.id, place]));
+  // Catalog snapshots are immutable; normalize text once, not per keystroke.
+  const searchIndex = places.map((place) => ({
+    place,
+    text: [place.name, place.location, place.province, place.region, place.description].join(" ").toLowerCase(),
+  }));
   return {
     places,
     search(query: string, type: PlaceType | "all" = "all") {
       const normalized = query.trim().toLowerCase();
-      return places.filter((place) =>
-        (type === "all" || place.type === type) &&
-        (!normalized || [place.name, place.location, place.province, place.region, place.description]
-          .join(" ").toLowerCase().includes(normalized)),
-      );
+      const matches: Place[] = [];
+      for (const { place, text } of searchIndex) {
+        if (type !== "all" && place.type !== type) continue;
+        if (normalized && !text.includes(normalized)) continue;
+        matches.push(place);
+      }
+      return matches;
     },
     getById(id: string): Place | null {
       const canonicalId = resolvePlaceId(id);

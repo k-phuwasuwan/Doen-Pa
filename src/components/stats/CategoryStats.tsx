@@ -1,3 +1,4 @@
+import { PLACE_TYPE_LABELS } from "@/domain/place-display";
 import type { PlaceType, Stats } from "@/types";
 
 interface CategoryStatsProps {
@@ -5,9 +6,9 @@ interface CategoryStatsProps {
 }
 
 const categories: { type: PlaceType; label: string }[] = [
-  { type: "mountain", label: "ภูเขา" },
-  { type: "waterfall", label: "น้ำตก" },
-  { type: "cave", label: "ถ้ำ" },
+  { type: "mountain", label: PLACE_TYPE_LABELS.mountain },
+  { type: "waterfall", label: PLACE_TYPE_LABELS.waterfall },
+  { type: "cave", label: PLACE_TYPE_LABELS.cave },
   { type: "island", label: "หมู่เกาะและทะเล" },
 ];
 

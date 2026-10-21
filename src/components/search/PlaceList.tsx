@@ -22,19 +22,3 @@ export function PlaceList({ cards }: { cards: ReactNode[] }) {
     </div>
   );
 }
-
-export function PlaceListSkeleton() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {[1, 2, 3, 4, 5, 6].map((i) => (
-        <div key={i} className="liquid-glass-card h-full flex flex-col overflow-hidden animate-pulse">
-          <div className="h-48 w-full bg-beige-100/40"></div>
-          <div className="p-4 flex flex-col flex-1">
-            <div className="h-6 bg-beige-100/40 rounded w-2/3 mb-4"></div>
-            <div className="h-4 bg-beige-100/40 rounded w-1/2 mt-auto"></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}

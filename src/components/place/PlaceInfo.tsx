@@ -1,14 +1,5 @@
 import type { Place } from "@/types";
-import { displayPlaceValue } from "@/domain/place-display";
-
-const regionLabel: Record<string, string> = {
-  north: "ภาคเหนือ",
-  central: "ภาคกลาง",
-  south: "ภาคใต้",
-  northeast: "ภาคตะวันออกเฉียงเหนือ",
-  east: "ภาคตะวันออก",
-  west: "ภาคตะวันตก",
-};
+import { displayPlaceValue, REGION_LABELS } from "@/domain/place-display";
 
 interface PlaceInfoProps {
   place: Place;
@@ -25,7 +16,7 @@ export function PlaceInfo({ place }: PlaceInfoProps) {
           <span>{displayPlaceValue(place.location)}, {displayPlaceValue(place.province)}</span>
         </div>
         <div className="liquid-glass inline-flex items-center rounded-full px-3 py-1 text-xs sm:text-sm font-medium text-brand-700">
-          <span>{regionLabel[place.region] ?? place.region}</span>
+          <span>{REGION_LABELS[place.region]}</span>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 const allowedPaths = new Set(["/search", "/map", "/passport", "/stats", "/profile", "/profile/edit", "/records/new", "/reset-password"]);
 
 /** Only app-owned destinations; never redirect credentials to an arbitrary URL. */
-export function safeAuthNext(value: unknown, fallback = "/passport"): string {
+export function safeAuthNext(value: unknown, fallback = "/search"): string {
   if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//") || /[\\\r\n]/.test(value)) return fallback;
   try {
     const url = new URL(value, "https://doen-pa.invalid");
@@ -21,6 +21,13 @@ export function safeAuthNext(value: unknown, fallback = "/passport"): string {
 
 export function loginHref(next: string) {
   return `/login?next=${encodeURIComponent(safeAuthNext(next))}`;
+}
+
+export function postAuthDestination(next: unknown, needsProfileSetup: boolean) {
+  const destination = safeAuthNext(next);
+  // Recovery must reach the password form even before profile setup.
+  if (!needsProfileSetup || destination === "/reset-password") return destination;
+  return "/profile/edit?setup=1";
 }
 
 export function authBackHref(from: string | undefined) {

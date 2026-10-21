@@ -11,6 +11,7 @@ export function decodeAccountData(value: unknown, userId: string): { user: User;
   if (!value || typeof value !== "object") throw new Error("Invalid account data");
   const { user, records } = value as Partial<AccountData>;
   if (!user || user.id !== userId || typeof user.name !== "string" || typeof user.username !== "string" || !Array.isArray(records)) throw new Error("Invalid account data");
+  if (user.needsProfileSetup !== undefined && typeof user.needsProfileSetup !== "boolean") throw new Error("Invalid profile setup state");
   const decoded = records.map((record) => {
     if (!record || record.userId !== userId || typeof record.id !== "string" || typeof record.placeId !== "string" || typeof record.note !== "string" || !Number.isInteger(record.rating) || record.rating < 0 || record.rating > 5 || !Array.isArray(record.photos) || !record.photos.every((p) => typeof p === "string" && p.startsWith("/api/photos/"))) throw new Error("Invalid travel record");
     const visitedAt = new Date(record.visitedAt), createdAt = new Date(record.createdAt);

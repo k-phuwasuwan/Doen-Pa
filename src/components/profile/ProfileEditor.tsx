@@ -12,18 +12,18 @@ import type { User } from "@/types";
 import { IMAGE_ACCEPT, PROFILE_IMAGE_POLICY } from "@/lib/images/image-import";
 import { useImageImport } from "@/lib/use-image-import";
 
-export function ProfileEditor() {
+export function ProfileEditor({ setup = false }: { setup?: boolean }) {
   const user = useCurrentUser();
   const userKey = JSON.stringify([user.id, user.name, user.username, user.bio, user.avatar, user.coverImage]);
-  return <ProfileEditorForm key={userKey} initialUser={user} />;
+  return <ProfileEditorForm key={setup ? user.id : userKey} initialUser={user} setup={setup} />;
 }
 
-function ProfileEditorForm({ initialUser }: { initialUser: User }) {
+function ProfileEditorForm({ initialUser, setup }: { initialUser: User; setup: boolean }) {
   const { profile } = useAuth();
   const router = useRouter();
   const { importer, loading: readingImages } = useImageImport();
-  const [name, setName] = useState(initialUser.name);
-  const [username, setUsername] = useState(initialUser.username);
+  const [name, setName] = useState(setup && initialUser.name === "นักเดินทาง" ? "" : initialUser.name);
+  const [username, setUsername] = useState(setup && initialUser.username === "new_hiker" ? "" : initialUser.username);
   const [bio, setBio] = useState(initialUser.bio ?? "");
   const [avatar, setAvatar] = useState(initialUser.avatar);
   const [coverImage, setCoverImage] = useState(initialUser.coverImage);
@@ -73,6 +73,15 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
         return;
       }
       await profile.updateCurrentUser({ name: cleanName, username: cleanUsername, bio: bio.trim(), avatar, coverImage });
+      if (setup) {
+        const response = await fetch("/auth/complete-profile-setup", {
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
+        });
+        const result: { error?: string; next?: string } = await response.json();
+        if (!response.ok || result.error) throw new Error(result.error ?? "ตั้งค่าโปรไฟล์ไม่สำเร็จ กรุณาลองบันทึกอีกครั้ง");
+        window.location.assign(result.next ?? "/search");
+        return;
+      }
       router.push("/profile");
     } catch (error) {
       setError(error instanceof Error ? error.message : "บันทึกโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่");
@@ -133,7 +142,7 @@ function ProfileEditorForm({ initialUser }: { initialUser: User }) {
           <Save className="h-5 w-5" aria-hidden="true" />
           {readingImages ? "กำลังอ่านรูปภาพ…" : saving ? "กำลังบันทึก…" : "บันทึกการเปลี่ยนแปลง"}
         </button>
-        <Link href="/profile" className="mx-auto mt-3 flex min-h-11 w-fit items-center rounded-full px-4 text-sm text-brand-800/65 underline underline-offset-4 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-brand-600">ยกเลิก</Link>
+        {!setup && <Link href="/profile" className="mx-auto mt-3 flex min-h-11 w-fit items-center rounded-full px-4 text-sm text-brand-800/65 underline underline-offset-4 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-brand-600">ยกเลิก</Link>}
       </form>
     </div>
   );

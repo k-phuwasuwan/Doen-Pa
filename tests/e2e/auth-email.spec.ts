@@ -42,7 +42,7 @@ test("real confirmation and recovery tokens establish SSR sessions and cannot be
     await page.getByLabel("อีเมล", { exact: true }).fill(email);
     await page.getByLabel("รหัสผ่าน", { exact: true }).fill(newPassword);
     await page.getByRole("button", { name: "เข้าสู่ระบบ", exact: true }).click();
-    await expect(page).toHaveURL(/\/passport$/);
+    await expect(page).toHaveURL(/\/search$/);
   } finally {
     if (userId) {
       // This ID was created by this test only; reusable QA accounts are retained.

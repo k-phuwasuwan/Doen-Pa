@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createRouteClient } from "@/lib/supabase/route";
-import { safeAuthNext } from "@/lib/auth/redirects";
+import { safeAuthNext, postAuthDestination } from "@/lib/auth/redirects";
 import { ensureAccountProfile } from "@/lib/auth/server";
 
 // Supports SSR email templates using TokenHash, including opening on another device.
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       if (!error && data.user) {
         await ensureAccountProfile(supabase, data.user.id);
         const next = type === "recovery" ? "/reset-password" : safeAuthNext(request.nextUrl.searchParams.get("next"));
-        return finish(NextResponse.redirect(new URL(next, request.nextUrl.origin), 303));
+        return finish(NextResponse.redirect(new URL(postAuthDestination(next, data.user.user_metadata.profile_setup_pending === true), request.nextUrl.origin), 303));
       }
     } catch {
       // Invalid, expired, already-used or unavailable confirmation links.

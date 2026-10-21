@@ -77,6 +77,10 @@ Covered journeys:
   account switching, preserved legacy local data and permitted return destinations.
 - Confirmation/recovery with real single-use Auth tokens, rejected unconfirmed
   login, changed passwords, and ownership enforced through two real JWTs.
+- First-login and email-confirmation profile setup without Back/Cancel,
+  optional avatar upload, persisted completion, Search after saving, subsequent
+  login to Search and normal profile editing with Back/Cancel
+  (`profile-setup.spec.ts`, isolated accounts and real tokens, no email sent).
 - Revisits, six photos across two records, Profile photo selection, lightbox and Passport read-only details.
 - Corrupt legacy local data and storage clear leave cloud memories intact.
 - Latest avatar selection, independent cover reads, and save disabled while reading.

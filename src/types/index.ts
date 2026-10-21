@@ -18,6 +18,8 @@ export interface User {
   avatar?: string;
   coverImage?: string;
   bio?: string;
+  /** Onboarding preference only; never grants access to personal data. */
+  needsProfileSetup?: boolean;
 }
 
 export interface Place {

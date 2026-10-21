@@ -21,7 +21,7 @@ export const getAuthAccount = cache(async () => {
     throw new Error("ตรวจสอบการเข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่");
   }
   if (!user) return null;
-  return loadAccountData(supabase, user.id);
+  return loadAccountData(supabase, user.id, user.user_metadata.profile_setup_pending === true);
 });
 
 export const getAuthUser = cache(async () => (await getAuthAccount())?.user ?? null);

@@ -70,7 +70,9 @@ See [Supabase password protection](https://supabase.com/docs/guides/auth/passwor
 
 The app starts logged out. Search and place descriptions remain public. Passport,
 Stats and Profile show guest screens without a verified session. Profile editing
-and stamping require login. Safe `next` destinations preserve stamp intent while
+and stamping require login. Normal login defaults to Search; legacy `from`
+controls the Back link only. Safe explicit `next` destinations preserve stamp
+intent for returning users while
 rejecting external URLs; legacy `from` links still work. The optional `view=guest`
 parameter only changes the design preview and cannot grant access.
 
@@ -94,6 +96,17 @@ Successful login and confirmation initialize a missing `profiles` row through
 the user's RLS-protected client, ignoring conflicts so existing values survive.
 There is no privileged signup trigger. Username is a private profile field;
 login uses the email address.
+
+New registrations set `profile_setup_pending: true` in Auth user metadata.
+Login and confirmation use that flag to open `/profile/edit?setup=1` first,
+without Back or Cancel links. Recovery always goes to `/reset-password`.
+The profile form requires a display name and username; images remain optional.
+Once the profile save succeeds, `/auth/complete-profile-setup` verifies the
+current account and saved profile, clears the flag using `auth.updateUser`, and
+returns Search regardless of the original destination. A completion failure keeps the editor and
+allows retrying. Existing accounts without the flag are not forced through setup.
+This metadata controls onboarding navigation only; it is never used for data
+authorization, which still relies on verified Auth identity and owner-only RLS.
 
 Logout uses `scope: "local"`, ends the current session, clears its cookies and
 broadcasts a change signal to other tabs. It preserves local memories and does
@@ -147,7 +160,8 @@ Recovery:
 {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery
 ```
 
-The confirmation template above goes to Passport by default; the recovery route
+The confirmation template above opens profile setup for pending new accounts,
+otherwise Search; the recovery route
 always goes to the password form. Template changes belong to the intended
 project's Auth configuration; repo changes do not update hosted templates or
 SMTP settings. A future Google integration additionally needs a Google OAuth

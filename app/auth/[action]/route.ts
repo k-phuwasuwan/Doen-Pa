@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createRouteClient } from "@/lib/supabase/route";
-import { safeAuthNext } from "@/lib/auth/redirects";
+import { safeAuthNext, postAuthDestination } from "@/lib/auth/redirects";
 import { ensureAccountProfile } from "@/lib/auth/server";
 
-const actions = new Set(["login", "signup", "logout", "forgot-password", "reset-password", "resend"]);
+const actions = new Set(["login", "signup", "logout", "forgot-password", "reset-password", "resend", "complete-profile-setup"]);
 
 function authError(code: string | undefined) {
   if (code === "invalid_credentials") return "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
@@ -43,6 +43,17 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       const { error } = await supabase.auth.signOut({ scope: "local" });
       return error ? reply({ error: authError(error.code) }, 400) : reply({ next: "/profile" });
     }
+    if (action === "complete-profile-setup") {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) return reply({ error: "กรุณาเข้าสู่ระบบอีกครั้งก่อนบันทึก" }, 401);
+      const { data: profile, error: profileError } = await supabase.from("profiles").select("name,username").eq("user_id", user.id).single();
+      if (profileError) return reply({ error: "ตรวจสอบโปรไฟล์ไม่สำเร็จ กรุณาลองบันทึกอีกครั้ง" }, 503);
+      if (!profile.name.trim() || !/^[a-zA-Z0-9_]{3,20}$/.test(profile.username)) {
+        return reply({ error: "กรุณาบันทึกชื่อและชื่อผู้ใช้ก่อนดำเนินการต่อ" }, 400);
+      }
+      const { error } = await supabase.auth.updateUser({ data: { profile_setup_pending: false } });
+      return error ? reply({ error: "ตั้งค่าโปรไฟล์ไม่สำเร็จ กรุณาลองบันทึกอีกครั้ง" }, 503) : reply({ next: "/search" });
+    }
     if (action !== "reset-password" && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)) {
       return reply({ error: "กรุณากรอกอีเมลให้ถูกต้อง" }, 400);
     }
@@ -59,14 +70,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await supabase.auth.signOut({ scope: "local" });
         return reply({ error: "เตรียมโปรไฟล์ไม่สำเร็จ กรุณาเข้าสู่ระบบอีกครั้ง" }, 503);
       }
-      return reply({ next });
+      return reply({ next: postAuthDestination(next, data.user.user_metadata.profile_setup_pending === true) });
     }
     if (action === "signup") {
-      const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: callback.toString() } });
+      const { data, error } = await supabase.auth.signUp({ email, password, options: {
+        emailRedirectTo: callback.toString(), data: { profile_setup_pending: true },
+      } });
       if (error) return reply({ error: authError(error.code) }, 400);
       if (data.session && data.user) {
         await ensureAccountProfile(supabase, data.user.id);
-        return reply({ next });
+        return reply({ next: postAuthDestination(next, data.user.user_metadata.profile_setup_pending === true) });
       }
       return reply({ message: "ตรวจสอบอีเมลของคุณ แล้วเปิดลิงก์เพื่อยืนยันบัญชี หากสมัครไว้แล้วให้เข้าสู่ระบบหรือรีเซ็ตรหัสผ่าน" });
     }

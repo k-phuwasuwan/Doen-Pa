@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createRouteClient } from "@/lib/supabase/route";
-import { safeAuthNext } from "@/lib/auth/redirects";
+import { safeAuthNext, postAuthDestination } from "@/lib/auth/redirects";
 import { ensureAccountProfile } from "@/lib/auth/server";
 
 export async function GET(request: NextRequest) {
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       if (!error && data.user) {
         await ensureAccountProfile(supabase, data.user.id);
-        return finish(NextResponse.redirect(new URL(next, request.nextUrl.origin), 303));
+        return finish(NextResponse.redirect(new URL(postAuthDestination(next, data.user.user_metadata.profile_setup_pending === true), request.nextUrl.origin), 303));
       }
     } catch {
       // Show a recoverable error without reflecting provider errors or tokens.

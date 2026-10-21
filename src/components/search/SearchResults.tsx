@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
 import type { Place, PlaceType } from "@/types";
 import { PlaceList } from "./PlaceList";
 import { VisitedFilter } from "./VisitedFilter";
-import { CATEGORY_SCROLL_KEY } from "./CategoryFilterLink";
 
 interface SearchResultsProps {
   places: Place[];
@@ -24,19 +23,6 @@ export function SearchResults({ places, cards, userId, query, type, visited }: S
     const hasVisited = memories.getVisitCount(place.id) > 0;
     return visited === "all" || (visited === "visited" ? hasVisited : !hasVisited);
   });
-
-  useEffect(() => {
-    if (sessionStorage.getItem(CATEGORY_SCROLL_KEY) !== "true") return;
-    sessionStorage.removeItem(CATEGORY_SCROLL_KEY);
-    if (!window.matchMedia("(max-width: 767px)").matches) return;
-
-    requestAnimationFrame(() => {
-      document.getElementById("search-place-list")?.scrollIntoView({
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-        block: "start",
-      });
-    });
-  }, [query, type, visited]);
 
   return (
     <section aria-labelledby="places-heading">

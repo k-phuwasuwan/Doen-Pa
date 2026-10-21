@@ -92,7 +92,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 ### Search
 
 - `app/search/page.tsx` filters the server-provided Supabase catalog with `q` and `type` URL parameters. `SearchResults` applies the `visited` parameter using the current user's records and server-rendered place cards.
-- Search category options show only their names. On mobile, choosing a category scrolls to the first result area below the floating nav; desktop keeps its scroll position.
+- Search category options show only their names. On mobile, categories form one horizontally scrollable row. Choosing a category preserves the page's scroll position on mobile and desktop.
 - Place cards link to full Place Details. Their green type chip is a place category, not booking status. The personal visit count appears only when positive. The card's Stamp action opens the record form with `returnTo=search`.
 - No public aggregate rating, review count, booking badge, or popularity recommendation.
 

@@ -122,8 +122,53 @@ PLAYWRIGHT_BASE_URL=http://localhost:3001 PLAYWRIGHT_PRODUCTION=1 pnpm exec play
 dev server overrides page headers with `no-cache, must-revalidate`; Auth JSON
 and callback handlers independently require `private, no-store` in both modes.
 
-The mobile project emulates Chromium. This suite does not validate Safari/WebKit, Firefox, or deployed map tile credentials.
+The mobile project emulates Chromium. It does not establish Safari/WebKit or
+Firefox coverage. The catalog map test stubs tiles; the explicit production
+journey below checks real deployed terrain responses.
 
 The Auth rollout's rendered QA used regular Playwright because the Browser
 plugin was not available in the session. Desktop (1440 × 1000) and mobile
 (390 × 844) screenshots and real interactions were inspected.
+
+## Production acceptance — 2026-10-22
+
+- Production URL: `https://doen-pa.vercel.app`, Vercel deployment for commit
+  `6c7578e` confirmed successful through its GitHub commit status.
+- User-confirmed: real Gmail inbox delivery for signup/confirmation, resend
+  and password recovery passed. Automated tests do not send email.
+- User-confirmed: real-device mobile checks passed. Device models and browser
+  versions were not recorded; this does not imply all mobile browsers passed.
+- Agent-verified: the deployed production journey and profile-setup tests passed
+  **6/6 cases**, using Chromium at 1440 × 1000 and 390 × 844. New-account setup,
+  real photo uploads, saved dates/ratings, Passport and lightbox, real terrain
+  responses without 401/403, visited pins, Stats/Profile, logout and private-photo
+  denial, and fresh-browser persistence passed. Temporary accounts and their
+  Storage objects were cleaned up after each case.
+- The complete journey was then rechecked **2/2 cases** with loaded Passport
+  photo bytes, all terrain tile images loaded, and console-error checks in the
+  fresh browser context before recording final screenshots.
+
+Run the deployed journey explicitly:
+
+```sh
+PLAYWRIGHT_BASE_URL=https://doen-pa.vercel.app PLAYWRIGHT_PRODUCTION=1 \
+  pnpm exec playwright test tests/e2e/production-journey.spec.ts tests/e2e/profile-setup.spec.ts --workers=1
+```
+
+`production-journey.spec.ts` runs only when `PLAYWRIGHT_PRODUCTION=1`. It uses a
+temporary confirmed account, ordinary UI login and profile setup, Search and
+Place Details, a dated record with two uploaded photos and a personal rating,
+Passport/gallery/lightbox, real Stadia terrain and its visited pin, Stats,
+Profile, logout/private-photo denial, and persistence after login in a fresh
+browser context. It does not stub map tiles or send signup email. Temporary
+Storage objects and the account are removed in `finally`; no user memories or
+catalog rows are modified. The companion profile-setup tests exercise genuine
+email-confirmation tokens and retry after a simulated completion failure.
+
+After full-document login, tests wait for the new page's scripts to finish
+loading and assert live profile-preview updates before saving. Place Details
+checks assert the destination URL and its level-one heading, so a matching
+Search card heading cannot make the test advance before navigation finishes.
+
+Screenshots are saved outside the repository under
+`/tmp/doen-pa-production-{passport,map,stats,profile}-{desktop,mobile}.png`.

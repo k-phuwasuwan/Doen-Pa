@@ -162,8 +162,10 @@ validation, cascades, and auto-RLS execution revocation. See [testing](testing.m
 Browser tests exercise real login/logout, confirmation/recovery tokens, SSR
 refresh and authenticated Data API isolation. Cloud tests additionally cover
 private Storage access, cross-browser reads and failure/retry cleanup; see
-[testing](testing.md). SMTP delivery and production-domain configuration still
-require separate verification.
+[testing](testing.md). The user confirmed real Gmail delivery and real-device
+checks on 2026-10-22; see [Auth setup](supabase-setup.md#production-url-and-email-delivery--2026-10-22)
+and [production acceptance](testing.md#production-acceptance--2026-10-22) for the
+recorded verification scope.
 
 References: [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security),
 [user data](https://supabase.com/docs/guides/auth/managing-user-data),

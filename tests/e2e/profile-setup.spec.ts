@@ -18,12 +18,14 @@ test("first login opens setup without Back or Cancel, saves to Search and skips 
     await page.getByLabel("รหัสผ่าน", { exact: true }).fill(account.password);
     await page.getByRole("button", { name: "เข้าสู่ระบบ", exact: true }).click();
     await expect(page.getByRole("heading", { name: "ตั้งค่าโปรไฟล์ของคุณ", exact: true })).toBeVisible();
+    await page.waitForLoadState("networkidle");
     await expect(page.getByRole("link", { name: "ย้อนกลับ", exact: true })).toHaveCount(0);
     await expect(page.getByRole("link", { name: "ยกเลิก", exact: true })).toHaveCount(0);
     await expect(page.getByLabel("ชื่อที่แสดง", { exact: true })).toHaveValue("");
     await expect(page.getByLabel("ชื่อผู้ใช้", { exact: true })).toHaveValue("");
     await page.getByLabel("ชื่อที่แสดง", { exact: true }).fill("นักเดินป่าครั้งแรก");
     await page.getByLabel("ชื่อผู้ใช้", { exact: true }).fill("first_hiker");
+    await expect(page.getByRole("heading", { name: "นักเดินป่าครั้งแรก", exact: true })).toBeVisible();
     expectedConsoleErrors.push("/auth/complete-profile-setup");
     await page.route("**/auth/complete-profile-setup", (route) => route.fulfill({ status: 503, json: { error: "ตั้งค่าโปรไฟล์ไม่สำเร็จ กรุณาลองบันทึกอีกครั้ง" } }));
     await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).click();

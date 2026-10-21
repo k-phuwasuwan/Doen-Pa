@@ -17,8 +17,8 @@ This file describes the **current implementation and accepted behavior**, not a 
 - Source of truth for types: `src/types/index.ts`; for design tokens/effects: `app/globals.css` and `tailwind.config.ts`; for the running place catalog: Supabase `public.places`, read through `src/services/place.service.ts`.
 - The app starts **logged out**. Supabase SSR implements email/password signup, confirmation, login, recovery and logout. New accounts start with zero memories. Profiles and travel records persist in Supabase; photos use private Storage with owner-only access. Google login remains deferred. Never reintroduce seeded personal records or sample user photos.
 
-- Deployment decision: deploy on **Vercel** using its provided **`*.vercel.app` URL**. The current plan requires no purchased custom domain. Configure Supabase Auth Site URL and allowed redirect URLs for the actual deployed HTTPS address before production verification.
-- Auth email decision: use **Gmail SMTP** with a dedicated Gmail sender account, 2-Step Verification and an App Password stored in Supabase's custom SMTP settings. Keep the App Password out of source control and browser code. Deployment and SMTP setup remain pending until configured and verified; this decision does not mean email delivery is already working.
+- Production runs on **Vercel** at **`https://doen-pa.vercel.app`**; no purchased custom domain is required. Recheck Supabase Auth Site URL and allowed redirect URLs whenever the deployment domain changes. Production acceptance results are recorded in [docs/testing.md](docs/testing.md).
+- Auth email uses **Gmail SMTP** with a dedicated sender, 2-Step Verification and an App Password stored only in Supabase's custom SMTP settings. On **2026-10-22**, the user confirmed real-inbox signup/confirmation, resend and password-recovery checks passed. Keep the App Password out of source control and browser code; automated token tests do not themselves prove email delivery.
 
 ## Routes and navigation
 

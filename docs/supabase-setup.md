@@ -129,21 +129,27 @@ See [private account data](private-data-backend.md) before
 changing cloud writes, Storage or imports. The `rls_auto_enable()` API-execution
 warnings remain resolved.
 
-## Email delivery and production URL setup still required
+## Production URL and email delivery — 2026-10-22
 
-The code and genuine Auth tokens have been tested locally. SMTP delivery and
-the deployed domain have not been configured or verified in this change.
-Prepare the production URL and SMTP provider before opening public registration.
+The app is deployed at `https://doen-pa.vercel.app` on Vercel. The user confirmed
+that the real Gmail inbox checks for signup/confirmation, resend and password
+recovery passed on 2026-10-22. This is user-reported email-delivery verification;
+automated token tests do not send email. See [production acceptance](testing.md#production-acceptance--2026-10-22)
+for the browser journey and real-device verification status.
 
-In the intended project's Auth settings:
+The selected sender is a dedicated Gmail account with 2-Step Verification and
+an App Password stored only in Supabase custom SMTP. Keep credentials out of
+source control, browser code and test artifacts.
+
+When changing domains, sender accounts or Auth configuration:
 
 1. Set Site URL to the actual HTTPS app URL, and allow the callback URLs used by
    the app for production and localhost. The app currently sends
    `<app-origin>/auth/callback?next=<allowed-app-path>` for signup/recovery.
    Review the exact redirect allowlist with that URL shape.
-2. Configure custom SMTP with a verified sender domain and address. Supabase's
-   default sender restricts recipients to project team members and is unsuitable
-   for public registration.
+2. Check the dedicated Gmail custom SMTP configuration and sender address.
+   Configure replacement credentials directly in Supabase; never add them to
+   repository or frontend environment variables.
 3. Keep email confirmation enabled. Test signup, resend and recovery with a real
    inbox, including spam delivery, expired links and already-used links.
 4. Set the public Supabase URL/key on the hosting provider and test the complete

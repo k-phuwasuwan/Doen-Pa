@@ -216,3 +216,26 @@ Search card heading cannot make the test advance before navigation finishes.
 
 Screenshots are saved outside the repository under
 `/tmp/doen-pa-production-{passport,map,stats,profile}-{desktop,mobile}.png`.
+
+### Post-refactor deployment verification — 2026-10-22
+
+- Runtime commit: `b7e1c520c6f864aee0b27f8db0d24d0d155d6f97`, including the
+  preceding cleanup/performance and account/navigation commits. Its Vercel
+  deployment completed successfully before testing the production alias
+  `https://doen-pa.vercel.app`.
+- **24/24 browser cases passed** in Chromium at desktop 1440 × 1000 and mobile
+  390 × 844, using `PLAYWRIGHT_PRODUCTION=1` and two workers.
+- Suites: `production-journey`, `profile-setup`, `navigation`,
+  `stamp-navigation`, `search-filters`, `account-refresh` and `map-selection`.
+  They verify new-account setup, real private-photo uploads and delivery,
+  dated/rated memories, Passport/lightbox, Stats/Profile, logout access denial,
+  fresh-browser persistence, keyboard stamping and Back destinations, active
+  tabs/guest previews, client filters, shared refreshes and stale-response races.
+- The complete production journey used real Stadia terrain responses and loaded
+  image bytes; no terrain 401/403 or unexpected browser errors were observed.
+  The separate marker-interaction suite stubs terrain to isolate selection and
+  keyboard focus. Desktop/mobile Passport, Map, Stats and Profile screenshots
+  were visually inspected.
+- Temporary accounts and their uploads were removed by test cleanup. No catalog
+  changes or migrations were applied. This run did not send SMTP email or repeat
+  the user's earlier physical-device tests.

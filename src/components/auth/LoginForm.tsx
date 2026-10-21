@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, LogIn } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus } from "lucide-react";
 import { notifyAuthChanged } from "@/lib/auth/browser";
 
 type Mode = "login" | "signup" | "forgot-password" | "reset-password";
@@ -79,6 +79,9 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
           </button>
         </div>
         {isNewPassword && <p id="password-help" className="mt-1.5 text-xs text-brand-800/75">ใช้รหัสผ่าน 8–72 ตัวอักษร และหลีกเลี่ยงรหัสที่ใช้กับบัญชีอื่น</p>}
+        {mode === "login" && <div className="mt-1 flex justify-end">
+          <Link href={"/forgot-password" + query} className={linkClass + " hover:text-brand-900"}>ลืมรหัสผ่าน</Link>
+        </div>}
       </div>}
       {isNewPassword && <div>
         <label htmlFor="confirm-password" className="mb-1.5 block text-sm font-medium text-brand-800">ยืนยันรหัสผ่านใหม่</label>
@@ -91,11 +94,14 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
       </button>
     </form>
     {canResend && <button type="button" disabled={busy || !email} onClick={() => void submit("resend")} className={linkClass + " mt-2 disabled:opacity-60"}>ส่งอีเมลยืนยันอีกครั้ง</button>}
-    {(mode === "login" || mode === "reset-password") && <div className="mt-4 flex flex-wrap items-center justify-between gap-1">
-      {mode === "login" ? <>
-        <Link href={"/signup" + query} className={linkClass}>สมัครสมาชิก</Link>
-        <Link href={"/forgot-password" + query} className={linkClass}>ลืมรหัสผ่าน</Link>
-      </> : <Link href={"/login" + query} className={linkClass}>กลับไปเข้าสู่ระบบ</Link>}
+    {mode === "login" && <div className="mt-6 border-t border-brand-800/10 pt-5">
+      <p className="mb-3 text-center text-sm text-brand-800/65">ยังไม่มีบัญชี?</p>
+      <Link href={"/signup" + query} className="site-top-nav-surface flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-700/15 px-5 text-base font-semibold text-brand-800 backdrop-blur-xl transition-colors hover:border-brand-500 hover:text-brand-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+        <UserPlus className="h-5 w-5" aria-hidden="true" />สมัครสมาชิก
+      </Link>
+    </div>}
+    {mode === "reset-password" && <div className="mt-4">
+      <Link href={"/login" + query} className={linkClass}>กลับไปเข้าสู่ระบบ</Link>
     </div>}
   </>;
 }

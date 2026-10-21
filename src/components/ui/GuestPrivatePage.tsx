@@ -7,7 +7,6 @@ interface GuestPrivatePageProps {
   emptyTitle: string;
   description: string;
   previewHref: string;
-  previewLabel: string;
   headerIcon: LucideIcon;
   emptyIcon: LucideIcon;
 }
@@ -18,7 +17,6 @@ export function GuestPrivatePage({
   emptyTitle,
   description,
   previewHref,
-  previewLabel,
   headerIcon: HeaderIcon,
   emptyIcon: EmptyIcon,
 }: GuestPrivatePageProps) {
@@ -43,9 +41,6 @@ export function GuestPrivatePage({
         <Link href={`/login?from=${previewHref.slice(1)}`} className="liquid-glass mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-7 py-3 font-semibold text-brand-800 transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
           <LogIn className="h-5 w-5" aria-hidden="true" />
           เข้าสู่ระบบ
-        </Link>
-        <Link href="/search" className="mt-5 rounded-full px-4 py-2 text-sm font-medium text-brand-700 underline underline-offset-4 transition hover:text-brand-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-          {previewLabel}
         </Link>
       </section>
     </div>

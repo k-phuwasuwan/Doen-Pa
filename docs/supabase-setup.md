@@ -79,6 +79,11 @@ credentials, unconfirmed email, expired links, rate limits and network errors
 have Thai recovery messages. The form does not persist passwords. Callback
 responses suppress referrers and shared caching.
 
+Signup, resend and password-recovery submissions do not display email-send
+success notices in the form. Errors remain visible. Signup and recovery retain
+the top Back control and omit the duplicate Login footer link; signup still
+offers resend after a successful request.
+
 `/auth/callback` exchanges a PKCE code. Default email links using this flow must
 be opened in the browser where signup/recovery began. `/auth/confirm` also accepts
 a single-use `token_hash` for SSR email templates, including another device.

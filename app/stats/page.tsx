@@ -23,7 +23,6 @@ export default async function StatsPage({ searchParams }: StatsPageProps) {
         emptyTitle="ยังไม่มีสถิติการเดินทาง"
         description="เข้าสู่ระบบเพื่อดูจำนวนสถานที่ จังหวัด ภูมิภาค และสถิติจากการเดินทางของคุณ"
         previewHref="/stats"
-        previewLabel="ค้นหาสถานที่"
         headerIcon={BarChart3}
         emptyIcon={ChartNoAxesCombined}
       />

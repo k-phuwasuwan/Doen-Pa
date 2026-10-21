@@ -31,15 +31,15 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/map` | Full-viewport visited-place terrain map. |
 | `/passport` | Account's Passport and travel-record cards, initially empty; logged-out visitors see the guest screen. |
 | `/passport?view=guest` | Optional guest design preview; this parameter is not a security boundary. |
-| `/signup` | Email/password signup, confirmation notice and resend. |
-| `/forgot-password` | Request a password recovery link. |
+| `/signup` | Email/password signup and resend; no email-send success notice or extra Login footer link. |
+| `/forgot-password` | Request a password recovery link; no email-send success notice or extra Login footer link. |
 | `/reset-password` | Requires a verified session; sets a new password, signs out the current session and returns to Login. |
 | `/login` | Real email/password login. `next` accepts allowed app destinations only; legacy `from` links Back to the originating main route. Signed-in users return to their destination. |
 | `/stats` | Personal travel statistics by province, place type, and region. Badge UI is deferred. |
-| `/stats?view=guest` | Optional guest Stats preview with a Search link; anonymous `/stats` shows the same guest screen. |
+| `/stats?view=guest` | Optional guest Stats preview with Login; anonymous `/stats` shows the same guest screen. |
 | `/profile` | Personal profile and photo gallery. |
 | `/profile/edit` | Requires authentication; edit the account's display name, username, bio, avatar and cover with a live preview. Changes save to the account in Supabase. |
-| `/profile?view=guest` | Optional guest Profile preview with a Search link; anonymous `/profile` shows the same guest screen. |
+| `/profile?view=guest` | Optional guest Profile preview with Login; anonymous `/profile` shows the same guest screen. |
 
 Place Details receives an explicit origin when needed:
 
@@ -116,6 +116,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 - Passport lists all travel records without a category filter. Cards open read-only Place Details with `from=passport`; they do not offer stamping there.
 - `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are optional guest design previews alongside real authentication. Keep them distinct from signed-in empty-data states.
+- Guest Passport, Stats and Profile show Login without a separate “ค้นหาสถานที่” link.
 - Stats and Profile derive personal counts from the current user's records. Stats shows travel, place, province, region, national park, and place-type counts; the badge teaser and collection are deferred. The national-park progress card sits below province progress. Its total comes from catalog places marked `isNationalPark`, independent of their display type. Visited progress counts each eligible place once; adding another park changes the total automatically. The place-type section uses progress bars and remaining catalog counts. Region progress bars and remaining counts use national parks in each region. Profile uses a real photo count in place of the former badge count. Profile photo tiles link to Place Details with `from=profile`.
 - The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves to Supabase. The form verifies the account before saving; profile text and photo metadata commit together, and replaced objects are cleaned afterward.
 - Profile logout revokes the current session with `scope: local`, clears its cookies, notifies other tabs and reloads the guest Profile. It preserves local originals and account-scoped memories; other device sessions are not intentionally signed out.

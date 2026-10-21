@@ -70,6 +70,9 @@ that cloud data is independent of browser storage.
 Covered journeys:
 
 - Guest screens, protected forms and a signed-in account's empty personal pages.
+- Guest personal pages omit the extra Search link. Signup/recovery omit the
+  duplicate Login footer and email-send success notices while retaining errors
+  and resend (`auth-screens.spec.ts`, mocked email responses, no email sent).
 - Real login, reload persistence, expired-session refresh, logout across tabs,
   account switching, preserved legacy local data and permitted return destinations.
 - Confirmation/recovery with real single-use Auth tokens, rejected unconfirmed

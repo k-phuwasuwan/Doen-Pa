@@ -23,7 +23,6 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
         emptyTitle="โปรไฟล์ของคุณยังว่างเปล่า"
         description="เข้าสู่ระบบเพื่อเก็บข้อมูลการเดินทาง รูปภาพ และความทรงจำไว้ในโปรไฟล์ของคุณ"
         previewHref="/profile"
-        previewLabel="ค้นหาสถานที่"
         headerIcon={UserRound}
         emptyIcon={UserRoundPen}
       />

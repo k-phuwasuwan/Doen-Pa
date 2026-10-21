@@ -39,7 +39,9 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
         window.location.assign(result.next);
         return;
       } else {
-        setNotice(result.message ?? "ทำรายการสำเร็จ");
+        if (action !== "signup" && action !== "forgot-password" && action !== "resend") {
+          setNotice(result.message ?? "ทำรายการสำเร็จ");
+        }
         if (mode === "signup") setCanResend(true);
       }
     } catch {
@@ -83,17 +85,17 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
         <input id="confirm-password" name="confirmPassword" type={showPassword ? "text" : "password"} autoComplete="new-password" required minLength={8} maxLength={72} disabled={busy} className={inputClass} />
       </div>}
       <p role="alert" className="text-sm text-red-700">{error}</p>
-      <p role="status" aria-live="polite" className="text-sm text-brand-800">{notice}</p>
+      {notice && <p role="status" aria-live="polite" className="text-sm text-brand-800">{notice}</p>}
       <button type="submit" disabled={busy} className="glass-button flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 text-base font-semibold disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
         <LogIn className="h-5 w-5" aria-hidden="true" />{busy ? "กำลังดำเนินการ…" : labels[mode]}
       </button>
     </form>
     {canResend && <button type="button" disabled={busy || !email} onClick={() => void submit("resend")} className={linkClass + " mt-2 disabled:opacity-60"}>ส่งอีเมลยืนยันอีกครั้ง</button>}
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-1">
+    {(mode === "login" || mode === "reset-password") && <div className="mt-4 flex flex-wrap items-center justify-between gap-1">
       {mode === "login" ? <>
         <Link href={"/signup" + query} className={linkClass}>สมัครสมาชิก</Link>
         <Link href={"/forgot-password" + query} className={linkClass}>ลืมรหัสผ่าน</Link>
       </> : <Link href={"/login" + query} className={linkClass}>กลับไปเข้าสู่ระบบ</Link>}
-    </div>
+    </div>}
   </>;
 }

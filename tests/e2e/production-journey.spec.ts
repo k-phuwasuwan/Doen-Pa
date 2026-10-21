@@ -40,7 +40,7 @@ test("production journey saves a new hiker's memories and restores them after lo
       await place.click();
       await expect(page).toHaveURL(/\/places\/place-doi-inthanon$/);
       await expect(page.getByRole("heading", { name: placeName, level: 1, exact: true })).toBeVisible();
-      await page.getByRole("button", { name: "สแตมป์", exact: true }).click();
+      await page.getByRole("link", { name: "สแตมป์", exact: true }).click();
       await expect(page).toHaveURL(/\/records\/new\?placeId=place-doi-inthanon$/);
       await page.waitForLoadState("networkidle");
       await page.locator("#visitedAt").fill("2026-10-20");
@@ -56,7 +56,7 @@ test("production journey saves a new hiker's memories and restores them after lo
       await expect(record).toHaveCount(1);
       await record.click();
       await expect(page.getByText("1 / 2", { exact: true })).toBeVisible();
-      await expect(page.getByRole("button", { name: "สแตมป์", exact: true })).toHaveCount(0);
+      await expect(page.getByRole("link", { name: "สแตมป์", exact: true })).toHaveCount(0);
       await page.getByRole("button", { name: "ดูภาพจากการเดินทาง รูปที่ 1 แบบเต็มจอ", exact: true }).click();
       await expect(page.getByRole("dialog")).toBeVisible();
       await page.keyboard.press("Escape");

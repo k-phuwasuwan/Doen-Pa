@@ -10,7 +10,7 @@ git diff --check
 pnpm build
 ```
 
-`pnpm test` runs the read-model, storage-snapshot, image-import, session and place-database tests with Node's test runner. TypeScript compilation goes into a temporary directory and is removed when the command completes. The place-database tests require Python 3 to check generated files and use test-only PGlite to execute Postgres migrations, seed imports and RLS checks in memory; they do not connect to Supabase or need Docker. See [catalog verification](places-backend.md#automated-verification) for coverage and hosted verification limits.
+`pnpm test` runs the read-model, image-import, session and place-database tests with Node's test runner. TypeScript compilation goes into a temporary directory and is removed when the command completes. The place-database tests require Python 3 to check generated files and use test-only PGlite to execute Postgres migrations, seed imports and RLS checks in memory; they do not connect to Supabase or need Docker. See [catalog verification](places-backend.md#automated-verification) for coverage and hosted verification limits.
 
 Private-data database tests apply the full migration history with simulated
 Supabase roles and `auth.uid()`. They check two-account isolation, ownership
@@ -20,6 +20,39 @@ validate the administrator-only hosted smoke script and its rollback. To run
 that script against the linked project, follow
 [private-data verification](private-data-backend.md#apply-and-verify). Database
 role tests do not validate Auth signup, real JWTs/cookies or Storage objects.
+
+`account-rows.test.ts` uses the real Supabase query builder with an in-memory
+HTTP adapter to check owner filters, stable ordering, pagination through a
+smaller project row cap, empty accounts and failed/incomplete responses.
+`account-data.test.ts` checks account identity, optional profile fields, photo
+paths, ratings and timestamp decoding; malformed values fail rather than
+appearing as valid memories or zero progress. Neither test contacts Supabase.
+
+## Logic performance checks
+
+Run `pnpm bench:logic` for repeatable Search, Map photo-selection and Profile
+gallery workloads against the reviewed 156-place catalog and synthetic personal
+records. It reports median batch times after seven warmups and 25 samples;
+Search reuses one prebuilt catalog, while Map/Profile include creating a fresh
+read model. Run it separately from builds
+and other CPU-heavy checks. This measures Node computation only, not network,
+image decoding, React rendering or total page-load time.
+
+On 2026-10-22, an interleaved comparison in one Node 22.21.1 process against the
+pre-optimization worktree produced equal checksums and these median batch times:
+
+| Workload | Batch | Before | After |
+| --- | --- | --- | --- |
+| Search over 156 places | 1,000 queries | 33.273 ms | 3.470 ms |
+| Map photo selection with 10,000 records | 20 fresh models, selecting every visited place | 25.352 ms | 10.063 ms |
+| Profile gallery with 10,000 records | 20 fresh models | 40.740 ms | 20.085 ms |
+
+Records in this fixture have two photos every fifth record. Results vary by
+hardware, record distribution and photo density. Search precomputes normalized
+text for an immutable catalog snapshot; Map uses `getMapPhoto` without sorting
+the gallery; Profile sorts only records containing photos. Unit tests cover
+search equivalence and fresh catalog snapshots, map date ties and photo-less
+visits, account isolation, and matching Profile/Place gallery positions.
 
 ## Browser regression tests
 
@@ -86,6 +119,17 @@ Covered journeys:
 - Latest avatar selection, independent cover reads, and save disabled while reading.
 - Avatar replacement removes old bytes, retains the cover and updates another open editor.
 - Delayed background reads cannot overwrite a confirmed profile save.
+- Concurrent focus/visibility triggers share one account request; failed reads
+  keep the current snapshot and can retry. Cross-tab changes and record saves
+  start a newer read even while an earlier response is held. Older data and
+  errors cannot replace the newer result (`account-refresh.spec.ts`).
+- Map selection retains existing marker elements and keyboard focus. Click,
+  Enter and Space select pins and closing details clears selection
+  (`map-selection.spec.ts`, terrain tiles stubbed).
+- Both navigation bars retain the origin tab on nested Place Details and
+  preserve explicit guest previews during navigation and Back
+  (`navigation.spec.ts`). Stamp links support keyboard activation and preserve
+  Search versus Place Details Back destinations (`stamp-navigation.spec.ts`).
 - Photo removal and alt edits during a pending read, then save and cross-tab Passport update.
 - Profile/record file limits and maximum five photos per record.
 - Failed cloud writes retain drafts without publishing unsaved data.
@@ -98,7 +142,7 @@ Covered journeys:
   are held; selection, result counts, Back/Forward and reload retain URL state
   on desktop and mobile (`search-filters.spec.ts`, anonymous, no QA account).
 
-The map catalog test stubs terrain tile images to isolate visited-pin behavior;
+The catalog and map-selection tests stub terrain tile images to isolate visited-pin behavior;
 it preserves and checks attribution but does not validate Stadia credentials.
 
 Held image reads are released explicitly by tests; race checks do not depend on arbitrary sleep durations. Browser console errors and uncaught page errors fail the test.

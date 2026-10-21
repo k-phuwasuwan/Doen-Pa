@@ -164,11 +164,11 @@ export function PhotoUploader({ value, onChange, importer, loading }: PhotoUploa
               </div>
 
               {/* Remove button */}
-                <button
+              <button
                 type="button"
                 onClick={() => handleRemove(index)}
                 aria-label={`ลบรูป ${photo.name}`}
-                className="absolute right-1.5 top-1.5 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white opacity-100 transition-opacity duration-150 sm:h-7 sm:w-7 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
+                className="absolute right-1.5 top-1.5 flex h-11 w-11 items-center justify-center rounded-full bg-black/60 text-white opacity-100 transition-opacity duration-150 sm:h-7 sm:w-7 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
               >
                 <X className="w-3.5 h-3.5" />
               </button>

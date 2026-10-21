@@ -10,7 +10,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 
 ## Current stack and repository
 
-- Next.js **16.3.4** App Router, React **19**, TypeScript strict mode, Tailwind CSS **4**, Lucide React, Leaflet 1.9/react-leaflet 5; package manager **pnpm**.
+- Next.js **16.3.4** App Router, React **19**, TypeScript strict mode, Tailwind CSS **4**, Lucide React, Leaflet 1.9 (used directly); package manager **pnpm**.
 - Fonts: Kanit and Plus Jakarta Sans are bundled under `public/fonts/` and declared in `app/globals.css`; the production build uses Webpack so it does not fetch Google Fonts during compilation.
 - Pages and global CSS live in root-level `app/`; components, services, data, types, and hooks live in `src/`. Do not create a second `src/app/`.
 - State uses React hooks, URL query parameters and `useSyncExternalStore` over verified Supabase account snapshots. localStorage carries cross-tab change signals only. **Zustand is not installed**; do not assume a store layer exists.
@@ -46,7 +46,7 @@ Place Details receives an explicit origin when needed:
 - Search opens `/places/[id]`: Back → `/search`; the Search nav item remains active; stamping is available.
 - Passport cards open `/places/[id]?from=passport`: Back → `/passport`; the Passport nav item remains active; **read-only**, so no Stamp button.
 - Profile photos open `/places/[id]?from=profile&photo=[index]` at the selected image: Back → `/profile`; the Profile nav item remains active.
-- `src/components/navigation/activeNav.ts` owns active-tab mapping for TopNav and BottomNav. Preserve a visible active tab on nested pages and during client navigation.
+- `src/components/navigation/activeNav.ts` owns shared links and active-tab mapping for TopNav and BottomNav; `NavigationState` preserves their last resolved tab and guest state during URL suspension. Preserve a visible active tab on nested pages and during client navigation.
 - Logged-out users and `?view=guest` previews see the Login link. Navigation preserves explicit `view=guest`; server authentication and RLS enforce access independently.
 - Signed-in TopNav reads the account-scoped profile through `useCurrentUser`. Do not hardcode a sample person's name or avatar.
 - `BackButton` uses an explicit href, never browser history. In the record form, `returnTo=search` returns to Search; otherwise Back returns to the place page. A successful record submission redirects to Passport.
@@ -61,7 +61,7 @@ Do not add a dialog version of Place Details. The map's selected-place card is d
 
 `data/national-parks-156.csv` is the reviewed import source. `pnpm import:places` generates only `supabase/seed.sql`; applying the seed updates the database. `--json` supplies offline tests and benchmarks. The generated application catalog `src/data/places.ts` has been removed. Preserve existing text IDs, the alias in `src/data/place-identities.ts`, and history-only metadata in `src/data/archived-places.ts` so old memories remain readable without adding searchable places or park credit. Before changing catalog loading, imports, database permissions or deployment, read [docs/places-backend.md](docs/places-backend.md).
 
-`getAuthAccount` verifies Auth before loading the account's profile, records and photo metadata with the user's SSR client. `AuthProvider` owns `createAccountStore` from `src/lib/account/browser.ts`; hooks subscribe to its in-memory snapshots. `/api/account` refreshes on cross-tab change signals, window focus and visibility; read failures retain the last snapshot with a retry notice. Initial read failures use the global error screen. Anonymous stores expose empty data and reject writes. Keep data operations out of presentational components where practical.
+`getAuthAccount` verifies Auth before loading the account's profile, records and photo metadata with the user's SSR client. Account reads paginate by the actual response length and reported total; a project row cap must never truncate personal data. Network snapshots validate optional profile fields and string timestamps before publication. The account store verifies the current identity before uploads and metadata writes; forms delegate to it without a duplicate Auth request. `AuthProvider` owns `createAccountStore` from `src/lib/account/browser.ts`; hooks subscribe to its in-memory snapshots. `/api/account` refreshes on cross-tab change signals, window focus and visibility. Concurrent background refreshes share one request per account-data revision. Cross-tab changes use `refresh({ afterChange: true })`; confirmed profile writes and record-write responses invalidate older reads so post-write refreshes never join pre-write requests. Only the latest refresh updates the retry notice; read failures retain the last snapshot. Initial read failures use the global error screen. Anonymous stores expose empty data and reject writes. Keep data operations out of presentational components where practical.
 
 All legacy local keys, including `doen-pa-travel-records-v2`, `doen-pa-current-user-v2` and both `*-account-v1:<uuid>` keys, remain untouched and are never automatically imported. **User decision — 2026-10-20:** there is no local data to migrate, so local import is removed from the plan. Manual local testing uses the accounts already created for this project. Reopen local import only if explicitly requested.
 
@@ -91,9 +91,10 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 ### Search
 
-- `app/search/page.tsx` supplies the full Supabase catalog snapshot and server-rendered place cards. `SearchResults` filters those cards in the browser using `q`, `type`, and `visited` URL parameters and the current user's records. Search controls update native browser history so selection and results do not wait for another Auth/catalog request; direct links, reload and Back/Forward retain the filters. An open Search page keeps its catalog snapshot until navigation or reload.
+- `app/search/page.tsx` supplies the full Supabase catalog snapshot and server-rendered place cards. `SearchResults` filters those cards in the browser using `q`, `type`, and `visited` URL parameters and the current user's records. Search controls update native browser history so selection and results do not wait for another Auth/catalog request; direct links, reload and Back/Forward retain the filters. An open Search page keeps its catalog snapshot until navigation or reload. `createPlaceCatalog` normalizes searchable text once per immutable snapshot; create a new catalog when place data changes. Query/type results are memoized independently of the visited filter and account updates.
 - Search category options show only their names. On mobile, categories form one horizontally scrollable row. Choosing a category preserves the page's scroll position on mobile and desktop.
 - Place cards link to full Place Details. Their green type chip is a place category, not booking status. The personal visit count appears only when positive. The card's Stamp action opens the record form with `returnTo=search`.
+- The card's Stamp link is a sibling of its details link, never an interactive element nested inside it. Stamp links load the form on demand with `prefetch={false}`.
 - No public aggregate rating, review count, booking badge, or popularity recommendation.
 
 ### Place Details and records
@@ -106,10 +107,11 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 ### Map
 
-- `MapOverview` combines client-side records with the server-provided catalog and deduplicates visited places by `placeId` when valid coordinates exist. `DynamicThailandMap` loads Leaflet without SSR.
+- `MapOverview` combines client-side records with the server-provided catalog and deduplicates visited places by `placeId` when valid coordinates exist. Its `getMapPhoto` read selects the latest photographed visit in one pass without sorting or building a gallery; equal visit dates retain storage order. `DynamicThailandMap` loads Leaflet without SSR.
 - Map fills the viewport **behind** the floating nav. Terrain tiles use Stadia Maps' Stamen Terrain Background. Stadia domain authentication for `doen-pa.vercel.app` was configured and verified on 2026-10-21; in Stadia's form, leave Subdomain empty and set Domain to `doen-pa.vercel.app`, with Allow All Subdomains off. This deployment needs no API key. Other deployed domains need their own Stadia domain authentication or `NEXT_PUBLIC_STADIA_MAPS_API_KEY`. If old 401 warning tiles remain after authorization, hard-reload the page to bypass cached tiles.
 - Keep Stadia Maps, Stamen Design, OpenMapTiles, and OpenStreetMap attribution visible; only Leaflet's optional prefix is hidden.
 - Constrain panning to Thailand and its nearby region. Show visited-place pins only, neutral province outlines and small Thai province names from `public/data/thailand.json`, and noninteractive Thai labels for neighboring countries. Do not shade provinces by visit status.
+- Pin selection reuses existing Leaflet markers and changes only the old/new selected icons; rebuild markers when place data changes. Enter and Space select a focused pin without losing keyboard focus.
 - Selecting a pin shows a bottom card on desktop and mobile with record photo when available, place name, **province chip**, distance, and altitude. It displays information only.
 
 ### Passport, Stats, Profile

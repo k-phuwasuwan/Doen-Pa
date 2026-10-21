@@ -373,8 +373,6 @@ body {
   .map-place-photo { height: 7rem; }
   .map-fullscreen--place-selected .leaflet-control-zoom { display: none; }
 }
-@media (max-width: 1023px) and (max-height: 520px) {
-}
 
 .visited-map-pin-wrapper { background: transparent; border: 0; }
 .visited-map-pin {
@@ -457,6 +455,11 @@ body {
 }
 .map-fullscreen .leaflet-top.leaflet-right { top: 6rem; }
 @media (max-width: 1023px) {
+  .map-fullscreen .leaflet-control-zoom.leaflet-bar a {
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+  }
   .map-fullscreen .leaflet-bottom .leaflet-control-attribution { margin-bottom: 6rem; }
 }
 

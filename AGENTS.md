@@ -107,7 +107,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 ### Map
 
 - `MapOverview` combines client-side records with the server-provided catalog and deduplicates visited places by `placeId` when valid coordinates exist. `DynamicThailandMap` loads Leaflet without SSR.
-- Map fills the viewport **behind** the floating nav. Terrain tiles use Stadia Maps' Stamen Terrain Background. Deployed domains need `NEXT_PUBLIC_STADIA_MAPS_API_KEY` or Stadia domain authentication.
+- Map fills the viewport **behind** the floating nav. Terrain tiles use Stadia Maps' Stamen Terrain Background. Stadia domain authentication for `doen-pa.vercel.app` was configured and verified on 2026-10-21; in Stadia's form, leave Subdomain empty and set Domain to `doen-pa.vercel.app`, with Allow All Subdomains off. This deployment needs no API key. Other deployed domains need their own Stadia domain authentication or `NEXT_PUBLIC_STADIA_MAPS_API_KEY`. If old 401 warning tiles remain after authorization, hard-reload the page to bypass cached tiles.
 - Keep Stadia Maps, Stamen Design, OpenMapTiles, and OpenStreetMap attribution visible; only Leaflet's optional prefix is hidden.
 - Constrain panning to Thailand and its nearby region. Show visited-place pins only, neutral province outlines and small Thai province names from `public/data/thailand.json`, and noninteractive Thai labels for neighboring countries. Do not shade provinces by visit status.
 - Selecting a pin shows a bottom card on desktop and mobile with record photo when available, place name, **province chip**, distance, and altitude. It displays information only.

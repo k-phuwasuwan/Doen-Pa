@@ -62,7 +62,7 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
   }
 
   const inputClass = "glass-input min-h-14 w-full px-5 text-base text-brand-800 placeholder:text-brand-800/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-60";
-  const linkClass = "inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-medium text-brand-700 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-brand-600";
+  const linkClass = "inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-medium text-brand-700 focus-visible:outline-2 focus-visible:outline-brand-600";
 
   return <>
     <form onSubmit={handleSubmit} className="mt-7 space-y-4" aria-busy={busy}>
@@ -93,15 +93,14 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
         <LogIn className="h-5 w-5" aria-hidden="true" />{busy ? "กำลังดำเนินการ…" : labels[mode]}
       </button>
     </form>
-    {canResend && <button type="button" disabled={busy || !email} onClick={() => void submit("resend")} className={linkClass + " mt-2 disabled:opacity-60"}>ส่งอีเมลยืนยันอีกครั้ง</button>}
-    {mode === "login" && <div className="mt-6 border-t border-brand-800/10 pt-5">
-      <p className="mb-3 text-center text-sm text-brand-800/65">ยังไม่มีบัญชี?</p>
+    {canResend && <button type="button" disabled={busy || !email} onClick={() => void submit("resend")} className={linkClass + " mt-2 underline underline-offset-4 disabled:opacity-60"}>ส่งอีเมลยืนยันอีกครั้ง</button>}
+    {mode === "login" && <div className="mt-3">
       <Link href={"/signup" + query} className="site-top-nav-surface flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-700/15 px-5 text-base font-semibold text-brand-800 backdrop-blur-xl transition-colors hover:border-brand-500 hover:text-brand-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
         <UserPlus className="h-5 w-5" aria-hidden="true" />สมัครสมาชิก
       </Link>
     </div>}
     {mode === "reset-password" && <div className="mt-4">
-      <Link href={"/login" + query} className={linkClass}>กลับไปเข้าสู่ระบบ</Link>
+      <Link href={"/login" + query} className={linkClass + " underline underline-offset-4"}>กลับไปเข้าสู่ระบบ</Link>
     </div>}
   </>;
 }

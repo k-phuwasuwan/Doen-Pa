@@ -15,7 +15,7 @@ export const test = base.extend<{ appHealth: void; signedIn: boolean; account: T
     const account = await createTemporaryAccount();
     try { await provide(account); } finally { await removeTemporaryAccount(account.id); }
   },
-  accountSession: [async ({ page, context, account, signedIn }, use) => {
+  accountSession: [async ({ page, context, account, signedIn }, provide) => {
     await context.addInitScript((id) => { window.doenPaTestAccountId = id; }, account.id);
     if (signedIn) {
       const response = await page.request.post("/auth/login", {
@@ -24,10 +24,13 @@ export const test = base.extend<{ appHealth: void; signedIn: boolean; account: T
       });
       expect(response.status(), "QA account login must succeed").toBe(200);
     }
-    await use();
-    // End only this context's Auth session; reusable QA identities are retained.
-    const logout = await page.request.post("/auth/logout", { headers: { Origin: appOrigin }, data: {} });
-    expect(logout.status(), "QA context session cleanup must succeed").toBe(200);
+    try {
+      await provide();
+    } finally {
+      // End only this context's Auth session; reusable QA identities are retained.
+      const logout = await page.request.post("/auth/logout", { headers: { Origin: appOrigin }, data: {} });
+      expect(logout.status(), "QA context session cleanup must succeed").toBe(200);
+    }
   }, { auto: true }],
   appHealth: [async ({ context, expectedConsoleErrors }, use) => {
     const errors: string[] = [];
@@ -83,9 +86,9 @@ export async function seedRecords(account: TestAccount, records: Array<{id: stri
   for (const record of records) {
     const result = await admin.from("travel_records").insert({ user_id: account.id, id: record.id, place_id: record.placeId, visited_at: "2026-01-01T12:00:00Z", created_at: record.createdAt ?? "2026-01-02T12:00:00Z", note: record.note ?? "original memory", rating: 0 });
     if (result.error) throw new Error("Could not seed cloud record");
-    for (let position = 0; position < (record.photos?.length ?? 0); position++) {
+    for (const [position, source] of (record.photos ?? []).entries()) {
       const id = crypto.randomUUID(), path = `${account.id}/record-photos/${id}.png`;
-      const bytes = Buffer.from(record.photos![position].split(",")[1], "base64");
+      const bytes = Buffer.from(source.split(",")[1], "base64");
       const upload = await admin.storage.from("travel-photos").upload(path, bytes, { contentType: "image/png" });
       if (upload.error) throw new Error("Could not seed cloud photo");
       const photo = await admin.from("photos").insert({ user_id: account.id, id, kind: "travel", travel_record_id: record.id, position, object_path: path, mime_type: "image/png", size_bytes: bytes.length });

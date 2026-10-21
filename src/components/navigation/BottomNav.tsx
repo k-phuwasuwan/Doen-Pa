@@ -1,45 +1,24 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
 import { Search, Map, BookOpen, BarChart2, User } from "lucide-react";
-import { getActiveNavHref, getNavigationHref, type NavHref } from "./activeNav";
+import { NAV_LINKS, getNavigationHref, type NavHref } from "./activeNav";
+import { NavigationState } from "./NavigationState";
 
-const links: { href: NavHref; label: string; icon: typeof Search }[] = [
-  { href: "/search", label: "ค้นหา", icon: Search },
-  { href: "/map", label: "แผนที่", icon: Map },
-  { href: "/passport", label: "พาสปอร์ต", icon: BookOpen },
-  { href: "/stats", label: "สถิติ", icon: BarChart2 },
-  { href: "/profile", label: "โปรไฟล์", icon: User },
-];
+const icons: Record<NavHref, typeof Search> = {
+  "/search": Search, "/map": Map, "/passport": BookOpen, "/stats": BarChart2, "/profile": User,
+};
 
 export function BottomNav() {
-  const pathname = usePathname();
-  const [lastActiveHref, setLastActiveHref] = useState<NavHref>(() => getActiveNavHref(pathname));
-  const [lastGuest, setLastGuest] = useState(false);
-  return (
-    <Suspense fallback={<BottomNavContent activeHref={lastActiveHref} isGuest={lastGuest} />}>
-      <ResolvedBottomNav pathname={pathname} onActiveChange={setLastActiveHref} onGuestChange={setLastGuest} />
-    </Suspense>
-  );
-}
-
-function ResolvedBottomNav({ pathname, onActiveChange, onGuestChange }: { pathname: string; onActiveChange: (href: NavHref) => void; onGuestChange: (isGuest: boolean) => void }) {
-  const searchParams = useSearchParams();
-  const activeHref = getActiveNavHref(pathname, searchParams.get("from"));
-  const isGuest = searchParams.get("view") === "guest";
-  useEffect(() => onActiveChange(activeHref), [activeHref, onActiveChange]);
-  useEffect(() => onGuestChange(isGuest), [isGuest, onGuestChange]);
-  return <BottomNavContent activeHref={activeHref} isGuest={isGuest} />;
+  return <NavigationState>{(state) => <BottomNavContent {...state} />}</NavigationState>;
 }
 
 function BottomNavContent({ activeHref, isGuest }: { activeHref: NavHref; isGuest: boolean }) {
   return (
     <nav aria-label="เมนูหลัก" className="mobile-bottom-nav fixed left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center rounded-full p-1.5 lg:hidden" style={{ backdropFilter: "blur(28px) saturate(160%)", WebkitBackdropFilter: "blur(28px) saturate(160%)" }}>
-      {links.map((link) => {
+      {NAV_LINKS.map((link) => {
         const isActive = activeHref === link.href;
-        const Icon = link.icon;
+        const Icon = icons[link.href];
         return (
           <Link
             key={link.href}

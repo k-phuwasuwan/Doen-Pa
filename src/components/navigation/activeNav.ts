@@ -1,5 +1,13 @@
 export type NavHref = "/search" | "/map" | "/passport" | "/stats" | "/profile";
 
+export const NAV_LINKS: { href: NavHref; label: string }[] = [
+  { href: "/search", label: "ค้นหา" },
+  { href: "/map", label: "แผนที่" },
+  { href: "/passport", label: "พาสปอร์ต" },
+  { href: "/stats", label: "สถิติ" },
+  { href: "/profile", label: "โปรไฟล์" },
+];
+
 export function getNavigationHref(href: NavHref, isGuest: boolean): string {
   return isGuest ? `${href}?view=guest` : href;
 }

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Star, CalendarDays, FileText, CheckCircle2 } from "lucide-react";
 import { PhotoUploader, type UploadedPhoto } from "./PhotoUploader";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { createClient } from "@/lib/supabase/client";
 import { useImageImport } from "@/lib/use-image-import";
 import type { Place } from "@/types";
 
@@ -14,7 +13,7 @@ interface TravelRecordFormProps {
 }
 
 export function TravelRecordForm({ place }: TravelRecordFormProps) {
-  const { user: account, records } = useAuth();
+  const { records } = useAuth();
   const router = useRouter();
   const { importer, loading: readingPhotos } = useImageImport();
 
@@ -57,12 +56,6 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
     setErrors({});
 
     try {
-      const { data: { user }, error: authError } = await createClient().auth.getUser();
-      if (authError || !account || user?.id !== account.id) {
-        setErrors({ submit: "กรุณาเข้าสู่ระบบอีกครั้งก่อนบันทึก" });
-        setSubmitting(false);
-        return;
-      }
       await records.createRecord({
         id: submissionId,
         placeId: place.id,
@@ -177,7 +170,7 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
                 setHoverRating(0);
               }}
               onMouseEnter={() => setHoverRating(star)}
-              className="p-0.5 focus:outline-none focus:ring-2 focus:ring-brand-500 rounded transition-transform active:scale-90"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center p-0.5 focus:outline-none focus:ring-2 focus:ring-brand-500 rounded transition-transform active:scale-90"
             >
               <Star
                 className={`w-7 h-7 transition-colors duration-100 ${

@@ -80,33 +80,35 @@ test("an expired session snapshot refreshes with the real refresh token before S
 
 test("switching accounts in the same browser isolates new data and preserves originals", async ({ page }) => {
   test.setTimeout(120_000);
-  const isolated = [await createTemporaryAccount(), await createTemporaryAccount()];
+  const isolated: TestAccount[] = [];
   try {
-  await login(page, isolated[0]);
-  await page.evaluate(() => localStorage.setItem("doen-pa-travel-records-v2", "untouched-original"));
-  await openPage(page, "/profile/edit");
-  await page.getByLabel("ชื่อที่แสดง").fill("QA Account A Private");
-  await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).click();
-  await expect(page).toHaveURL(/\/profile$/);
-  await openPage(page, "/records/new?placeId=place-khao-yai");
-  await page.getByLabel("บันทึกความทรงจำ").fill("Account A private memory");
-  await page.getByRole("button", { name: "บันทึกลงพาสปอร์ต", exact: true }).click();
-  await expect(page).toHaveURL(/\/passport$/);
-  await expect(page.getByText("1 บันทึก", { exact: true })).toBeVisible();
-  await openPage(page, "/profile");
-  await page.getByRole("button", { name: "ออกจากระบบ", exact: true }).click();
-  await expect(page.getByRole("link", { name: "เข้าสู่ระบบ", exact: true }).last()).toBeVisible();
-  await login(page, isolated[1], "/passport");
-  await expect(page.getByText("0 บันทึก", { exact: true })).toBeVisible();
-  await expect(page.getByText("QA Account A Private", { exact: true })).toHaveCount(0);
-  await expect(page.getByText("Account A private memory")).toHaveCount(0);
-  await openPage(page, "/profile");
-  await page.getByRole("button", { name: "ออกจากระบบ", exact: true }).click();
-  await expect(page.getByRole("link", { name: "เข้าสู่ระบบ", exact: true }).last()).toBeVisible();
-  await login(page, isolated[0], "/passport");
-  await expect(page.getByRole("heading", { name: "QA Account A Private", exact: true })).toBeVisible();
-  await expect(page.getByText("1 บันทึก", { exact: true })).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem("doen-pa-travel-records-v2"))).toBe("untouched-original");
+    isolated.push(await createTemporaryAccount());
+    isolated.push(await createTemporaryAccount());
+    await login(page, isolated[0]);
+    await page.evaluate(() => localStorage.setItem("doen-pa-travel-records-v2", "untouched-original"));
+    await openPage(page, "/profile/edit");
+    await page.getByLabel("ชื่อที่แสดง").fill("QA Account A Private");
+    await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).click();
+    await expect(page).toHaveURL(/\/profile$/);
+    await openPage(page, "/records/new?placeId=place-khao-yai");
+    await page.getByLabel("บันทึกความทรงจำ").fill("Account A private memory");
+    await page.getByRole("button", { name: "บันทึกลงพาสปอร์ต", exact: true }).click();
+    await expect(page).toHaveURL(/\/passport$/);
+    await expect(page.getByText("1 บันทึก", { exact: true })).toBeVisible();
+    await openPage(page, "/profile");
+    await page.getByRole("button", { name: "ออกจากระบบ", exact: true }).click();
+    await expect(page.getByRole("link", { name: "เข้าสู่ระบบ", exact: true }).last()).toBeVisible();
+    await login(page, isolated[1], "/passport");
+    await expect(page.getByText("0 บันทึก", { exact: true })).toBeVisible();
+    await expect(page.getByText("QA Account A Private", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("Account A private memory")).toHaveCount(0);
+    await openPage(page, "/profile");
+    await page.getByRole("button", { name: "ออกจากระบบ", exact: true }).click();
+    await expect(page.getByRole("link", { name: "เข้าสู่ระบบ", exact: true }).last()).toBeVisible();
+    await login(page, isolated[0], "/passport");
+    await expect(page.getByRole("heading", { name: "QA Account A Private", exact: true })).toBeVisible();
+    await expect(page.getByText("1 บันทึก", { exact: true })).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem("doen-pa-travel-records-v2"))).toBe("untouched-original");
   } finally { for (const account of isolated) await removeTemporaryAccount(account.id); }
 });
 

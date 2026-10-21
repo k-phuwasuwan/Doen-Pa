@@ -83,15 +83,28 @@ limits. Browser uploads also validate size, type and image decodability.
 
 `getAuthAccount` verifies the Auth user before loading a paginated account
 snapshot through the user's SSR client. `/api/account` repeats this verification
-for refreshes; account rows never use an administrative key. `AuthProvider`
+for refreshes; account rows never use an administrative key. `readAccountRows`
+advances by the actual number of rows received and checks the reported total,
+so a project row cap below 500 cannot silently truncate records or photos.
+`decodeAccountData` validates profile fields, owner IDs, private-photo paths,
+ratings and string timestamps before publishing a snapshot. `AuthProvider`
 publishes the snapshot through `createAccountStore`. Cross-tab signals carry
 only an account UUID and nonce; focus/visibility also refresh data from Supabase.
+Concurrent background triggers share one in-flight read for the current account
+data revision. A cross-tab change or a write response advances that revision,
+so a post-change read cannot reuse a pre-change response. An older read cannot
+replace a confirmed snapshot or clear a newer request from the in-flight slot;
+only the latest trigger updates the refresh error notice. Both successful and
+failed requests release their slot so later refreshes can retry.
 Failed refreshes retain the previous snapshot with a retry notice; initial
 failures show the global error screen rather than empty personal statistics.
 
 Uploads use new UUID paths with `upsert: false`. Storage permits owner reads,
 owner inserts into the expected folder and deletion of unreferenced objects;
 ordinary clients cannot overwrite uploaded bytes or delete referenced objects.
+The account store verifies the current Auth identity before uploads and again
+before committing metadata; Profile and record forms delegate to this check
+instead of making an additional duplicate Auth request.
 `save_travel_record` inserts the record and photo metadata in one transaction,
 using `(user_id, id)` for idempotent submissions. `save_account_profile` commits
 profile text and replacement photo metadata together, serializing replacements

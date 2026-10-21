@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Camera, ImagePlus, Save } from "lucide-react";
 import { useCurrentUser } from "@/lib/use-current-user";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { createClient } from "@/lib/supabase/client";
 import { ProfileHeader } from "./ProfileHeader";
 import type { User } from "@/types";
 import { IMAGE_ACCEPT, PROFILE_IMAGE_POLICY } from "@/lib/images/image-import";
@@ -67,11 +66,6 @@ function ProfileEditorForm({ initialUser, setup }: { initialUser: User; setup: b
 
     try {
       setSaving(true);
-      const { data: { user }, error: authError } = await createClient().auth.getUser();
-      if (authError || user?.id !== initialUser.id) {
-        setError("กรุณาเข้าสู่ระบบอีกครั้งก่อนบันทึก");
-        return;
-      }
       await profile.updateCurrentUser({ name: cleanName, username: cleanUsername, bio: bio.trim(), avatar, coverImage });
       if (setup) {
         const response = await fetch("/auth/complete-profile-setup", {

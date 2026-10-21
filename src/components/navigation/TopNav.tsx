@@ -1,40 +1,15 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
 import { LogIn } from "lucide-react";
 import { useCurrentUser } from "@/lib/use-current-user";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { getActiveNavHref, getNavigationHref, type NavHref } from "./activeNav";
-
-const links: { href: NavHref; label: string }[] = [
-  { href: "/search", label: "ค้นหา" },
-  { href: "/map", label: "แผนที่" },
-  { href: "/passport", label: "พาสปอร์ต" },
-  { href: "/stats", label: "สถิติ" },
-  { href: "/profile", label: "โปรไฟล์" },
-];
+import { NAV_LINKS, getNavigationHref, type NavHref } from "./activeNav";
+import { NavigationState } from "./NavigationState";
 
 export function TopNav() {
-  const pathname = usePathname();
-  const [lastActiveHref, setLastActiveHref] = useState<NavHref>(() => getActiveNavHref(pathname));
-  const [lastGuest, setLastGuest] = useState(false);
-  return (
-    <Suspense fallback={<TopNavContent activeHref={lastActiveHref} isGuest={lastGuest} />}>
-      <ResolvedTopNav pathname={pathname} onActiveChange={setLastActiveHref} onGuestChange={setLastGuest} />
-    </Suspense>
-  );
-}
-
-function ResolvedTopNav({ pathname, onActiveChange, onGuestChange }: { pathname: string; onActiveChange: (href: NavHref) => void; onGuestChange: (isGuest: boolean) => void }) {
-  const searchParams = useSearchParams();
-  const activeHref = getActiveNavHref(pathname, searchParams.get("from"));
-  const isGuest = searchParams.get("view") === "guest";
-  useEffect(() => onActiveChange(activeHref), [activeHref, onActiveChange]);
-  useEffect(() => onGuestChange(isGuest), [isGuest, onGuestChange]);
-  return <TopNavContent activeHref={activeHref} isGuest={isGuest} />;
+  return <NavigationState>{(state) => <TopNavContent {...state} />}</NavigationState>;
 }
 
 function TopNavContent({ activeHref, isGuest: previewGuest }: { activeHref: NavHref; isGuest: boolean }) {
@@ -51,7 +26,7 @@ function TopNavContent({ activeHref, isGuest: previewGuest }: { activeHref: NavH
         </Link>
 
         <div className="hidden min-w-0 rounded-full bg-brand-900/[0.04] p-1.5 lg:flex lg:gap-2">
-          {links.map((link) => {
+          {NAV_LINKS.map((link) => {
             const isActive = activeHref === link.href;
             return (
               <Link

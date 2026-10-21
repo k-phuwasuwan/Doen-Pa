@@ -28,7 +28,7 @@ export function CategoryCard({ label, type, active = false, query = "", visited 
         updateSearchFilter("type", type === "all" ? "" : type);
       }}
       aria-current={active ? "true" : undefined}
-      className={`group relative flex min-h-16 min-w-36 shrink-0 items-center justify-center overflow-hidden rounded-3xl border bg-white/80 px-3 py-3 text-center shadow-glass transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ${
+      className={`group relative flex min-h-16 min-w-36 shrink-0 items-center justify-center overflow-hidden rounded-3xl border px-3 py-3 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 ${
         active ? "border-2 border-brand-500" : "border-white/90"
       }`}
     >

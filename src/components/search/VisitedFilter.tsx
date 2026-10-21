@@ -21,7 +21,7 @@ export function VisitedFilter({ current }: VisitedFilterProps) {
           aria-pressed={current === value}
           className={`rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
             current === value
-              ? "bg-brand-600 text-white shadow-glow-emerald"
+              ? "bg-brand-600 text-white"
               : "bg-transparent text-brand-800/70 hover:bg-brand-100/50"
           }`}
         >

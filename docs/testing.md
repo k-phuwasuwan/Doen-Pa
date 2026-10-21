@@ -87,6 +87,9 @@ Covered journeys:
 - Partial upload cleanup and idempotent retry after a lost commit response.
 - Catalog search, category counts, missing measurements, old record references,
   404s, invalid stamp redirects and deduplicated visited pins on the map.
+- Search filters and text search work while subsequent Search server responses
+  are held; selection, result counts, Back/Forward and reload retain URL state
+  on desktop and mobile (`search-filters.spec.ts`, anonymous, no QA account).
 
 The map catalog test stubs terrain tile images to isolate visited-pin behavior;
 it preserves and checks attribution but does not validate Stadia credentials.

@@ -1,23 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import type { PlaceType } from "@/types";
+import { updateSearchFilter } from "./useSearchFilters";
 
 interface VisitedFilterProps {
   current: "all" | "visited" | "unvisited";
-  query: string;
-  type: PlaceType | "all";
 }
 
-export function VisitedFilter({ current, query, type }: VisitedFilterProps) {
-  const router = useRouter();
-
+export function VisitedFilter({ current }: VisitedFilterProps) {
   const select = (value: "all" | "visited" | "unvisited") => {
-    const params = new URLSearchParams();
-    if (query) params.set("q", query);
-    if (type !== "all") params.set("type", type);
-    if (value !== "all") params.set("visited", value);
-    router.push(`/search${params.size ? `?${params.toString()}` : ""}`, { scroll: false });
+    updateSearchFilter("visited", value === "all" ? "" : value);
   };
 
   return (

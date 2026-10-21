@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Image from "next/image";
 import { SearchBar } from "@/components/search/SearchBar";
 
-export function SearchHero({ initialQuery = "" }: { initialQuery?: string }) {
+export function SearchHero() {
   return (
     <section
       aria-labelledby="search-hero-title"
@@ -29,7 +29,7 @@ export function SearchHero({ initialQuery = "" }: { initialQuery?: string }) {
         <p className="max-w-xl text-brand-800/75">ค้นหาเส้นทาง ภูเขา น้ำตก และสถานที่ธรรมชาติ เพื่อเติมเต็มพาสปอร์ตของคุณ</p>
         <div className="w-full max-w-2xl rounded-2xl hero-glass-console p-2">
           <Suspense fallback={<div className="glass-input h-[48px] w-full bg-white/90 animate-pulse" />}>
-            <SearchBar initialQuery={initialQuery} />
+            <SearchBar />
           </Suspense>
         </div>
       </div>

@@ -146,3 +146,9 @@ they do not add searchable places or inflate national-park totals.
 CSV and seed files remain deployment inputs. They are not read by the running
 application. Updating the database takes effect on the next server request;
 an already open page keeps its snapshot until navigation or reload.
+
+Search receives the full catalog snapshot and server-rendered place cards,
+including when its initial URL contains filters. Changes to `q`, `type` and
+`visited` filter those cards in the browser and use native history updates,
+without another Auth or catalog request. Back/Forward restores the filter
+state; a reload or navigation into Search reads a fresh catalog snapshot.

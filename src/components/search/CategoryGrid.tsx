@@ -1,5 +1,8 @@
+"use client";
+
 import type { PlaceType } from "@/types";
 import { CategoryCard } from "./CategoryCard";
+import { useSearchFilters } from "./useSearchFilters";
 
 const categories: { label: string; type: PlaceType | "all" }[] = [
   { label: "ทั้งหมด", type: "all" },
@@ -9,11 +12,8 @@ const categories: { label: string; type: PlaceType | "all" }[] = [
   { label: "หมู่เกาะ & ทะเล", type: "island" },
 ];
 
-export function CategoryGrid({ currentType = "all", query = "", visited = "all" }: {
-  currentType?: PlaceType | "all";
-  query?: string;
-  visited?: "all" | "visited" | "unvisited";
-}) {
+export function CategoryGrid() {
+  const { type: currentType, query, visited } = useSearchFilters();
   return (
     <section aria-labelledby="category-title" className="py-8">
       <div className="mb-5 flex items-end justify-center text-center">

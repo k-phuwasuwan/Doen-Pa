@@ -1,41 +1,32 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
+import { updateSearchFilter } from "./useSearchFilters";
 
-export function SearchBar({ initialQuery = "" }: { initialQuery?: string }) {
-  const router = useRouter();
-  const pathname = usePathname();
+export function SearchBar() {
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState(initialQuery);
-
-  // Sync state if URL changes externally
   const currentQuery = searchParams.get("q") || "";
+  const [draft, setDraft] = useState({ value: currentQuery, urlQuery: currentQuery });
+  // Back/Forward changes the URL; an old typing draft must not overwrite it.
+  const query = draft.urlQuery === currentQuery ? draft.value : currentQuery;
+  if (draft.urlQuery !== currentQuery) {
+    setDraft({ value: currentQuery, urlQuery: currentQuery });
+  }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const params = new URLSearchParams(searchParams.toString());
-    if (query) params.set("q", query);
-    else params.delete("q");
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    updateSearchFilter("q", query);
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (query !== currentQuery && (query || searchParams.has("q"))) {
-        if (query) {
-          params.set("q", query);
-        } else {
-          params.delete("q");
-        }
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
-      }
+      if (query !== currentQuery) updateSearchFilter("q", query);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [currentQuery, query, pathname, router, searchParams]);
+  }, [currentQuery, query]);
 
   return (
     <form onSubmit={handleSubmit} className="relative flex items-center gap-2">
@@ -45,7 +36,7 @@ export function SearchBar({ initialQuery = "" }: { initialQuery?: string }) {
       <input
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => setDraft({ value: e.target.value, urlQuery: currentQuery })}
         placeholder="ค้นหาชื่อสถานที่ จังหวัด..."
         className="block min-w-0 flex-1 rounded-xl border-0 bg-white/70 py-3 pl-11 pr-4 text-brand-800 placeholder-brand-800/50 backdrop-blur focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow"
       />

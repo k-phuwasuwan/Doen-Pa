@@ -1,8 +1,10 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useTravelRecordReadModel } from "@/lib/use-travel-record-read-model";
-import type { Place, PlaceType } from "@/types";
+import type { Place } from "@/types";
+import { createPlaceCatalog } from "@/domain/place-catalog";
+import { useSearchFilters } from "./useSearchFilters";
 import { PlaceList } from "./PlaceList";
 import { VisitedFilter } from "./VisitedFilter";
 
@@ -10,18 +12,18 @@ interface SearchResultsProps {
   places: Place[];
   cards: ReactNode[];
   userId: string;
-  query: string;
-  type: PlaceType | "all";
-  visited: "all" | "visited" | "unvisited";
 }
 
-export function SearchResults({ places, cards, userId, query, type, visited }: SearchResultsProps) {
+export function SearchResults({ places, cards, userId }: SearchResultsProps) {
+  const { query, type, visited } = useSearchFilters();
+  const catalog = useMemo(() => createPlaceCatalog(places), [places]);
+  const matchingIds = new Set(catalog.search(query, type).map((place) => place.id));
   const memories = useTravelRecordReadModel(userId);
 
   const visibleCards = cards.filter((_, index) => {
     const place = places[index];
     const hasVisited = memories.getVisitCount(place.id) > 0;
-    return visited === "all" || (visited === "visited" ? hasVisited : !hasVisited);
+    return matchingIds.has(place.id) && (visited === "all" || (visited === "visited" ? hasVisited : !hasVisited));
   });
 
   return (
@@ -33,7 +35,7 @@ export function SearchResults({ places, cards, userId, query, type, visited }: S
           </h2>
           <span className="text-sm text-brand-800/65">{visibleCards.length} แห่ง</span>
         </div>
-        <VisitedFilter current={visited} query={query} type={type} />
+        <VisitedFilter current={visited} />
       </div>
       <PlaceList cards={visibleCards} />
     </section>

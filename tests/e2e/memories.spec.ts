@@ -24,7 +24,8 @@ test("revisit counts and Profile photo positions agree across personal pages", a
   await expect(page).toHaveURL(/from=profile&photo=4$/);
   await expect(page.getByText("5 / 6", { exact: true })).toBeVisible();
   const gallery = page.getByRole("button", { name: "ดูภาพจากการเดินทาง รูปที่ 5 แบบเต็มจอ" });
-  await expect(gallery.locator("img")).toHaveAttribute("src", source!);
+  // Profile tiles and the gallery request different widths of the same photo.
+  await expect(gallery.locator("img")).toHaveAttribute("src", source!.replace(/&w=\d+$/, "&w=1280"));
   await gallery.click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");

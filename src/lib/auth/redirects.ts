@@ -30,6 +30,15 @@ export function postAuthDestination(next: unknown, needsProfileSetup: boolean) {
   return "/profile/edit?setup=1";
 }
 
-export function authBackHref(from: string | undefined) {
+export function authBackHref(from: string | undefined, next?: unknown) {
+  // Protected stamp links carry their origin in the validated next destination.
+  if (!from) {
+    const destination = new URL(safeAuthNext(next), "https://doen-pa.invalid");
+    if (destination.pathname === "/records/new") {
+      if (destination.searchParams.get("returnTo") === "search") return "/search";
+      const placeId = destination.searchParams.get("placeId");
+      if (placeId) return `/places/${encodeURIComponent(placeId)}`;
+    }
+  }
   return from && ["search", "map", "passport", "stats", "profile"].includes(from) ? `/${from}` : "/passport";
 }

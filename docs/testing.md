@@ -129,7 +129,9 @@ Covered journeys:
 - Both navigation bars retain the origin tab on nested Place Details and
   preserve explicit guest previews during navigation and Back
   (`navigation.spec.ts`). Stamp links support keyboard activation and preserve
-  Search versus Place Details Back destinations (`stamp-navigation.spec.ts`).
+  Search versus Place Details Back destinations, including Back from Login
+  after logged-out stamping, Login resuming the stamp form and successful
+  submission opening Passport (`stamp-navigation.spec.ts`).
 - Photo removal and alt edits during a pending read, then save and cross-tab Passport update.
 - Profile/record file limits and maximum five photos per record.
 - Failed cloud writes retain drafts without publishing unsaved data.

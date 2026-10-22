@@ -12,7 +12,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const user = await getAuthUser();
   if (user) redirect(postAuthDestination(next, user.needsProfileSetup === true));
   const notice = params.error === "link" ? "ลิงก์ไม่ถูกต้องหรือหมดอายุ กรุณาขอลิงก์ใหม่ หรือยืนยันแล้วเข้าสู่ระบบอีกครั้ง" : params.updated === "1" ? "เปลี่ยนรหัสผ่านแล้ว กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่" : "";
-  return <AuthPanel title="เข้าสู่ระบบ Doen Pa" description="กลับมาบันทึกความทรงจำจากทุกเส้นทาง" backHref={authBackHref(params.from)}>
+  return <AuthPanel title="เข้าสู่ระบบ Doen Pa" description="กลับมาบันทึกความทรงจำจากทุกเส้นทาง" backHref={authBackHref(params.from, next)}>
     <LoginForm next={next} initialNotice={notice} />
   </AuthPanel>;
 }

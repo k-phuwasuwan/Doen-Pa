@@ -49,7 +49,7 @@ Place Details receives an explicit origin when needed:
 - `src/components/navigation/activeNav.ts` owns shared links and active-tab mapping for TopNav and BottomNav; `NavigationState` preserves their last resolved tab and guest state during URL suspension. Preserve a visible active tab on nested pages and during client navigation.
 - Logged-out users and `?view=guest` previews see the Login link. Navigation preserves explicit `view=guest`; server authentication and RLS enforce access independently.
 - Signed-in TopNav reads the account-scoped profile through `useCurrentUser`. Do not hardcode a sample person's name or avatar.
-- `BackButton` uses an explicit href, never browser history. In the record form, `returnTo=search` returns to Search; otherwise Back returns to the place page. A successful record submission redirects to Passport.
+- `BackButton` uses an explicit href, never browser history. In the record form and its logged-out Login redirect, `returnTo=search` returns to Search; otherwise Back returns to the place page. Login preserves the record-form destination in `next` independently of Back; a successful record submission redirects to Passport.
 
 Do not add a dialog version of Place Details. The map's selected-place card is display-only and does not navigate.
 

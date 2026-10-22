@@ -1,3 +1,5 @@
+import { stripImageMetadata } from "./strip-metadata";
+
 export interface ImageFile {
   name: string;
   type: string;
@@ -82,13 +84,15 @@ export function createImageImporter<F extends ImageFile>(read: (file: F) => Prom
   };
 }
 
-export function readBrowserImage(file: File): Promise<string> {
+export async function readBrowserImage(file: File): Promise<string> {
+  // Remove GPS/camera metadata before the image is previewed or uploaded.
+  const clean = stripImageMetadata(new Uint8Array(await file.arrayBuffer()), file.type);
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Invalid image data"));
     reader.onerror = () => reject(new Error("Image read failed"));
     reader.onabort = () => reject(new Error("Image read aborted"));
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(new Blob([clean as BlobPart], { type: file.type }));
   });
 }
 export type ImageImporter = ReturnType<typeof createImageImporter<File>>;

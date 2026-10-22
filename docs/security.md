@@ -8,6 +8,7 @@ they were not verified from this repository.
 | Severity | Finding | Status |
 | --- | --- | --- |
 | Critical | Next.js 16.3.4 advisories (RCE in `next/og`, image-optimizer SSRF, cache issues) | Fixed: Next.js 16.3.8 |
+| Critical | Next.js <=16.4.0 advisories (RCE via image optimizer with SVG and `use cache` typed arrays, Server Actions DoS; found by CI on 2026-10-23) | Fixed: Next.js 16.4.2 |
 | High | `brace-expansion`, `source-map-js` DoS in dev tooling | Fixed with `pnpm-workspace.yaml` overrides |
 | High | `braces` DoS (via `eslint-config-next`), no upstream fix | Open, dev-only; CI reports it without failing |
 | Medium | No browser security headers | Added `nosniff`, frame denial, referrer and permissions policies, plus a Content-Security-Policy (origins restricted to self, Supabase and Stadia tiles; `'unsafe-inline'` scripts remain because Next hydration data is inline, so a nonce rollout is the next hardening step). Checked for violations on anonymous pages at desktop/mobile; **signed-in flows (uploads, profile) were not checked under the CSP**, run `production-journey` after deploying |

@@ -10,7 +10,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 
 ## Current stack and repository
 
-- Next.js **16.3.4** App Router, React **19**, TypeScript strict mode, Tailwind CSS **4**, Lucide React, Leaflet 1.9 (used directly); package manager **pnpm**.
+- Next.js **16.4.2** App Router, React **19**, TypeScript strict mode, Tailwind CSS **4**, Lucide React, Leaflet 1.9 (used directly); package manager **pnpm**.
 - Fonts: Kanit and Plus Jakarta Sans are bundled under `public/fonts/` and declared in `app/globals.css`; the production build uses Webpack so it does not fetch Google Fonts during compilation.
 - Pages and global CSS live in root-level `app/`; components, services, data, types, and hooks live in `src/`. Do not create a second `src/app/`.
 - State uses React hooks, URL query parameters and `useSyncExternalStore` over verified Supabase account snapshots. localStorage carries cross-tab change signals only. **Zustand is not installed**; do not assume a store layer exists.

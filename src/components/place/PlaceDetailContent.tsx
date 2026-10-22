@@ -26,7 +26,7 @@ export function PlaceDetailContent({ place, userId, readOnly = false, initialPho
         <PlaceGallery key={initialPhotoIndex} recordPhotos={photos} initialPhotoIndex={initialPhotoIndex} />
       </div>
 
-      <section className="liquid-glass-card relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-9">
+      <section className="liquid-glass-card liquid-glass-card--flat relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-9">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
         <PlaceInfo place={place} />
         <PlaceChips place={place} />

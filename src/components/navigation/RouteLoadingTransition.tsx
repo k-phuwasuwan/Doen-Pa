@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { HikerLoader } from "@/components/ui/HikerLoader";
 
 const MIN_VISIBLE_MS = 500;
+// The overlay appears at once so the outgoing page is never left blank; it fades out.
+const FADE_MS = 180;
 
 interface RouteLoadingContextValue {
   begin: () => void;
@@ -26,6 +28,8 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
   const previousPathname = useRef(pathname);
   const visibleSince = useRef<number | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [leaving, setLeaving] = useState(false);
 
   const begin = useCallback(() => {
     activeLoads.current += 1;
@@ -33,6 +37,8 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
 
     clearTimer(hideTimer);
     if (visibleSince.current !== null) {
+      clearTimer(leaveTimer);
+      setLeaving(false);
       visibleSince.current = performance.now();
       return;
     }
@@ -50,8 +56,13 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
     const elapsed = performance.now() - visibleSince.current;
     hideTimer.current = setTimeout(() => {
       hideTimer.current = null;
-      visibleSince.current = null;
-      setVisible(false);
+      setLeaving(true);
+      leaveTimer.current = setTimeout(() => {
+        leaveTimer.current = null;
+        visibleSince.current = null;
+        setLeaving(false);
+        setVisible(false);
+      }, FADE_MS);
     }, Math.max(0, MIN_VISIBLE_MS - elapsed));
   }, []);
 
@@ -91,6 +102,7 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => () => {
     clearTimer(hideTimer);
+    clearTimer(leaveTimer);
   }, []);
 
   const context = useMemo(() => ({ begin, end }), [begin, end]);
@@ -99,7 +111,7 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
     <RouteLoadingContext.Provider value={context}>
       {children}
       {visible && (
-        <div className="contour-pattern fixed inset-0 z-30 isolate flex items-center justify-center overflow-hidden bg-canvas px-4" data-route-loading-overlay>
+        <div className={`route-loading-overlay contour-pattern fixed inset-0 z-30 isolate flex items-center justify-center overflow-hidden bg-canvas px-4${leaving ? " is-leaving" : ""}`} data-route-loading-overlay>
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             <div className="ambient-glow-mesh-1 left-[-20rem] top-[-18rem]" />
             <div className="ambient-glow-mesh-2 right-[-18rem] top-[20rem]" />

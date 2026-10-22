@@ -273,6 +273,10 @@ body {
   border: 1px solid rgba(255,255,255,0.9);
   box-shadow: 0 16px 42px -6px rgba(14,42,28,0.09), 0 2px 8px -1px rgba(0,0,0,0.03), inset 0 1.5px 2px 0 rgba(255,255,255,0.95), inset 0 -1.5px 2px 0 rgba(20,60,40,0.04);
 }
+/* Same glass without the drop shadow below the card. */
+.liquid-glass-card.liquid-glass-card--flat {
+  box-shadow: inset 0 1.5px 2px 0 rgba(255,255,255,0.95);
+}
 .liquid-glass-capsule {
   background: linear-gradient(135deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.52) 100%);
   backdrop-filter: blur(24px) saturate(180%);
@@ -472,4 +476,10 @@ body {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
+}
+
+.route-loading-overlay { transition: opacity 180ms ease-in; }
+.route-loading-overlay.is-leaving { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .route-loading-overlay { transition: none; }
 }

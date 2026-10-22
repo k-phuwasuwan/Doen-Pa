@@ -15,7 +15,7 @@ they were not verified from this repository.
 
 Checked and found sound: redirect allowlist, same-origin JSON-only auth
 mutations, owner checks in `/api/photos` plus RLS, Storage MIME/size/path rules,
-non-enumerating auth messages, `private, no-store` on personal responses, HSTS,
+non-enumerating auth messages, `private, no-store` on personal responses (photos are `private, immutable` and cleared with `Clear-Site-Data` on account switches), HSTS,
 no secrets in tracked files or history.
 
 Known limits: no application-level login rate limit (relies on Supabase Auth

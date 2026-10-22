@@ -38,7 +38,7 @@ test("cloud profile, records and private photos survive a fresh browser context"
     for (let index = 0; index < photoUrls.length; index++) {
       const image = await fresh.request.get(photoUrls[index]);
       expect(image.status()).toBe(200);
-      expect(image.headers()["cache-control"]).toBe("private, no-store");
+      expect(image.headers()["cache-control"]).toBe("private, max-age=31536000, immutable");
       expect((await image.body()).equals(png("verify", [1, 2, 0][index]).buffer)).toBe(true);
     }
     await openPage(remote, "/passport");
@@ -125,7 +125,7 @@ test("replacing an avatar removes old bytes while preserving the cover", async (
   const original = (await (await page.request.get("/api/account")).json()).user;
   const observer = await context.newPage();
   await openPage(observer, "/profile/edit");
-  await expect(observer.getByAltText("ผู้ใช้ใหม่", { exact: true })).toHaveAttribute("src", original.avatar);
+  await expect(observer.getByAltText("ผู้ใช้ใหม่", { exact: true })).toHaveAttribute("src", `${original.avatar}&w=256`);
   await openPage(page, "/profile/edit");
   await page.locator("#profile-avatar").setInputFiles(png("replacement.png", 1));
   await page.getByRole("button", { name: "บันทึกการเปลี่ยนแปลง", exact: true }).click();
@@ -133,7 +133,7 @@ test("replacing an avatar removes old bytes while preserving the cover", async (
   const current = (await (await page.request.get("/api/account")).json()).user;
   expect(current.avatar === original.avatar).toBe(false);
   expect(current.coverImage === original.coverImage).toBe(true);
-  await expect(observer.getByAltText("ผู้ใช้ใหม่", { exact: true })).toHaveAttribute("src", current.avatar);
+  await expect(observer.getByAltText("ผู้ใช้ใหม่", { exact: true })).toHaveAttribute("src", `${current.avatar}&w=256`);
   expect((await page.request.get(original.avatar)).status()).toBe(404);
   expect((await (await page.request.get(current.avatar)).body()).equals(png("verify", 1).buffer)).toBe(true);
   expect((await (await page.request.get(current.coverImage)).body()).equals(png("verify", 2).buffer)).toBe(true);

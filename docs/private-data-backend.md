@@ -122,8 +122,12 @@ cleanup can leave private orphan bytes; scheduled reclamation is not implemented
 Local originals remain untouched, including both account-v1 keys.
 
 Images are delivered by `/api/photos/[id]?owner=<uuid>`, which verifies the
-session, matches the requested owner and reads the metadata and Storage bytes
-through RLS. Successful responses use `private, no-store` and `nosniff`; guests,
+JWT locally with `getClaims`, matches the requested owner and reads the metadata
+and Storage bytes through RLS. Photo IDs never change bytes, so successful
+responses use `private, max-age=31536000, immutable` and `nosniff`; a response
+that also refreshes session cookies stays `private, no-store`. Login, logout,
+account deletion and password reset send `Clear-Site-Data: "cache"` so cached
+photos do not survive an account switch on a shared browser. Guests,
 other owners and missing images receive 404. Personal Next Images use
 `unoptimized` to avoid an image optimizer cache of authenticated content. No
 public URLs or reusable bearer links are exposed by this delivery route.

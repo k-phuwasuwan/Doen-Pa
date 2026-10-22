@@ -19,11 +19,17 @@ export function createRouteClient(request: NextRequest) {
       },
     },
   });
-  function finish(response: NextResponse) {
-    for (const cookie of pending.cookies.getAll()) response.cookies.set(cookie);
-    response.headers.set("Cache-Control", "private, no-store");
-    response.headers.set("Pragma", "no-cache");
-    response.headers.set("Expires", "0");
+  /** `browserCache` is honored only when no session cookie changes ride on the response. */
+  function finish(response: NextResponse, browserCache?: string) {
+    const cookies = pending.cookies.getAll();
+    for (const cookie of cookies) response.cookies.set(cookie);
+    if (browserCache && !cookies.length) {
+      response.headers.set("Cache-Control", browserCache);
+    } else {
+      response.headers.set("Cache-Control", "private, no-store");
+      response.headers.set("Pragma", "no-cache");
+      response.headers.set("Expires", "0");
+    }
     response.headers.set("Referrer-Policy", "no-referrer");
     return response;
   }

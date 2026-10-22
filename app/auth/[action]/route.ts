@@ -19,6 +19,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { action } = await params;
   const { supabase, finish } = createRouteClient(request);
   const reply = (body: { error?: string; message?: string; next?: string }, status = 200) => finish(NextResponse.json(body, { status }));
+  // Account switches drop the previous owner's privately cached photos.
+  const switchAccount = (body: { next: string }) => {
+    const response = reply(body);
+    response.headers.set("Clear-Site-Data", '"cache"');
+    return response;
+  };
   if (!actions.has(action)) return reply({ error: "ไม่พบรายการที่ต้องการ" }, 404);
   // Same-origin JSON requests only, including logout and password updates.
   if (request.headers.get("origin") !== request.nextUrl.origin || !request.headers.get("content-type")?.startsWith("application/json")) {
@@ -41,7 +47,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   try {
     if (action === "logout") {
       const { error } = await supabase.auth.signOut({ scope: "local" });
-      return error ? reply({ error: authError(error.code) }, 400) : reply({ next: "/profile" });
+      return error ? reply({ error: authError(error.code) }, 400) : switchAccount({ next: "/profile" });
     }
     if (action === "delete-account") {
       const { data: { user }, error: userLookupError } = await supabase.auth.getUser();
@@ -65,7 +71,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       const { error: deleteError } = await supabase.rpc("delete_my_account");
       if (deleteError) return reply({ error: "ลบบัญชีไม่สำเร็จ กรุณาลองใหม่" }, 503);
       await supabase.auth.signOut({ scope: "local" });
-      return reply({ next: "/profile" });
+      return switchAccount({ next: "/profile" });
     }
     if (action === "complete-profile-setup") {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -94,7 +100,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await supabase.auth.signOut({ scope: "local" });
         return reply({ error: "เตรียมโปรไฟล์ไม่สำเร็จ กรุณาเข้าสู่ระบบอีกครั้ง" }, 503);
       }
-      return reply({ next: postAuthDestination(next, data.user.user_metadata.profile_setup_pending === true) });
+      return switchAccount({ next: postAuthDestination(next, data.user.user_metadata.profile_setup_pending === true) });
     }
     if (action === "signup") {
       const { data, error } = await supabase.auth.signUp({ email, password, options: {
@@ -123,7 +129,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const { error } = await supabase.auth.updateUser({ password });
     if (error) return reply({ error: authError(error.code) }, 400);
     await supabase.auth.signOut({ scope: "local" });
-    return reply({ next: "/login?updated=1" });
+    return switchAccount({ next: "/login?updated=1" });
   } catch {
     return reply({ error: "เชื่อมต่อไม่สำเร็จ กรุณาลองใหม่อีกครั้ง" }, 503);
   }

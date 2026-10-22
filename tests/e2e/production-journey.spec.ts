@@ -136,8 +136,10 @@ test("production journey saves a new hiker's memories and restores them after lo
         await expect(remote.locator("blockquote")).toContainText(note);
         const photo = await fresh.request.get(privatePhoto);
         expect(photo.status()).toBe(200);
-        expect(photo.headers()["cache-control"]).toBe("private, no-store");
-        expect((await fresh.request.post("/auth/logout", { headers: { Origin: appOrigin }, data: {} })).status()).toBe(200);
+        expect(photo.headers()["cache-control"]).toBe("private, max-age=31536000, immutable");
+        const logout = await fresh.request.post("/auth/logout", { headers: { Origin: appOrigin }, data: {} });
+        expect(logout.status()).toBe(200);
+        expect(logout.headers()["clear-site-data"]).toBe('"cache"');
         expect(errors).toEqual([]);
       } finally { await fresh.close(); }
     });

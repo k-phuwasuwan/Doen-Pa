@@ -5,7 +5,7 @@ import { HikerLoader } from "@/components/ui/HikerLoader";
 
 function MapSkeleton() {
   return (
-    <div className="flex h-full w-full items-center justify-center bg-brand-100">
+    <div className="flex h-full w-full items-center justify-center bg-brand-100" data-page-loading>
       <HikerLoader compact label="กำลังโหลดแผนที่…" />
     </div>
   );

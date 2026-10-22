@@ -6,6 +6,9 @@ import { HikerLoader } from "@/components/ui/HikerLoader";
 
 const MIN_VISIBLE_MS = 200;
 const FADE_MS = 180;
+/** Upper bound for holding the overlay while on-screen images download. */
+const IMAGE_WAIT_MS = 10000;
+const IMAGE_POLL_MS = 100;
 
 interface RouteLoadingContextValue {
   begin: () => void;
@@ -19,6 +22,35 @@ function clearTimer(timer: { current: ReturnType<typeof setTimeout> | null }) {
   timer.current = null;
 }
 
+/**
+ * Images the visitor would see once the overlay lifts; lazy images below the fold never start loading.
+ * Client-only sections that have not mounted yet mark themselves with `data-page-loading`.
+ */
+function hasPendingVisibleImages() {
+  if (document.querySelector("[data-page-loading]")) return true;
+  for (const image of document.images) {
+    if (image.complete || image.closest("[data-route-loading-overlay]")) continue;
+    const rect = image.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight) return true;
+  }
+  return false;
+}
+
+/** Resolves after two consecutive idle checks, so images rendered by late client data are included. */
+function waitForVisibleImages(isCancelled: () => boolean) {
+  const deadline = performance.now() + IMAGE_WAIT_MS;
+  return new Promise<void>((resolve) => {
+    let idleChecks = 0;
+    const check = () => {
+      if (isCancelled()) return;
+      idleChecks = hasPendingVisibleImages() ? 0 : idleChecks + 1;
+      if (idleChecks >= 2 || performance.now() >= deadline) resolve();
+      else setTimeout(check, IMAGE_POLL_MS);
+    };
+    requestAnimationFrame(check);
+  });
+}
+
 export function RouteLoadingProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
@@ -29,8 +61,10 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const settleRun = useRef(0);
 
   const begin = useCallback(() => {
+    settleRun.current += 1;
     activeLoads.current += 1;
     if (activeLoads.current > 1) return;
 
@@ -52,17 +86,22 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
 
     if (visibleSince.current === null) return;
 
-    const elapsed = performance.now() - visibleSince.current;
-    hideTimer.current = setTimeout(() => {
-      hideTimer.current = null;
-      setLeaving(true);
-      leaveTimer.current = setTimeout(() => {
-        leaveTimer.current = null;
-        visibleSince.current = null;
-        setLeaving(false);
-        setVisible(false);
-      }, FADE_MS);
-    }, Math.max(0, MIN_VISIBLE_MS - elapsed));
+    const run = ++settleRun.current;
+    const cancelled = () => run !== settleRun.current;
+    void waitForVisibleImages(cancelled).then(() => {
+      if (cancelled() || visibleSince.current === null) return;
+      const elapsed = performance.now() - visibleSince.current;
+      hideTimer.current = setTimeout(() => {
+        hideTimer.current = null;
+        setLeaving(true);
+        leaveTimer.current = setTimeout(() => {
+          leaveTimer.current = null;
+          visibleSince.current = null;
+          setLeaving(false);
+          setVisible(false);
+        }, FADE_MS);
+      }, Math.max(0, MIN_VISIBLE_MS - elapsed));
+    });
   }, []);
 
   useEffect(() => {
@@ -100,6 +139,7 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
   }, [begin]);
 
   useEffect(() => () => {
+    settleRun.current += 1;
     clearTimer(hideTimer);
     clearTimer(leaveTimer);
   }, []);

@@ -129,7 +129,7 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 
 ## Architecture and quality rules
 
-- The hiker overlay appears as soon as an internal link is clicked and on first load, then stays at least 200 ms (`MIN_VISIBLE_MS`) and fades out. It is driven by link clicks in `RouteLoadingProvider`; there is no `app/loading.tsx`.
+- The hiker overlay appears as soon as an internal link is clicked and on first load, then stays until on-screen images have loaded (at most 10 s, `IMAGE_WAIT_MS`) and at least 200 ms (`MIN_VISIBLE_MS`) before fading out. Lazy images below the fold are not awaited; client-only sections still loading (such as the map skeleton) mark themselves with `data-page-loading`. It is driven by link clicks in `RouteLoadingProvider`; there is no `app/loading.tsx`.
 - Server Components by default; use client components for browser APIs, account-snapshot subscriptions, Leaflet, form/filter state, and active navigation. Keep `PlaceCard` a Server Component with a Next `Link`.
 - Keep data operations in services/hooks. Use strict TypeScript; avoid `any`, magic constants, huge components, and unnecessary client fetching.
 - Every changed interaction should handle its relevant loading, empty, error, focus, and disabled states. Use semantic elements, image alt text, keyboard-accessible controls, and WCAG AA contrast.

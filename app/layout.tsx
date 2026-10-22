@@ -5,7 +5,7 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { getAuthAccount } from "@/lib/auth/server";
 
 export const metadata: Metadata = {
-  title: "Doen Pa — พาสปอร์ตเดินป่า",
+  title: "Doen Pa",
   description: "บันทึกการเดินป่า สะสมทริป สร้างพาสปอร์ตที่ไม่ซ้ำใคร",
 };
 

@@ -1,3 +1,4 @@
+import { photoThumb } from "@/domain/account-data";
 import Image from "next/image";
 import { MapPin, Mountain, Route, X } from "lucide-react";
 import type { Place } from "@/types";
@@ -19,7 +20,7 @@ export function SelectedPlaceCard({ place, photo, onClose }: SelectedPlaceCardPr
         <div className="map-place-photo relative h-36 overflow-hidden rounded-2xl bg-beige-100 sm:h-40">
           {photo && (
             <Image unoptimized
-              src={photo}
+              src={photoThumb(photo, 1280)}
               alt={`ภาพบันทึกการเดินทางที่${place.name}`}
               fill
               sizes="(max-width: 640px) 100vw, 448px"

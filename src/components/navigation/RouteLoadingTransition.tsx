@@ -1,11 +1,12 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { HikerLoader } from "@/components/ui/HikerLoader";
 
 const MIN_VISIBLE_MS = 500;
-// The overlay appears at once so the outgoing page is never left blank; it fades out.
+// The hiker overlay covers only the first load. Later navigations keep the current page on
+// screen and show a slim progress bar, so nothing blanks or flashes between pages.
 const FADE_MS = 180;
 
 interface RouteLoadingContextValue {
@@ -30,6 +31,7 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const [firstLoad, setFirstLoad] = useState(true);
 
   const begin = useCallback(() => {
     activeLoads.current += 1;
@@ -62,6 +64,7 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
         visibleSince.current = null;
         setLeaving(false);
         setVisible(false);
+        setFirstLoad(false);
       }, FADE_MS);
     }, Math.max(0, MIN_VISIBLE_MS - elapsed));
   }, []);
@@ -110,7 +113,12 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
   return (
     <RouteLoadingContext.Provider value={context}>
       {children}
-      {visible && (
+      {visible && !firstLoad && (
+        <div className="route-progress-bar fixed inset-x-0 top-0 z-[60] h-1 overflow-hidden" role="progressbar" aria-label="กำลังโหลด" data-route-progress>
+          <div className="route-progress-bar__fill h-full w-1/3 rounded-full bg-brand-600" />
+        </div>
+      )}
+      {visible && firstLoad && (
         <div className={`route-loading-overlay contour-pattern fixed inset-0 z-30 isolate flex items-center justify-center overflow-hidden bg-canvas px-4${leaving ? " is-leaving" : ""}`} data-route-loading-overlay>
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             <div className="ambient-glow-mesh-1 left-[-20rem] top-[-18rem]" />
@@ -124,15 +132,4 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
       )}
     </RouteLoadingContext.Provider>
   );
-}
-
-export function RouteLoadingSignal() {
-  const context = useContext(RouteLoadingContext);
-
-  useEffect(() => {
-    context?.begin();
-    return () => context?.end();
-  }, [context]);
-
-  return null;
 }

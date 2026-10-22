@@ -1,3 +1,4 @@
+import { photoThumb } from "@/domain/account-data";
 import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, ChevronRight, MapPin, Star } from "lucide-react";
@@ -19,7 +20,7 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
         <div className="relative h-56 w-full shrink-0 overflow-hidden bg-beige-100/20">
           {image ? (
             <Image unoptimized
-              src={image}
+              src={photoThumb(image, 1280)}
               alt={`ภาพความทรงจำจาก ${place.name}`}
               fill
               className="object-cover"

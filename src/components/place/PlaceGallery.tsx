@@ -1,5 +1,6 @@
 "use client";
 
+import { photoThumb } from "@/domain/account-data";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -49,7 +50,7 @@ export function PlaceGallery({ recordPhotos, initialPhotoIndex = 0 }: PlaceGalle
           >
             <Image unoptimized
               key={visiblePhoto}
-              src={visiblePhoto}
+              src={photoThumb(visiblePhoto, 1280)}
               alt={`ภาพจากการเดินทางของคุณ รูปที่ ${visibleIndex + 1}`}
               fill
               priority

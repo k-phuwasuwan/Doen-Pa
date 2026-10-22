@@ -175,9 +175,10 @@ client and provider configuration.
 
 ### Branded Auth emails — 2026-10-23
 
-Confirmation and recovery emails use Thai copy, the Doen Pa wordmark, inline
-styles and table layouts, a forest-green action button and a copyable fallback
-link. The HTML sources live in `supabase/templates/confirmation.html` and
+Confirmation and recovery emails use friendly Thai copy, a forest-green header
+with the Doen Pa wordmark (no logo image; Gmail does not render SVG), inline styles and
+table layouts, a forest-green action button, a note box about single-use links
+and a copyable fallback link. They request light-only color scheme. The HTML sources live in `supabase/templates/confirmation.html` and
 `supabase/templates/recovery.html`; `supabase/config.toml` points local Auth to
 those files.
 

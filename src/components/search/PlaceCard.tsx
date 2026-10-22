@@ -19,7 +19,7 @@ export function PlaceCard({ place, userId }: { place: Place; userId: string }) {
             <p className="mb-3 line-clamp-2 text-sm text-brand-800/65">{displayPlaceValue(place.description)}</p>
             <div className="mb-4 flex min-h-10 items-center text-sm text-brand-800/60">
               <MapPin className="w-4 h-4 mr-1 shrink-0" />
-              <span className="truncate">{displayPlaceValue(place.location)}, {displayPlaceValue(place.province)}</span>
+              <span className="truncate">{displayPlaceValue(place.location)} {displayPlaceValue(place.province)}</span>
             </div>
             <div className="mt-auto flex min-h-14 items-center justify-end gap-3 border-t border-brand-800/10 pr-24 pt-3 text-xs text-brand-800/60">
               <VisitCount placeId={place.id} userId={userId} />

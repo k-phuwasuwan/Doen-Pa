@@ -32,7 +32,7 @@ export function ProfileHeader({ user, coverImage, showEditButton = true, heading
       <div className="px-6 pb-6 sm:px-8 sm:pb-8">
         <div className="-mt-12 flex items-start gap-4 sm:-mt-14">
           <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600 text-3xl font-bold text-white ring-4 ring-white/90 sm:h-28 sm:w-28">
-            {user.avatar ? <Image unoptimized src={photoThumb(user.avatar, 256)} alt={user.name} fill className="object-cover" sizes="112px" /> : initials}
+            {user.avatar ? <Image unoptimized src={photoThumb(user.avatar, 256)} alt={user.name} fill priority className="object-cover" sizes="112px" /> : initials}
           </div>
           <div className="min-w-0 pt-16 sm:pt-20">
             <Heading id="profile-heading" className="break-words text-2xl font-bold text-brand-800">{user.name}</Heading>

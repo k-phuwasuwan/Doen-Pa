@@ -173,6 +173,32 @@ project's Auth configuration; repo changes do not update hosted templates or
 SMTP settings. A future Google integration additionally needs a Google OAuth
 client and provider configuration.
 
+### Branded Auth emails — 2026-10-23
+
+Confirmation and recovery emails use Thai copy, the Doen Pa wordmark, inline
+styles and table layouts, a forest-green action button and a copyable fallback
+link. The HTML sources live in `supabase/templates/confirmation.html` and
+`supabase/templates/recovery.html`; `supabase/config.toml` points local Auth to
+those files.
+
+| Dashboard template | Subject | Button |
+| --- | --- | --- |
+| Confirm sign up | ยืนยันอีเมลเพื่อสมัครใช้งาน Doen Pa | ยืนยันอีเมล |
+| Reset password | ตั้งรหัสผ่านใหม่สำหรับบัญชี Doen Pa | ตั้งรหัสผ่านใหม่ |
+
+Both buttons and fallback links retain `{{ .ConfirmationURL }}`, matching the
+previous hosted templates and preserving the existing callback/PKCE flow. They
+do not switch to the optional TokenHash links above. `{{ .SiteURL }}` is used
+only by the footer website link. Expiry copy does not promise a fixed duration.
+
+The two subjects and bodies were saved in the linked production project's
+**Authentication > Emails > Templates**. Future repository edits must also be
+applied to those two hosted templates; a Vercel deploy does not update them.
+Update only the corresponding subject and HTML body, keeping SMTP credentials,
+Auth security settings and URL configuration unchanged. Dashboard previews and
+browser rendering do not prove Gmail inbox delivery; recheck signup, resend and
+recovery in a real inbox after template changes.
+
 ## Reusable QA accounts
 
 For manual local runs, use the accounts already created for this project.

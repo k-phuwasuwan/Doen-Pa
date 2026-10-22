@@ -56,6 +56,16 @@ visits, account isolation, and matching Profile/Place gallery positions.
 
 ## Browser regression tests
 
+Auth email template checks on 2026-10-23 rendered confirmation and recovery
+HTML at 640 px and 390 px using installed Chromium (Browser plugin not
+available). All four previews retained their action/fallback URL, had action
+targets above 44 px, wrapped long URLs without horizontal overflow and
+followed the button to a stubbed destination without browser errors. Hosted
+subjects/bodies were saved through Supabase's Dashboard. These checks do not
+send email, verify Gmail rendering/dark mode/spam placement, or consume real
+Auth tokens. The new templates still need a real-inbox signup/resend/recovery
+check; the earlier SMTP acceptance below predates this template update.
+
 First-time setup:
 
 ```sh

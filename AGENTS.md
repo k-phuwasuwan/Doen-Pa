@@ -19,6 +19,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 
 - Production runs on **Vercel** at **`https://doen-pa.vercel.app`**; no purchased custom domain is required. Recheck Supabase Auth Site URL and allowed redirect URLs whenever the deployment domain changes. Production acceptance results are recorded in [docs/testing.md](docs/testing.md).
 - Auth email uses **Gmail SMTP** with a dedicated sender, 2-Step Verification and an App Password stored only in Supabase's custom SMTP settings. On **2026-10-22**, the user confirmed real-inbox signup/confirmation, resend and password-recovery checks passed. Keep the App Password out of source control and browser code; automated token tests do not themselves prove email delivery.
+- Confirmation and recovery emails use formal Thai templates with green action buttons from `supabase/templates/`; retain `{{ .ConfirmationURL }}` for both buttons and fallback links. Local templates are configured in `supabase/config.toml`; hosted subjects/bodies must also be updated in Supabase Authentication > Emails (Vercel does not deploy them). See [email setup](docs/supabase-setup.md#branded-auth-emails--2026-10-23).
 
 ## Routes and navigation
 

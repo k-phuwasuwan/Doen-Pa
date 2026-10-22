@@ -12,19 +12,20 @@ const labels: Record<Mode, string> = {
 
 const RESEND_COOLDOWN_SECONDS = 60;
 const RESEND_COOLDOWN_KEY = "doen-pa-resend-until";
+const RECOVERY_COOLDOWN_KEY = "doen-pa-recovery-until";
 
-function readCooldownSeconds() {
+function readCooldownSeconds(key: string) {
   try {
-    const until = Number(window.localStorage.getItem(RESEND_COOLDOWN_KEY));
+    const until = Number(window.localStorage.getItem(key));
     return Number.isFinite(until) ? Math.min(RESEND_COOLDOWN_SECONDS, Math.max(0, Math.ceil((until - Date.now()) / 1000))) : 0;
   } catch {
     return 0;
   }
 }
 
-function startCooldown(setCooldown: (seconds: number) => void) {
+function startCooldown(key: string, setCooldown: (seconds: number) => void) {
   try {
-    window.localStorage.setItem(RESEND_COOLDOWN_KEY, String(Date.now() + RESEND_COOLDOWN_SECONDS * 1000));
+    window.localStorage.setItem(key, String(Date.now() + RESEND_COOLDOWN_SECONDS * 1000));
   } catch {
     // The in-page timer still applies when storage is unavailable.
   }
@@ -41,19 +42,20 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
   const [cooldown, setCooldown] = useState(0);
   const hasPassword = mode !== "forgot-password";
   const isNewPassword = mode === "signup" || mode === "reset-password";
+  const cooldownKey = mode === "forgot-password" ? RECOVERY_COOLDOWN_KEY : RESEND_COOLDOWN_KEY;
   const query = "?next=" + encodeURIComponent(next);
 
   useEffect(() => {
-    if (mode === "forgot-password" || mode === "reset-password") return;
+    if (mode === "reset-password") return;
     // Read after hydration so server and client markup match; deferred to keep setState out of the effect body.
     const timer = window.setTimeout(() => {
-      const remaining = readCooldownSeconds();
+      const remaining = readCooldownSeconds(cooldownKey);
       if (remaining <= 0) return;
       setCooldown(remaining);
-      setCanResend(true);
+      if (mode !== "forgot-password") setCanResend(true);
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [mode]);
+  }, [mode, cooldownKey]);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -62,8 +64,8 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
   }, [cooldown]);
 
   async function submit(action: string, password?: string) {
-    if (busy || (action === "resend" && cooldown > 0)) return;
-    if (action === "resend") startCooldown(setCooldown);
+    if (busy || ((action === "resend" || action === "forgot-password") && cooldown > 0)) return;
+    if (action === "resend") startCooldown(cooldownKey, setCooldown);
     setBusy(true); setError(""); setNotice("");
     try {
       const response = await fetch("/auth/" + action, {
@@ -85,8 +87,9 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
         }
         if (mode === "signup") {
           setCanResend(true);
-          if (action === "signup") startCooldown(setCooldown);
+          if (action === "signup") startCooldown(cooldownKey, setCooldown);
         }
+        if (action === "forgot-password") startCooldown(cooldownKey, setCooldown);
       }
     } catch {
       setError("เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่");
@@ -133,8 +136,8 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
       </div>}
       <p role="alert" className="text-sm text-red-700">{error}</p>
       {notice && <p role="status" aria-live="polite" className="text-sm text-brand-800">{notice}</p>}
-      <button type="submit" disabled={busy} className="glass-button flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 text-base font-semibold disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-        <LogIn className="h-5 w-5" aria-hidden="true" />{busy ? "กำลังดำเนินการ…" : labels[mode]}
+      <button type="submit" disabled={busy || (mode === "forgot-password" && cooldown > 0)} className="glass-button flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 text-base font-semibold disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+        <LogIn className="h-5 w-5" aria-hidden="true" />{busy ? "กำลังดำเนินการ…" : mode === "forgot-password" && cooldown > 0 ? `ส่งอีเมลอีกครั้งได้ใน ${cooldown} วินาที` : labels[mode]}
       </button>
     </form>
     {canResend && <button type="button" disabled={busy || !email || cooldown > 0} onClick={() => void submit("resend")} className="site-top-nav-surface mt-3 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-700/15 px-5 text-base font-semibold text-brand-800 backdrop-blur-xl transition-colors hover:border-brand-500 hover:text-brand-900 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:border-brand-700/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">

@@ -4,11 +4,8 @@ import { createContext, useCallback, useEffect, useMemo, useRef, useState } from
 import { usePathname } from "next/navigation";
 import { HikerLoader } from "@/components/ui/HikerLoader";
 
-const MIN_VISIBLE_MS = 500;
+const MIN_VISIBLE_MS = 200;
 const FADE_MS = 180;
-// The hiker overlay covers the first load. Later navigations keep the current page on screen
-// with a slim progress bar, and escalate to the overlay only if they take longer than this.
-const SLOW_NAVIGATION_MS = 350;
 
 interface RouteLoadingContextValue {
   begin: () => void;
@@ -32,10 +29,6 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [leaving, setLeaving] = useState(false);
-  const [firstLoad, setFirstLoad] = useState(true);
-  const [slow, setSlow] = useState(false);
-  const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const slowSince = useRef<number | null>(null);
 
   const begin = useCallback(() => {
     activeLoads.current += 1;
@@ -51,11 +44,6 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
 
     visibleSince.current = performance.now();
     setVisible(true);
-    slowTimer.current = setTimeout(() => {
-      slowTimer.current = null;
-      slowSince.current = performance.now();
-      setSlow(true);
-    }, SLOW_NAVIGATION_MS);
   }, []);
 
   const end = useCallback(() => {
@@ -64,19 +52,15 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
 
     if (visibleSince.current === null) return;
 
-    clearTimer(slowTimer);
-    const elapsed = performance.now() - (slowSince.current ?? visibleSince.current);
+    const elapsed = performance.now() - visibleSince.current;
     hideTimer.current = setTimeout(() => {
       hideTimer.current = null;
       setLeaving(true);
       leaveTimer.current = setTimeout(() => {
         leaveTimer.current = null;
         visibleSince.current = null;
-        slowSince.current = null;
         setLeaving(false);
         setVisible(false);
-        setSlow(false);
-        setFirstLoad(false);
       }, FADE_MS);
     }, Math.max(0, MIN_VISIBLE_MS - elapsed));
   }, []);
@@ -118,7 +102,6 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
   useEffect(() => () => {
     clearTimer(hideTimer);
     clearTimer(leaveTimer);
-    clearTimer(slowTimer);
   }, []);
 
   const context = useMemo(() => ({ begin, end }), [begin, end]);
@@ -126,12 +109,7 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
   return (
     <RouteLoadingContext.Provider value={context}>
       {children}
-      {visible && !firstLoad && !slow && (
-        <div className="route-progress-bar fixed inset-x-0 top-0 z-[60] h-1 overflow-hidden" role="progressbar" aria-label="กำลังโหลด" data-route-progress>
-          <div className="route-progress-bar__fill h-full w-1/3 rounded-full bg-brand-600" />
-        </div>
-      )}
-      {visible && (firstLoad || slow) && (
+      {visible && (
         <div className={`route-loading-overlay contour-pattern fixed inset-0 z-30 isolate flex items-center justify-center overflow-hidden bg-canvas px-4${leaving ? " is-leaving" : ""}`} data-route-loading-overlay>
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
             <div className="ambient-glow-mesh-1 left-[-20rem] top-[-18rem]" />

@@ -6,6 +6,11 @@ export interface AccountData {
 }
 export const photoUrl = (userId: string, id: string) => `/api/photos/${encodeURIComponent(id)}?owner=${encodeURIComponent(userId)}`;
 
+/** Widths the photo route can resize to; anything else returns the original. */
+export const PHOTO_WIDTHS = [256, 640, 1280];
+export const photoThumb = (url: string, width: number) =>
+  url.startsWith("/api/photos/") ? `${url}${url.includes("?") ? "&" : "?"}w=${width}` : url;
+
 function object(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid account data");
   return value as Record<string, unknown>;

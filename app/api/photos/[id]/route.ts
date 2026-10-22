@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
+import sharp from "sharp";
 import { createRouteClient } from "@/lib/supabase/route";
+import { PHOTO_WIDTHS } from "@/domain/account-data";
 
 /** Session-checked image delivery: no bearer links remain usable after logout. */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -13,5 +15,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   if (!photo) return missing();
   const { data: file, error: downloadError } = await supabase.storage.from(photo.kind === "travel" ? "travel-photos" : "profile-photos").download(photo.object_path);
   if (downloadError || !file) return missing();
+  const width = Number(request.nextUrl.searchParams.get("w"));
+  if (PHOTO_WIDTHS.includes(width)) {
+    // Smaller, auto-oriented WebP for grids and headers; metadata is not carried over.
+    try {
+      const resized = await sharp(Buffer.from(await file.arrayBuffer()), { failOn: "none" }).rotate().resize({ width, withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+      return finish(new NextResponse(new Uint8Array(resized), { headers: { "Content-Type": "image/webp", "X-Content-Type-Options": "nosniff", "Content-Disposition": "inline" } }));
+    } catch {
+      // Fall back to the original bytes below.
+    }
+  }
   return finish(new NextResponse(file, { headers: { "Content-Type": photo.mime_type, "X-Content-Type-Options": "nosniff", "Content-Disposition": "inline" } }));
 }

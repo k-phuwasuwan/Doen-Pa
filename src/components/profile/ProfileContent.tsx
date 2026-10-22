@@ -23,7 +23,6 @@ export function ProfileContent() {
               provinceCount={provinceCount}
               photoCount={photoCount}
             />
-            <p className="px-2 text-sm text-brand-800/75">ข้อมูลการเดินทางและรูปภาพเป็นส่วนตัวเฉพาะบัญชีของคุณ</p>
             <LogoutButton />
           </div>
           <PostGallery posts={posts} />

@@ -6,7 +6,6 @@ import { CatalogContent } from "@/components/place/CatalogContent";
 import { getAuthUser } from "@/lib/auth/server";
 
 export const metadata = {
-  title: "ค้นหา | Doen Pa",
   description: "ค้นหาสถานที่เดินป่าที่คุณต้องการ",
 };
 

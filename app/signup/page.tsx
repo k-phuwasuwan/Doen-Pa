@@ -4,7 +4,6 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { getAuthUser } from "@/lib/auth/server";
 import { safeAuthNext, postAuthDestination } from "@/lib/auth/redirects";
 
-export const metadata = { title: "สมัครสมาชิก | Doen Pa" };
 export default async function SignupPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const next = safeAuthNext((await searchParams).next);
   const user = await getAuthUser();

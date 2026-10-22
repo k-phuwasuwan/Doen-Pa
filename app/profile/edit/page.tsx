@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
 import { BackButton } from "@/components/place/BackButton";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
 import { requireAuthUser } from "@/lib/auth/server";
-
-export const metadata: Metadata = {
-  title: "แก้ไขโปรไฟล์ | Doen Pa",
-};
 
 export default async function EditProfilePage() {
   const user = await requireAuthUser("/profile/edit");

@@ -3,10 +3,6 @@ import { PassportContent } from "@/components/passport/PassportContent";
 import { CatalogContent } from "@/components/place/CatalogContent";
 import { getAuthUser } from "@/lib/auth/server";
 
-export const metadata = {
-  title: "พาสปอร์ต | Doen Pa",
-};
-
 interface PassportPageProps {
   searchParams: Promise<{ view?: string }>;
 }

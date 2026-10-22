@@ -4,10 +4,13 @@ import { AppShell } from "@/components/navigation/AppShell";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { getAuthAccount } from "@/lib/auth/server";
 
-export const metadata: Metadata = {
-  title: "Doen Pa",
-  description: "บันทึกการเดินป่า สะสมทริป สร้างพาสปอร์ตที่ไม่ซ้ำใคร",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const account = await getAuthAccount();
+  return {
+    title: { absolute: account ? `${account.user.username} • Doen Pa` : "Doen Pa" },
+    description: "บันทึกการเดินป่า สะสมทริป สร้างพาสปอร์ตที่ไม่ซ้ำใคร",
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const account = await getAuthAccount();

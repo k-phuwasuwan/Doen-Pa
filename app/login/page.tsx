@@ -4,8 +4,6 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { getAuthUser } from "@/lib/auth/server";
 import { authBackHref, safeAuthNext, postAuthDestination } from "@/lib/auth/redirects";
 
-export const metadata = { title: "เข้าสู่ระบบ | Doen Pa" };
-
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ from?: string; next?: string; error?: string; updated?: string }> }) {
   const params = await searchParams;
   const next = safeAuthNext(params.next);

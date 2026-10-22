@@ -17,14 +17,11 @@ export async function generateMetadata({ params }: PlacePageProps) {
     catalog = await getPlaceCatalog();
   } catch (error) {
     unstable_rethrow(error);
-    return { title: "สถานที่ | Doen Pa" };
+    return {};
   }
   const place = catalog.getById(id);
-  if (!place) return { title: "ไม่พบสถานที่ | Doen Pa" };
-  return {
-    title: `${place.name} | Doen Pa`,
-    description: place.description,
-  };
+  if (!place) return {};
+  return { description: place.description };
 }
 
 export default async function PlacePage({ params, searchParams }: PlacePageProps) {

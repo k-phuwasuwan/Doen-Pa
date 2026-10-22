@@ -4,10 +4,6 @@ import { TravelRecordForm } from "@/components/records/TravelRecordForm";
 import { BackButton } from "@/components/place/BackButton";
 import { requireAuthUser } from "@/lib/auth/server";
 
-export const metadata = {
-  title: "สแตมป์ | Doen Pa",
-};
-
 interface RecordsNewPageProps {
   searchParams: Promise<{ placeId?: string; returnTo?: string }>;
 }

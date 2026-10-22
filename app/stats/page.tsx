@@ -4,10 +4,6 @@ import { CatalogContent } from "@/components/place/CatalogContent";
 import { GuestPrivatePage } from "@/components/ui/GuestPrivatePage";
 import { getAuthUser } from "@/lib/auth/server";
 
-export const metadata = {
-  title: "สถิติ | Doen Pa",
-};
-
 interface StatsPageProps {
   searchParams: Promise<{ view?: string }>;
 }

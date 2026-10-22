@@ -205,3 +205,7 @@ References: [Supabase SSR](https://supabase.com/docs/guides/auth/server-side/cre
 [SMTP](https://supabase.com/docs/guides/auth/auth-smtp),
 [redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls),
 [password Auth](https://supabase.com/docs/guides/auth/passwords).
+
+## Function region
+
+The Supabase project is in `ap-northeast-1` (Tokyo). `vercel.json` pins Vercel Functions to `hnd1` so each Supabase round trip stays in-region; the default `iad1` added roughly a transatlantic round trip to every Auth, database and Storage call. Keep the two regions together if either moves.

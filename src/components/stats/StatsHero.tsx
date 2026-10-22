@@ -16,9 +16,9 @@ export function StatsHero({ stats, journeyCount }: StatsHeroProps) {
         </h1>
       </div>
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        <StatCard value={stats.totalPlaces} label="สถานที่" variant="yellow" />
-        <StatCard value={stats.totalProvinces} label="จังหวัด" variant="yellow" />
-        <StatCard value={stats.totalRegions} label="ภูมิภาค" variant="yellow" />
+        <StatCard value={stats.totalPlaces} label="สถานที่" />
+        <StatCard value={stats.totalProvinces} label="จังหวัด" />
+        <StatCard value={stats.totalRegions} label="ภูมิภาค" />
       </div>
     </section>
   );

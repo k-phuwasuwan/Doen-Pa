@@ -8,6 +8,8 @@ import { useCurrentUser } from "@/lib/use-current-user";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { NAV_LINKS, getNavigationHref, type NavHref } from "./activeNav";
 import { NavigationState } from "./NavigationState";
+import { handleNavClick } from "./pendingNav";
+import { indicatorStyle, useSlidingIndicator } from "./useSlidingIndicator";
 
 export function TopNav() {
   return <NavigationState>{(state) => <TopNavContent {...state} />}</NavigationState>;
@@ -17,6 +19,7 @@ function TopNavContent({ activeHref, isGuest: previewGuest }: { activeHref: NavH
   const user = useCurrentUser();
   const { user: account } = useAuth();
   const isGuest = previewGuest || !account;
+  const { containerRef, box } = useSlidingIndicator(activeHref);
 
   return (
     <nav className="sticky top-4 z-40 mx-4 flex items-center lg:mx-auto lg:w-full lg:px-8">
@@ -26,7 +29,8 @@ function TopNavContent({ activeHref, isGuest: previewGuest }: { activeHref: NavH
           <span>Doen Pa</span>
         </Link>
 
-        <div className="hidden min-w-0 rounded-full bg-brand-900/[0.04] p-1.5 lg:flex lg:gap-2">
+        <div ref={containerRef} className="relative hidden min-w-0 rounded-full bg-brand-900/[0.04] p-1.5 lg:flex lg:gap-2">
+          <span aria-hidden="true" className="nav-indicator pointer-events-none absolute left-0 top-0 rounded-full bg-gradient-to-r from-brand-600 to-emerald-700 shadow-glow-emerald" style={indicatorStyle(box)} />
           {NAV_LINKS.map((link) => {
             const isActive = activeHref === link.href;
             return (
@@ -34,9 +38,10 @@ function TopNavContent({ activeHref, isGuest: previewGuest }: { activeHref: NavH
                 key={link.href}
                 href={getNavigationHref(link.href, isGuest)}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex min-h-11 shrink-0 items-center rounded-full px-6 py-2 text-sm transition-colors ${
+                onClick={(event) => handleNavClick(event, link.href)}
+                className={`relative z-10 flex min-h-11 shrink-0 items-center rounded-full px-6 py-2 text-sm transition-colors ${
                   isActive
-                    ? "bg-gradient-to-r from-brand-600 to-emerald-700 font-semibold text-white shadow-glow-emerald"
+                    ? "font-semibold text-white"
                     : "text-brand-800/80 hover:bg-white/70"
                 }`}
               >

@@ -488,3 +488,11 @@ body {
 @media (hover: none), (max-width: 1023px) {
   .ambient-glow-mesh-1, .ambient-glow-mesh-2, .ambient-glow-mesh-3 { animation: none; }
 }
+
+.nav-indicator {
+  transition: transform 650ms cubic-bezier(0.32, 0.72, 0, 1), width 650ms cubic-bezier(0.32, 0.72, 0, 1), height 650ms cubic-bezier(0.32, 0.72, 0, 1), opacity 150ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-indicator { transition: none; }
+}

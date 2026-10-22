@@ -9,7 +9,9 @@ const bucketFor = (kind: UploadedPhoto["kind"]) => kind === "travel" ? "travel-p
 
 async function imageBlob(dataUrl: string, kind: UploadedPhoto["kind"]) {
   if (!/^data:image\/(jpeg|png|webp);base64,/.test(dataUrl)) throw new Error("รองรับเฉพาะ JPG, PNG, WebP");
-  const blob = await (await fetch(dataUrl)).blob();
+  // Decode locally: the CSP connect-src does not allow fetching data: URLs.
+  const comma = dataUrl.indexOf(",");
+  const blob = new Blob([Uint8Array.from(atob(dataUrl.slice(comma + 1)), (c) => c.charCodeAt(0))], { type: dataUrl.slice(5, dataUrl.indexOf(";")) });
   const limit = (kind === "travel" ? RECORD_IMAGE_POLICY : PROFILE_IMAGE_POLICY).maxBytes;
   if (!blob.size || blob.size > limit) throw new Error("รูปภาพมีขนาดเกินที่กำหนด");
   // Verify the image is decodable before sending bytes to Storage.

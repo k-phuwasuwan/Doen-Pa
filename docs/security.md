@@ -10,7 +10,7 @@ they were not verified from this repository.
 | Critical | Next.js 16.3.4 advisories (RCE in `next/og`, image-optimizer SSRF, cache issues) | Fixed: Next.js 16.3.8 |
 | High | `brace-expansion`, `source-map-js` DoS in dev tooling | Fixed with `pnpm-workspace.yaml` overrides |
 | High | `braces` DoS (via `eslint-config-next`), no upstream fix | Open, dev-only; CI reports it without failing |
-| Medium | No browser security headers | Added `nosniff`, frame denial, referrer and permissions policies. **CSP not yet added**; it needs a nonce rollout tested against Leaflet, Stadia and Supabase |
+| Medium | No browser security headers | Added `nosniff`, frame denial, referrer and permissions policies, plus a Content-Security-Policy (origins restricted to self, Supabase and Stadia tiles; `'unsafe-inline'` scripts remain because Next hydration data is inline, so a nonce rollout is the next hardening step). Checked for violations on anonymous pages at desktop/mobile; **signed-in flows (uploads, profile) were not checked under the CSP**, run `production-journey` after deploying |
 | Medium | Photo EXIF/GPS was uploaded unchanged | Fixed: metadata is stripped in the browser (`strip-metadata.ts`), orientation kept |
 
 Checked and found sound: redirect allowlist, same-origin JSON-only auth

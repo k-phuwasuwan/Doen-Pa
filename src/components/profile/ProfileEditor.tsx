@@ -1,5 +1,6 @@
 "use client";
 
+import { DeleteAccountPanel } from "@/components/auth/DeleteAccountPanel";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -138,6 +139,7 @@ function ProfileEditorForm({ initialUser, setup }: { initialUser: User; setup: b
         </button>
         {!setup && <Link href="/profile" className="mx-auto mt-3 flex min-h-11 w-fit items-center rounded-full px-4 text-sm text-brand-800/65 underline underline-offset-4 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-brand-600">ยกเลิก</Link>}
       </form>
+      {!setup && <DeleteAccountPanel />}
     </div>
   );
 }

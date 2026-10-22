@@ -35,6 +35,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/forgot-password` | Request a password recovery link; no email-send success notice or extra Login footer link. |
 | `/reset-password` | Requires a verified session; sets a new password, signs out the current session and returns to Login. |
 | `/login` | Real email/password login. Normal login ends at Search; explicit `next` accepts allowed app destinations only. Legacy `from` controls Back, not the login destination. Newly registered users with pending profile setup open `/profile/edit` first and reach Search after saving. Returning users skip setup. |
+| `/auth/delete-account` | POST only: password re-check, deletes photo rows and Storage objects, then `delete_my_account()` removes the Auth user. Shown as "ลบบัญชี" on `/profile/edit` (not during setup). |
 | `/stats` | Personal travel statistics by province, place type, and region. Badge UI is deferred. |
 | `/stats?view=guest` | Optional guest Stats preview with Login; anonymous `/stats` shows the same guest screen. |
 | `/profile` | Personal profile and photo gallery. |
@@ -71,6 +72,7 @@ The hosted `profiles`, `travel_records`, `photos` and private Storage buckets en
 
 Photo rules:
 
+- Uploads have EXIF/XMP/GPS removed in the browser by `src/lib/images/strip-metadata.ts` before preview or upload (JPEG keeps only orientation). See [docs/security.md](docs/security.md) for review, backup, operations and privacy decisions.
 - A **new TravelRecord** accepts up to **5** JPG, PNG, or WebP images, each at most **5 MB**. `PhotoUploader` reads them as data URLs and offers preview/removal and alt-text entry.
 - Revisiting the same place creates another record; do **not** cap the total photos shown for that place at five. The shared read model joins matching records; `PlaceDetailContent` passes every photo to `PlaceGallery` and `PhotoLightbox`.
 - Passport cards represent records; Passport statistics count unique places/provinces and all saved photos.

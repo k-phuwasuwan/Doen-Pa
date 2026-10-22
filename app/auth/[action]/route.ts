@@ -3,7 +3,7 @@ import { createRouteClient } from "@/lib/supabase/route";
 import { safeAuthNext, postAuthDestination } from "@/lib/auth/redirects";
 import { ensureAccountProfile } from "@/lib/auth/server";
 
-const actions = new Set(["login", "signup", "logout", "forgot-password", "reset-password", "resend", "complete-profile-setup"]);
+const actions = new Set(["login", "signup", "logout", "forgot-password", "reset-password", "resend", "complete-profile-setup", "delete-account"]);
 
 function authError(code: string | undefined) {
   if (code === "invalid_credentials") return "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
@@ -42,6 +42,30 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (action === "logout") {
       const { error } = await supabase.auth.signOut({ scope: "local" });
       return error ? reply({ error: authError(error.code) }, 400) : reply({ next: "/profile" });
+    }
+    if (action === "delete-account") {
+      const { data: { user }, error: userLookupError } = await supabase.auth.getUser();
+      if (userLookupError || !user?.email) return reply({ error: "กรุณาเข้าสู่ระบบอีกครั้งก่อนลบบัญชี" }, 401);
+      if (!password || password.length > 1024) return reply({ error: "กรุณากรอกรหัสผ่านเพื่อยืนยัน" }, 400);
+      const { error: passwordError } = await supabase.auth.signInWithPassword({ email: user.email, password });
+      if (passwordError) return reply({ error: authError(passwordError.code) }, 400);
+      // Rows first: Storage only lets owners delete objects no photo row references.
+      const { error: rowsError } = await supabase.from("photos").delete().eq("user_id", user.id);
+      if (rowsError) return reply({ error: "ลบบัญชีไม่สำเร็จ กรุณาลองใหม่" }, 503);
+      for (const [bucket, folder] of [["travel-photos", "record-photos"], ["profile-photos", "profile"]]) {
+        const prefix = `${user.id}/${folder}`;
+        for (;;) {
+          const { data: objects, error: listError } = await supabase.storage.from(bucket).list(prefix, { limit: 100 });
+          if (listError) return reply({ error: "ลบไฟล์รูปไม่สำเร็จ กรุณาลองใหม่" }, 503);
+          if (!objects.length) break;
+          const { error: removeError } = await supabase.storage.from(bucket).remove(objects.map((object) => `${prefix}/${object.name}`));
+          if (removeError) return reply({ error: "ลบไฟล์รูปไม่สำเร็จ กรุณาลองใหม่" }, 503);
+        }
+      }
+      const { error: deleteError } = await supabase.rpc("delete_my_account");
+      if (deleteError) return reply({ error: "ลบบัญชีไม่สำเร็จ กรุณาลองใหม่" }, 503);
+      await supabase.auth.signOut({ scope: "local" });
+      return reply({ next: "/profile" });
     }
     if (action === "complete-profile-setup") {
       const { data: { user }, error: authError } = await supabase.auth.getUser();

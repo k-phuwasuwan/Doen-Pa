@@ -34,7 +34,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/passport?view=guest` | Optional guest design preview; this parameter is not a security boundary. |
 | `/signup` | Email/password signup and resend; no email-send success notice or extra Login footer link. |
 | `/forgot-password` | Request a password recovery link; no email-send success notice or extra Login footer link. |
-| `/reset-password` | Requires a verified session; sets a new password, signs out the current session and returns to Login. |
+| `/reset-password` | Requires a verified session; sets a new password, signs out the current session and returns to Login. Retains the top Back control; no duplicate Login footer link. |
 | `/login` | Real email/password login. Normal login ends at Search; explicit `next` accepts allowed app destinations only. Legacy `from` controls Back, not the login destination. Newly registered users with pending profile setup open `/profile/edit` first and reach Search after saving. Returning users skip setup. |
 | `/auth/delete-account` | POST only: password re-check, deletes photo rows and Storage objects, then `delete_my_account()` removes the Auth user. Shown as "ลบบัญชี" on `/profile/edit` (not during setup). |
 | `/stats` | Personal travel statistics by province, place type, and region. Badge UI is deferred. |

@@ -148,8 +148,5 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
         <UserPlus className="h-5 w-5" aria-hidden="true" />สมัครสมาชิก
       </Link>
     </div>}
-    {mode === "reset-password" && <div className="mt-4">
-      <Link href={"/login" + query} className={linkClass + " underline underline-offset-4"}>กลับไปเข้าสู่ระบบ</Link>
-    </div>}
   </>;
 }

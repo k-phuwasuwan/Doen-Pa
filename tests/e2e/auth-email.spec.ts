@@ -3,7 +3,7 @@ import { getTestAdmin } from "../helpers/auth-admin";
 
 test.use({ signedIn: false });
 
-test("real confirmation and recovery tokens establish SSR sessions and cannot be reused", async ({ page }) => {
+test("real confirmation and recovery tokens establish SSR sessions and cannot be reused", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   const admin = getTestAdmin();
   const email = `doen-pa-ephemeral-${crypto.randomUUID()}@example.com`;
@@ -33,6 +33,10 @@ test("real confirmation and recovery tokens establish SSR sessions and cannot be
     if (recovery.error) throw new Error(`Could not create recovery fixture: ${recovery.error.code}`);
     await openPage(page, `/auth/confirm?token_hash=${recovery.data.properties.hashed_token}&type=recovery&next=https://other.example`);
     await expect(page).toHaveURL(/\/reset-password$/);
+    await expect(page.locator("[data-route-loading-overlay]")).toBeHidden();
+    await expect(page.getByRole("link", { name: "กลับไปเข้าสู่ระบบ", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "กลับ", exact: true })).toBeVisible();
+    await page.screenshot({ path: `/tmp/doen-pa-auth-reset-password-${testInfo.project.name}.png` });
     await page.getByLabel("รหัสผ่านใหม่", { exact: true }).fill(newPassword);
     await page.getByLabel("ยืนยันรหัสผ่านใหม่", { exact: true }).fill(newPassword);
     await page.getByRole("button", { name: "บันทึกรหัสผ่านใหม่", exact: true }).click();

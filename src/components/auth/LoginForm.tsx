@@ -38,7 +38,8 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
-  const [canResend, setCanResend] = useState(false);
+  const [resendReady, setResendReady] = useState(false);
+  const [resendEmail, setResendEmail] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const hasPassword = mode !== "forgot-password";
   const isNewPassword = mode === "signup" || mode === "reset-password";
@@ -46,13 +47,13 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
   const query = "?next=" + encodeURIComponent(next);
 
   useEffect(() => {
-    if (mode === "reset-password") return;
+    if (mode === "reset-password" || mode === "login") return;
     // Read after hydration so server and client markup match; deferred to keep setState out of the effect body.
     const timer = window.setTimeout(() => {
       const remaining = readCooldownSeconds(cooldownKey);
       if (remaining <= 0) return;
       setCooldown(remaining);
-      if (mode !== "forgot-password") setCanResend(true);
+      setResendReady(true);
     }, 0);
     return () => window.clearTimeout(timer);
   }, [mode, cooldownKey]);
@@ -63,6 +64,11 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
     return () => window.clearTimeout(timer);
   }, [cooldown]);
 
+  function markResendReady() {
+    setResendReady(true);
+    setResendEmail(email);
+  }
+
   async function submit(action: string, password?: string) {
     if (busy || ((action === "resend" || action === "forgot-password") && cooldown > 0)) return;
     if (action === "resend") startCooldown(cooldownKey, setCooldown);
@@ -72,10 +78,10 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, next }),
       });
-      const result: { error?: string; message?: string; next?: string } = await response.json();
+      const result: { error?: string; code?: string; message?: string; next?: string } = await response.json();
       if (!response.ok || result.error) {
         setError(result.error ?? "ทำรายการไม่สำเร็จ กรุณาลองใหม่");
-        if (mode === "login") setCanResend(true);
+        if (mode === "login" && result.code === "email_not_confirmed") markResendReady();
       } else if (result.next) {
         notifyAuthChanged();
         // A full request consumes fresh SSR cookies and discards cached personal UI.
@@ -85,11 +91,10 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
         if (action !== "signup" && action !== "forgot-password" && action !== "resend") {
           setNotice(result.message ?? "ทำรายการสำเร็จ");
         }
-        if (mode === "signup") {
-          setCanResend(true);
-          if (action === "signup") startCooldown(cooldownKey, setCooldown);
+        if (action === "signup" || action === "forgot-password") {
+          markResendReady();
+          startCooldown(cooldownKey, setCooldown);
         }
-        if (action === "forgot-password") startCooldown(cooldownKey, setCooldown);
       }
     } catch {
       setError("เชื่อมต่อไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่");
@@ -97,8 +102,22 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
     setBusy(false);
   }
 
+  function resend() {
+    return submit(mode === "forgot-password" ? "forgot-password" : "resend");
+  }
+
+  function handleEmailChange(value: string) {
+    setEmail(value);
+    // A resend only reaches the address that was used the first time.
+    if (resendEmail && value !== resendEmail) setResendReady(false);
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (resendReady) {
+      void resend();
+      return;
+    }
     const fields = new FormData(event.currentTarget);
     const password = fields.get("password")?.toString();
     if (isNewPassword && password !== fields.get("confirmPassword")) {
@@ -115,7 +134,7 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
     <form onSubmit={handleSubmit} className="mt-7 space-y-4" aria-busy={busy}>
       {mode !== "reset-password" && <div>
         <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-brand-800">อีเมล</label>
-        <input id="login-email" name="email" type="email" autoComplete="email" required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} disabled={busy} className={inputClass} />
+        <input id="login-email" name="email" type="email" autoComplete="email" required maxLength={254} value={email} onChange={(e) => handleEmailChange(e.target.value)} disabled={busy} className={inputClass} />
       </div>}
       {hasPassword && <div>
         <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-brand-800">{isNewPassword ? "รหัสผ่านใหม่" : "รหัสผ่าน"}</label>
@@ -136,13 +155,11 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
       </div>}
       <p role="alert" className="text-sm text-red-700">{error}</p>
       {notice && <p role="status" aria-live="polite" className="text-sm text-brand-800">{notice}</p>}
-      <button type="submit" disabled={busy || (mode === "forgot-password" && cooldown > 0)} className="glass-button flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 text-base font-semibold disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-        <LogIn className="h-5 w-5" aria-hidden="true" />{busy ? "กำลังดำเนินการ…" : mode === "forgot-password" && cooldown > 0 ? `ส่งอีเมลอีกครั้งได้ใน ${cooldown} วินาที` : labels[mode]}
+      <button type="submit" disabled={busy || (resendReady && (cooldown > 0 || !email))} className="glass-button flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 text-base font-semibold disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+        {resendReady ? <MailCheck className="h-5 w-5" aria-hidden="true" /> : <LogIn className="h-5 w-5" aria-hidden="true" />}
+        {busy ? "กำลังดำเนินการ…" : resendReady ? (cooldown > 0 ? `ส่งอีเมลอีกครั้งได้ใน ${cooldown} วินาที` : "ส่งอีเมลอีกครั้ง") : labels[mode]}
       </button>
     </form>
-    {canResend && <button type="button" disabled={busy || !email || cooldown > 0} onClick={() => void submit("resend")} className="site-top-nav-surface mt-3 flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-700/15 px-5 text-base font-semibold text-brand-800 backdrop-blur-xl transition-colors hover:border-brand-500 hover:text-brand-900 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:border-brand-700/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-      <MailCheck className="h-5 w-5" aria-hidden="true" />{cooldown > 0 ? `ส่งอีเมลอีกครั้งได้ใน ${cooldown} วินาที` : "ส่งอีเมลยืนยันอีกครั้ง"}
-    </button>}
     {mode === "login" && <div className="mt-3">
       <Link href={"/signup" + query} className="site-top-nav-surface flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-700/15 px-5 text-base font-semibold text-brand-800 backdrop-blur-xl transition-colors hover:border-brand-500 hover:text-brand-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
         <UserPlus className="h-5 w-5" aria-hidden="true" />สมัครสมาชิก

@@ -25,20 +25,18 @@ test("signup and recovery omit email notices and the duplicate login link", asyn
       await page.getByLabel("ยืนยันรหัสผ่านใหม่", { exact: true }).fill("UiCheck-Password123");
     }
     const submit = page.locator('button[type="submit"]');
-    await submit.click();
-    await expect(submit).toBeEnabled();
-    await expect(page.getByText("ตรวจสอบอีเมลของคุณ ระบบส่งลิงก์แล้ว", { exact: true })).toHaveCount(0);
-    await expect(page.locator("form").getByRole("status")).toHaveCount(0);
-    await page.screenshot({ path: `/tmp/doen-pa-auth-${mode}-${testInfo.project.name}.png` });
-    if (mode === "signup") {
-      await page.route("**/auth/resend", (route) => route.fulfill({ json: { message: "ส่งอีเมลยืนยันใหม่แล้ว" } }));
-      await page.getByRole("button", { name: "ส่งอีเมลยืนยันอีกครั้ง", exact: true }).click();
-      await expect(submit).toBeEnabled();
-      await expect(page.getByText("ส่งอีเมลยืนยันใหม่แล้ว", { exact: true })).toHaveCount(0);
-    }
-    await page.unroute(`**/auth/${mode}`);
     await page.route(`**/auth/${mode}`, (route) => route.fulfill({ status: 503, json: { error: "เชื่อมต่อไม่สำเร็จ กรุณาลองใหม่" } }));
     await submit.click();
     await expect(page.locator("form").getByRole("alert")).toHaveText("เชื่อมต่อไม่สำเร็จ กรุณาลองใหม่");
+    await expect(submit).toBeEnabled();
+    await page.unroute(`**/auth/${mode}`);
+    await page.route(`**/auth/${mode}`, (route) => route.fulfill({ json: { message: "ตรวจสอบอีเมลของคุณ ระบบส่งลิงก์แล้ว" } }));
+    await submit.click();
+    // The same button becomes the resend control with a 60-second cooldown.
+    await expect(submit).toBeDisabled();
+    await expect(submit).toContainText("ส่งอีเมลอีกครั้งได้ใน");
+    await expect(page.getByText("ตรวจสอบอีเมลของคุณ ระบบส่งลิงก์แล้ว", { exact: true })).toHaveCount(0);
+    await expect(page.locator("form").getByRole("status")).toHaveCount(0);
+    await page.screenshot({ path: `/tmp/doen-pa-auth-${mode}-${testInfo.project.name}.png` });
   }
 });

@@ -83,8 +83,11 @@ responses suppress referrers and shared caching.
 
 Signup, resend and password-recovery submissions do not display email-send
 success notices in the form. Errors remain visible. Signup and recovery retain
-the top Back control and omit the duplicate Login footer link; signup still
-offers resend after a successful request.
+the top Back control and omit the duplicate Login footer link. After a
+successful signup or recovery request the primary button becomes "ส่งอีเมลอีกครั้ง"
+with a 60-second cooldown; on Login it does so only after an unconfirmed-email
+error. Signup detects an already registered email (Supabase returns a user with
+empty `identities`) and shows "อีเมลนี้มีบัญชีแล้ว กรุณาเข้าสู่ระบบ".
 
 `/auth/callback` exchanges a PKCE code. Default email links using this flow must
 be opened in the browser where signup/recovery began. `/auth/confirm` also accepts

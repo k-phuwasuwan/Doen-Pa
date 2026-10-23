@@ -18,7 +18,7 @@ function authError(code: string | undefined) {
 export async function POST(request: NextRequest, { params }: { params: Promise<{ action: string }> }) {
   const { action } = await params;
   const { supabase, finish } = createRouteClient(request);
-  const reply = (body: { error?: string; message?: string; next?: string }, status = 200) => finish(NextResponse.json(body, { status }));
+  const reply = (body: { error?: string; code?: string; message?: string; next?: string }, status = 200) => finish(NextResponse.json(body, { status }));
   // Account switches drop the previous owner's privately cached photos.
   const switchAccount = (body: { next: string }) => {
     const response = reply(body);
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (action === "login") {
       if (!password || password.length > 1024) return reply({ error: "กรุณากรอกรหัสผ่าน" }, 400);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error || !data.user) return reply({ error: authError(error?.code) }, 400);
+      if (error || !data.user) return reply({ error: authError(error?.code), code: error?.code }, 400);
       try {
         await ensureAccountProfile(supabase, data.user.id);
       } catch {
@@ -107,11 +107,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         emailRedirectTo: callback.toString(), data: { profile_setup_pending: true },
       } });
       if (error) return reply({ error: authError(error.code) }, 400);
+      // With email confirmation on, Supabase hides duplicates by returning a user without identities.
+      if (data.user?.identities?.length === 0) return reply({ error: "อีเมลนี้มีบัญชีแล้ว กรุณาเข้าสู่ระบบ", code: "email_exists" }, 409);
       if (data.session && data.user) {
         await ensureAccountProfile(supabase, data.user.id);
         return reply({ next: postAuthDestination(next, data.user.user_metadata.profile_setup_pending === true) });
       }
-      return reply({ message: "ตรวจสอบอีเมลของคุณ แล้วเปิดลิงก์เพื่อยืนยันบัญชี หากสมัครไว้แล้วให้เข้าสู่ระบบหรือรีเซ็ตรหัสผ่าน" });
+      return reply({ message: "ตรวจสอบอีเมลของคุณ แล้วเปิดลิงก์เพื่อยืนยันบัญชี" });
     }
     if (action === "resend") {
       const { error } = await supabase.auth.resend({ type: "signup", email, options: { emailRedirectTo: callback.toString() } });

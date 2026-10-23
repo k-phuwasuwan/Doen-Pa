@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { photoThumb } from "@/domain/account-data";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Pencil, UserRound } from "lucide-react";
 import type { User } from "@/types";
 
 interface ProfileHeaderProps {
@@ -12,15 +12,12 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user, coverImage, showEditButton = true, headingLevel = 1 }: ProfileHeaderProps) {
-  const initials = user.name.slice(0, 1);
   const Heading = headingLevel === 1 ? "h1" : "h2";
 
   return (
     <section className="liquid-glass-card overflow-hidden" aria-labelledby="profile-heading">
       <div className="relative h-36 bg-brand-600 sm:h-44">
-        {coverImage && (
-          <Image unoptimized src={photoThumb(coverImage, 1280)} alt="ภาพปกโปรไฟล์" fill priority className="object-cover" sizes="(max-width: 1024px) 100vw, 600px" />
-        )}
+        <Image unoptimized src={coverImage ? photoThumb(coverImage, 1280) : "/images/default-profile-cover.jpg"} alt="ภาพปกโปรไฟล์" fill priority className="object-cover" sizes="(max-width: 1024px) 100vw, 600px" />
         <div className="absolute inset-0 bg-brand-600/25" />
         {showEditButton && (
           <Link href="/profile/edit" className="absolute right-4 top-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/90 px-4 py-2 text-sm font-medium text-brand-800 shadow-glass transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" aria-label="แก้ไขโปรไฟล์">
@@ -32,7 +29,7 @@ export function ProfileHeader({ user, coverImage, showEditButton = true, heading
       <div className="px-6 pb-6 sm:px-8 sm:pb-8">
         <div className="-mt-12 flex items-start gap-4 sm:-mt-14">
           <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600 text-3xl font-bold text-white ring-4 ring-white/90 sm:h-28 sm:w-28">
-            {user.avatar ? <Image unoptimized src={photoThumb(user.avatar, 256)} alt={user.name} fill priority className="object-cover" sizes="112px" /> : initials}
+            {user.avatar ? <Image unoptimized src={photoThumb(user.avatar, 256)} alt={user.name} fill priority className="object-cover" sizes="112px" /> : <UserRound className="h-12 w-12" aria-hidden="true" />}
           </div>
           <div className="min-w-0 pt-16 sm:pt-20">
             <Heading id="profile-heading" className="break-words text-2xl font-bold text-brand-800">{user.name}</Heading>

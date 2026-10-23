@@ -3,7 +3,7 @@
 import { photoThumb } from "@/domain/account-data";
 import Image from "next/image";
 import Link from "next/link";
-import { LogIn } from "lucide-react";
+import { LogIn, UserRound } from "lucide-react";
 import { useCurrentUser } from "@/lib/use-current-user";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { NAV_LINKS, getNavigationHref, type NavHref } from "./activeNav";
@@ -59,7 +59,7 @@ function TopNavContent({ activeHref, isGuest: previewGuest }: { activeHref: NavH
         ) : (
           <Link href="/profile" aria-label={`โปรไฟล์ ${user.name}`} className="inline-flex min-h-11 min-w-0 max-w-32 items-center gap-1.5 rounded-full bg-white/70 px-2 py-1.5 text-xs font-medium text-brand-800 shadow-glass transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:max-w-40 sm:gap-2 sm:px-3 sm:text-sm">
             <span className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-600 text-xs font-bold text-white">
-              {user.avatar ? <Image unoptimized src={photoThumb(user.avatar, 256)} alt="" fill sizes="28px" className="object-cover" /> : user.name.slice(0, 1)}
+              {user.avatar ? <Image unoptimized src={photoThumb(user.avatar, 256)} alt="" fill sizes="28px" className="object-cover" /> : <UserRound className="h-4 w-4" aria-hidden="true" />}
             </span>
             <span className="min-w-0 truncate">{user.name}</span>
           </Link>

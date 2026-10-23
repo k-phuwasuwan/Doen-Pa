@@ -1,5 +1,6 @@
 import { photoThumb } from "@/domain/account-data";
 import Image from "next/image";
+import { UserRound } from "lucide-react";
 import type { User } from "@/types";
 import { StatCard } from "@/components/ui/StatCard";
 
@@ -16,8 +17,6 @@ export function PassportHeader({
   provinceCount,
   photoCount,
 }: PassportHeaderProps) {
-  const initials = user.name.slice(0, 1);
-
   return (
     <section className="liquid-glass-card p-6 md:p-8" aria-labelledby="passport-heading">
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
@@ -26,7 +25,7 @@ export function PassportHeader({
             {user.avatar ? (
               <Image unoptimized src={photoThumb(user.avatar, 256)} alt={user.name} fill className="object-cover" />
             ) : (
-              initials
+              <UserRound className="h-8 w-8" aria-hidden="true" />
             )}
           </div>
           <div>

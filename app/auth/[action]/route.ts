@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createRouteClient } from "@/lib/supabase/route";
 import { safeAuthNext, postAuthDestination } from "@/lib/auth/redirects";
 import { ensureAccountProfile } from "@/lib/auth/server";
+import { isProfileSetupComplete } from "@/lib/auth/profile-setup";
 
 const actions = new Set(["login", "signup", "logout", "forgot-password", "reset-password", "resend", "complete-profile-setup", "delete-account"]);
 
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       if (authError || !user) return reply({ error: "กรุณาเข้าสู่ระบบอีกครั้งก่อนบันทึก" }, 401);
       const { data: profile, error: profileError } = await supabase.from("profiles").select("name,username").eq("user_id", user.id).single();
       if (profileError) return reply({ error: "ตรวจสอบโปรไฟล์ไม่สำเร็จ กรุณาลองบันทึกอีกครั้ง" }, 503);
-      if (!profile.name.trim() || !/^[a-zA-Z0-9_]{3,20}$/.test(profile.username)) {
+      if (!isProfileSetupComplete(profile.name, profile.username)) {
         return reply({ error: "กรุณาบันทึกชื่อและชื่อผู้ใช้ก่อนดำเนินการต่อ" }, 400);
       }
       const { error } = await supabase.auth.updateUser({ data: { profile_setup_pending: false } });

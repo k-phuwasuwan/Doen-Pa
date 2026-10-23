@@ -11,6 +11,7 @@ import { ProfileHeader } from "./ProfileHeader";
 import type { User } from "@/types";
 import { IMAGE_ACCEPT, PROFILE_IMAGE_POLICY } from "@/lib/images/image-import";
 import { useImageImport } from "@/lib/use-image-import";
+import { DEFAULT_PROFILE_NAME, DEFAULT_PROFILE_USERNAME, USERNAME_PATTERN, isProfileSetupComplete } from "@/lib/auth/profile-setup";
 
 export function ProfileEditor({ setup = false }: { setup?: boolean }) {
   const user = useCurrentUser();
@@ -22,8 +23,8 @@ function ProfileEditorForm({ initialUser, setup }: { initialUser: User; setup: b
   const { profile } = useAuth();
   const router = useRouter();
   const { importer, loading: readingImages } = useImageImport();
-  const [name, setName] = useState(setup && initialUser.name === "นักเดินทาง" ? "" : initialUser.name);
-  const [username, setUsername] = useState(setup && initialUser.username === "new_hiker" ? "" : initialUser.username);
+  const [name, setName] = useState(setup && initialUser.name === DEFAULT_PROFILE_NAME ? "" : initialUser.name);
+  const [username, setUsername] = useState(setup && initialUser.username === DEFAULT_PROFILE_USERNAME ? "" : initialUser.username);
   const [bio, setBio] = useState(initialUser.bio ?? "");
   const [avatar, setAvatar] = useState(initialUser.avatar);
   const [coverImage, setCoverImage] = useState(initialUser.coverImage);
@@ -60,8 +61,12 @@ function ProfileEditorForm({ initialUser, setup }: { initialUser: User; setup: b
     if (importer.isPending() || saving) return;
     const cleanName = name.trim();
     const cleanUsername = username.trim().replace(/^@/, "");
-    if (!cleanName || !/^[a-zA-Z0-9_]{3,20}$/.test(cleanUsername)) {
+    if (!cleanName || !USERNAME_PATTERN.test(cleanUsername)) {
       setError("กรุณากรอกชื่อและชื่อผู้ใช้ให้ถูกต้อง");
+      return;
+    }
+    if (setup && !isProfileSetupComplete(cleanName, cleanUsername)) {
+      setError("กรุณาตั้งชื่อที่แสดงและชื่อผู้ใช้ของคุณเอง");
       return;
     }
 

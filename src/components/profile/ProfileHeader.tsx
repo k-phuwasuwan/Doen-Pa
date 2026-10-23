@@ -17,8 +17,10 @@ export function ProfileHeader({ user, coverImage, showEditButton = true, heading
   return (
     <section className="liquid-glass-card overflow-hidden" aria-labelledby="profile-heading">
       <div className="relative h-36 bg-brand-600 sm:h-44">
-        <Image unoptimized src={coverImage ? photoThumb(coverImage, 1280) : "/images/default-profile-cover.jpg"} alt="ภาพปกโปรไฟล์" fill priority className="object-cover" sizes="(max-width: 1024px) 100vw, 600px" />
-        <div className="absolute inset-0 bg-brand-600/25" />
+        {coverImage && <>
+          <Image unoptimized src={photoThumb(coverImage, 1280)} alt="ภาพปกโปรไฟล์" fill priority className="object-cover" sizes="(max-width: 1024px) 100vw, 600px" />
+          <div className="absolute inset-0 bg-brand-600/25" />
+        </>}
         {showEditButton && (
           <Link href="/profile/edit" className="absolute right-4 top-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/90 px-4 py-2 text-sm font-medium text-brand-800 shadow-glass transition hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" aria-label="แก้ไขโปรไฟล์">
             <Pencil className="h-4 w-4" aria-hidden="true" />

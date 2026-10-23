@@ -28,7 +28,7 @@
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                   <tr>
                     <td align="center" bgcolor="#1b4332" style="border-radius:12px; background-color:#1b4332;">
-                      <a href="{{ .ConfirmationURL }}" style="display:block; border:1px solid #1b4332; border-radius:12px; padding:16px 20px; color:#ffffff; background-color:#1b4332; font-size:17px; line-height:26px; font-weight:700; text-align:center; text-decoration:none;">ตั้งรหัสผ่านใหม่</a>
+                      <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery" style="display:block; border:1px solid #1b4332; border-radius:12px; padding:16px 20px; color:#ffffff; background-color:#1b4332; font-size:17px; line-height:26px; font-weight:700; text-align:center; text-decoration:none;">ตั้งรหัสผ่านใหม่</a>
                     </td>
                   </tr>
                 </table>
@@ -41,7 +41,7 @@
                   <tr>
                     <td style="border-top:1px solid #e5ebe6; padding-top:20px;">
                       <p style="margin:0 0 6px; color:#52675b; font-size:12px; line-height:22px;">กดปุ่มไม่ได้? คัดลอกลิงก์นี้ไปวางในเบราว์เซอร์</p>
-                      <p style="margin:0; font-size:12px; line-height:22px; overflow-wrap:anywhere; word-break:break-all;"><a href="{{ .ConfirmationURL }}" style="color:#1b4332; text-decoration:underline; word-break:break-all;">{{ .ConfirmationURL }}</a></p>
+                      <p style="margin:0; font-size:12px; line-height:22px; overflow-wrap:anywhere; word-break:break-all;"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery" style="color:#1b4332; text-decoration:underline; word-break:break-all;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery</a></p>
                     </td>
                   </tr>
                 </table>

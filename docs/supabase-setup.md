@@ -187,10 +187,13 @@ those files.
 | Confirm sign up | ยืนยันอีเมลเพื่อสมัครใช้งาน Doen Pa | ยืนยันอีเมล |
 | Reset password | ตั้งรหัสผ่านใหม่สำหรับบัญชี Doen Pa | ตั้งรหัสผ่านใหม่ |
 
-Both buttons and fallback links retain `{{ .ConfirmationURL }}`, matching the
-previous hosted templates and preserving the existing callback/PKCE flow. They
-do not switch to the optional TokenHash links above. `{{ .SiteURL }}` is used
-only by the footer website link. Expiry copy does not promise a fixed duration.
+Both buttons and fallback links use the TokenHash targets above (`type=email` for
+confirmation, `type=recovery` for reset). The earlier `{{ .ConfirmationURL }}`
+PKCE links failed with "link invalid or expired" whenever the email was opened
+in a different browser from the one that started signup (for example Gmail's
+in-app browser), because the PKCE code verifier cookie was missing. TokenHash
+links need no verifier. Supabase **Site URL must be `https://doen-pa.vercel.app`**.
+Tokens stay single-use; `{{ .SiteURL }}` is also used by the footer link.
 
 The two subjects and bodies were saved in the linked production project's
 **Authentication > Emails > Templates**. Future repository edits must also be

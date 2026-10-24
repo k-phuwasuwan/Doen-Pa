@@ -8,7 +8,7 @@ const a = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", b = "bbbbbbbb-bbbb-4bbb-8bbb-b
 test("cloud transactions and private Storage enforce ownership and survive retry/failure", async (t) => {
   const db = new PGlite(); t.after(() => db.close());
   await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
-    create schema auth; create table auth.users(id uuid primary key);
+    create schema auth; create table auth.users (id uuid primary key, email_confirmed_at timestamptz, recovery_token text);
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
     grant usage on schema auth to anon, authenticated; insert into auth.users values('${a}'),('${b}');`);
   await db.exec(storageSchema);

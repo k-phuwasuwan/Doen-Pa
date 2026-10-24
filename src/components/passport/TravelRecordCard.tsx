@@ -17,29 +17,29 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
 
   return (
     <article className="liquid-glass-card h-full overflow-hidden">
-      <Link href={`/places/${place.id}?from=passport`} className="flex h-full flex-col rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500">
-        <div className={`relative aspect-[16/10] w-full shrink-0 overflow-hidden ${image ? "bg-beige-100" : "topo-fill"}`}>
+      <Link href={`/places/${place.id}?from=passport`} className="flex h-full flex-col rounded-3xl focus:outline-none md:h-52 md:flex-row focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500">
+        <div className={`relative aspect-[16/10] w-full shrink-0 overflow-hidden md:aspect-auto md:h-full md:w-2/5 ${image ? "bg-beige-100" : "topo-fill"}`}>
           {image ? (
             <Image unoptimized
               src={photoThumb(image, 1280)}
               alt={`ภาพความทรงจำจาก ${place.name}`}
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              sizes="(max-width: 768px) 100vw, 440px"
             />
           ) : (
             <span className="sr-only">ไม่มีรูปภาพ</span>
           )}
         </div>
 
-        <div className="relative flex flex-1 flex-col p-4 sm:p-5">
+        <div className="relative flex min-w-0 flex-1 flex-col p-4 sm:p-5 md:p-6">
           <InkStamp
             top={place.name}
             bottom={place.province || "DOEN PA"}
             center={stampDate.dayMonth}
             sub={stampDate.year}
             seed={record.id}
-            className="absolute right-3 top-3 h-24 w-24"
+            className="absolute right-3 top-3 h-24 w-24 md:right-5 md:top-5 md:h-28 md:w-28"
           />
           <p className="pr-24 text-xs text-brand-800/60">{formatDate(record.visitedAt)}</p>
           <h2 className="mt-0.5 pr-24 text-base font-semibold leading-snug text-brand-800">{place.name}</h2>
@@ -57,7 +57,7 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
           </div>
 
           {record.note && (
-            <blockquote className="mt-3 line-clamp-2 border-l-2 border-lichen pl-3 text-sm leading-relaxed text-brand-800/75">
+            <blockquote className="mt-3 line-clamp-2 pr-24 md:pr-32 border-l-2 border-lichen pl-3 text-sm leading-relaxed text-brand-800/75">
               “{record.note}”
             </blockquote>
           )}

@@ -2,12 +2,16 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, LogIn, MailCheck, UserPlus } from "lucide-react";
+import { Eye, EyeOff, KeyRound, LogIn, Mail, MailCheck, UserPlus, type LucideIcon } from "lucide-react";
 import { notifyAuthChanged } from "@/lib/auth/browser";
 
 type Mode = "login" | "signup" | "forgot-password" | "reset-password";
 const labels: Record<Mode, string> = {
   login: "เข้าสู่ระบบ", signup: "สมัครสมาชิก", "forgot-password": "ส่งลิงก์ตั้งรหัสผ่านใหม่", "reset-password": "บันทึกรหัสผ่านใหม่",
+};
+
+const icons: Record<Mode, LucideIcon> = {
+  login: LogIn, signup: UserPlus, "forgot-password": Mail, "reset-password": KeyRound,
 };
 
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -45,6 +49,7 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
   const isNewPassword = mode === "signup" || mode === "reset-password";
   const cooldownKey = mode === "forgot-password" ? RECOVERY_COOLDOWN_KEY : RESEND_COOLDOWN_KEY;
   const query = "?next=" + encodeURIComponent(next);
+  const SubmitIcon = resendReady ? MailCheck : icons[mode];
 
   useEffect(() => {
     if (mode === "reset-password" || mode === "login") return;
@@ -127,11 +132,11 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
     void submit(mode, password);
   }
 
-  const inputClass = "glass-input min-h-14 w-full px-5 text-base text-brand-800 placeholder:text-brand-800/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-60";
-  const linkClass = "inline-flex min-h-11 items-center rounded-xl px-2 text-sm font-medium text-brand-700 focus-visible:outline-2 focus-visible:outline-brand-600";
+  const inputClass = "glass-input min-h-12 w-full px-4 text-base text-brand-800 placeholder:text-brand-800/55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-60";
+  const linkClass = "inline-flex min-h-11 items-center rounded-xl px-1 text-sm font-medium text-brand-600 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-brand-600";
 
   return <>
-    <form onSubmit={handleSubmit} className="mt-7 space-y-4" aria-busy={busy}>
+    <form onSubmit={handleSubmit} className="mt-6 space-y-4" aria-busy={busy}>
       {mode !== "reset-password" && <div>
         <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-brand-800">อีเมล</label>
         <input id="login-email" name="email" type="email" autoComplete="email" required maxLength={254} value={email} onChange={(e) => handleEmailChange(e.target.value)} disabled={busy} className={inputClass} />
@@ -145,8 +150,8 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
           </button>
         </div>
         {isNewPassword && <p id="password-help" className="mt-1.5 text-xs text-brand-800/75">ใช้รหัสผ่าน 8–72 ตัวอักษร และหลีกเลี่ยงรหัสที่ใช้กับบัญชีอื่น</p>}
-        {mode === "login" && <div className="mt-1 flex justify-end">
-          <Link href={"/forgot-password" + query} className={linkClass + " hover:text-brand-900"}>ลืมรหัสผ่าน</Link>
+        {mode === "login" && <div className="-mb-2 flex justify-end">
+          <Link href={"/forgot-password" + query} className={linkClass}>ลืมรหัสผ่าน</Link>
         </div>}
       </div>}
       {isNewPassword && <div>
@@ -155,13 +160,14 @@ export function LoginForm({ mode = "login", next = "/passport", initialNotice = 
       </div>}
       <p role="alert" className="text-sm text-red-700">{error}</p>
       {notice && <p role="status" aria-live="polite" className="text-sm text-brand-800">{notice}</p>}
-      <button type="submit" disabled={busy || (resendReady && (cooldown > 0 || !email))} className="glass-button flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl px-4 text-base font-semibold disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-        {resendReady ? <MailCheck className="h-5 w-5" aria-hidden="true" /> : <LogIn className="h-5 w-5" aria-hidden="true" />}
+      <button type="submit" disabled={busy || (resendReady && (cooldown > 0 || !email))} className="glass-button flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl px-4 text-base font-semibold disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+        <SubmitIcon className="h-5 w-5" aria-hidden="true" />
         {busy ? "กำลังดำเนินการ…" : resendReady ? (cooldown > 0 ? `ส่งอีเมลอีกครั้งได้ใน ${cooldown} วินาที` : "ส่งอีเมลอีกครั้ง") : labels[mode]}
       </button>
     </form>
-    {mode === "login" && <div className="mt-3">
-      <Link href={"/signup" + query} className="site-top-nav-surface flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl border border-brand-700/15 px-5 text-base font-semibold text-brand-800 backdrop-blur-xl transition-colors hover:border-brand-500 hover:text-brand-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+    {mode === "login" && <div className="mt-6 border-t border-brand-800/10 pt-5">
+      <p className="mb-3 text-center text-sm text-brand-800/60">ยังไม่มีบัญชี?</p>
+      <Link href={"/signup" + query} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-brand-700/20 bg-white/60 px-5 text-base font-semibold text-brand-800 transition-colors hover:border-brand-500 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
         <UserPlus className="h-5 w-5" aria-hidden="true" />สมัครสมาชิก
       </Link>
     </div>}

@@ -3,7 +3,7 @@
 import { photoThumb } from "@/domain/account-data";
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Camera, ChevronLeft, ChevronRight } from "lucide-react";
 import { PhotoLightbox } from "./PhotoLightbox";
 
 interface PlaceGalleryProps {
@@ -39,7 +39,15 @@ export function PlaceGallery({ recordPhotos, initialPhotoIndex = 0 }: PlaceGalle
   }
 
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-beige-100 shadow-glass-card">
+    <div className={`relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-glass sm:aspect-[2/1] lg:aspect-[21/9] ${visiblePhoto ? "bg-beige-100" : "topo-fill"}`}>
+      {!visiblePhoto && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#edf1ec]/55 px-6 text-center">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/80 text-brand-600 shadow-glass">
+            <Camera className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <p className="max-w-56 text-sm text-brand-800/70">รูปจากการเดินทางของคุณจะแสดงที่นี่</p>
+        </div>
+      )}
       {visiblePhoto && (
         <>
           <button
@@ -55,7 +63,7 @@ export function PlaceGallery({ recordPhotos, initialPhotoIndex = 0 }: PlaceGalle
               fill
               priority
               className="object-cover object-center"
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              sizes="(max-width: 1152px) 100vw, 1152px"
             />
             <span className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/20" />
           </button>

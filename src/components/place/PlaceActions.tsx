@@ -1,20 +1,21 @@
 import Link from "next/link";
-import { PlusCircle } from "lucide-react";
+import { Stamp } from "lucide-react";
 
 interface PlaceActionsProps {
   placeId: string;
+  visited: boolean;
 }
 
-export function PlaceActions({ placeId }: PlaceActionsProps) {
+export function PlaceActions({ placeId, visited }: PlaceActionsProps) {
   return (
-    <div className="flex items-center gap-3 pt-2">
-      {/* Primary CTA */}
+    <div className="flex items-center justify-between gap-3 rounded-2xl bg-lichen-soft p-2 pl-4 lg:flex-col lg:items-stretch lg:gap-3 lg:p-4">
+      <p className="text-sm text-brand-800/80">{visited ? "กลับมาที่นี่อีกครั้ง?" : "เคยมาที่นี่แล้ว?"}</p>
       <Link
         href={`/records/new?placeId=${placeId}`}
         prefetch={false}
-        className="shimmer-glass flex-1 sm:flex-initial inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-brand-700 to-brand-500 hover:from-brand-800 hover:to-brand-600 text-white px-7 py-3.5 rounded-2xl font-semibold text-sm sm:text-base shadow-glow-emerald transition-all duration-300 active:scale-[0.98] border border-emerald-400/20 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+        className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 lg:min-h-12 text-sm font-semibold text-white shadow-glow-emerald transition-colors hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
       >
-        <PlusCircle className="w-5 h-5 text-emerald-200" />
+        <Stamp className="h-4 w-4" aria-hidden="true" />
         สแตมป์
       </Link>
     </div>

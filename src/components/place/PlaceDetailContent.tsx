@@ -16,36 +16,39 @@ interface PlaceDetailContentProps {
   initialPhotoIndex?: number;
 }
 
+/** Title, a wide photo stage, then readings; the Stamp bar rides beside the story on desktop. */
 export function PlaceDetailContent({ place, userId, readOnly = false, initialPhotoIndex = 0 }: PlaceDetailContentProps) {
   const memories = useTravelRecordReadModel(userId);
   const { records: placeRecords, photos } = memories.getPlaceMemory(place.id);
 
   return (
-    <div className="grid grid-cols-1 items-start gap-8 overflow-hidden lg:grid-cols-2 lg:gap-12 xl:gap-14">
-      <div className="overflow-hidden lg:sticky lg:top-24">
-        <PlaceGallery key={initialPhotoIndex} recordPhotos={photos} initialPhotoIndex={initialPhotoIndex} />
-      </div>
+    <div className="space-y-5">
+      <PlaceInfo place={place} />
+      <PlaceGallery key={initialPhotoIndex} recordPhotos={photos} initialPhotoIndex={initialPhotoIndex} />
+      <PlaceChips place={place} visitCount={placeRecords.length} />
 
-      <section className="liquid-glass-card liquid-glass-card--flat relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-9">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-        <PlaceInfo place={place} />
-        <PlaceChips place={place} />
-        <div className="mb-5 h-px w-full bg-gradient-to-r from-transparent via-brand-700/15 to-transparent" />
-        <PlaceDescription place={place} />
-
-        {placeRecords.length > 0 && (
-          <section aria-labelledby="place-records-heading" className="mb-5">
-            <h2 id="place-records-heading" className="mb-3 text-lg font-semibold text-brand-800">
-              บันทึกการเดินทางของคุณ ({placeRecords.length})
-            </h2>
-            <div className="space-y-3">
-              {placeRecords.map((record) => <PlaceRecord key={record.id} record={record} />)}
-            </div>
-          </section>
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_21rem]">
+        {!readOnly && (
+          <div className="lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1">
+            <PlaceActions placeId={place.id} visited={placeRecords.length > 0} />
+          </div>
         )}
 
-        {!readOnly && <PlaceActions placeId={place.id} />}
-      </section>
+        <section className="liquid-glass-card liquid-glass-card--flat space-y-6 p-5 sm:p-6 lg:col-start-1 lg:row-start-1">
+          <PlaceDescription place={place} />
+
+          {placeRecords.length > 0 && (
+            <section aria-labelledby="place-records-heading" className="border-t border-brand-800/10 pt-5">
+              <h2 id="place-records-heading" className="text-base font-semibold text-brand-800">
+                บันทึกการเดินทางของคุณ ({placeRecords.length})
+              </h2>
+              <div className="mt-1">
+                {placeRecords.map((record) => <PlaceRecord key={record.id} record={record} place={place} />)}
+              </div>
+            </section>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

@@ -37,9 +37,8 @@ export default async function PlacePage({ params, searchParams }: PlacePageProps
       const place = catalog.getById(id);
       if (!place) notFound();
       return (
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-8 overflow-x-hidden">
-          {/* Back button */}
-          <div className="mb-6">
+        <div className="page-shell overflow-x-hidden">
+          <div className="mb-5">
             <BackButton href={isFromPassport ? "/passport" : isFromProfile ? "/profile" : "/search"} />
           </div>
 

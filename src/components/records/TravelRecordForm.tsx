@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Star, CalendarDays, FileText, CheckCircle2 } from "lucide-react";
+import { Star, CheckCircle2, Stamp } from "lucide-react";
 import { PhotoUploader, type UploadedPhoto } from "./PhotoUploader";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useImageImport } from "@/lib/use-image-import";
 import type { Place } from "@/types";
+import { formatStampDate } from "@/lib/utils";
+import { InkStamp } from "@/components/ui/InkStamp";
 
 interface TravelRecordFormProps {
   place: Place;
@@ -74,132 +76,137 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
     }
   };
 
-  if (success) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 gap-4 text-center">
-        <div className="w-14 h-14 rounded-full bg-brand-600/10 flex items-center justify-center">
-          <CheckCircle2 className="w-8 h-8 text-brand-800" />
-        </div>
-        <div>
-          <p className="font-bold text-brand-800 text-lg">บันทึกสำเร็จ!</p>
-          <p className="text-brand-800/65 text-sm mt-1">กำลังพาไปที่พาสปอร์ต…</p>
-        </div>
-      </div>
-    );
-  }
+  const stampDate = /^\d{4}-\d{2}-\d{2}$/.test(visitedAt) ? formatStampDate(new Date(`${visitedAt}T12:00:00Z`)) : null;
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
-      {/* Place info — read-only */}
-      <div className="flex items-center gap-3 p-4 rounded-xl bg-brand-600/5 border border-brand-600/10">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-brand-800/65 mb-0.5">สถานที่</p>
-          <p className="font-semibold text-brand-800 truncate">{place.name}</p>
-          <p className="text-xs text-brand-800/65">{place.location}, {place.province}</p>
-        </div>
-      </div>
-
-      {/* Date */}
-      <div>
-        <label htmlFor="visitedAt" className="block text-sm font-medium text-brand-800 mb-1.5">
-          <span className="flex items-center gap-1.5">
-            <CalendarDays className="w-4 h-4" />
-            วันที่ไป <span className="text-red-500">*</span>
-          </span>
-        </label>
-        <input
-          id="visitedAt"
-          type="date"
-          value={visitedAt}
-          max={todayISO}
-          onChange={(e) => {
-            setVisitedAt(e.target.value);
-            setErrors((prev) => ({ ...prev, visitedAt: "" }));
-          }}
-          required
-          aria-invalid={!!errors.visitedAt}
-          aria-describedby={errors.visitedAt ? "visitedAt-error" : undefined}
-          className="glass-input block w-full px-3 py-2.5 text-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-shadow"
+    <div className="mx-auto grid max-w-5xl items-start gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)] lg:gap-8">
+      <aside className="liquid-glass-card flex items-center gap-4 p-4 lg:sticky lg:top-24 lg:flex-col lg:gap-5 lg:px-8 lg:py-10 lg:text-center" aria-label="ตัวอย่างตราประทับ">
+        <InkStamp
+          key={`${visitedAt}-${success}`}
+          top={place.name}
+          bottom={place.province || "DOEN PA"}
+          center={stampDate?.dayMonth ?? "—"}
+          sub={stampDate?.year}
+          seed={place.id}
+          press
+          className="h-24 w-24 shrink-0 lg:h-52 lg:w-52"
         />
-        {errors.visitedAt && (
-          <p id="visitedAt-error" role="alert" className="mt-1 text-xs text-red-600">
-            {errors.visitedAt}
-          </p>
+        <div className="min-w-0">
+          <p className="font-semibold leading-snug text-brand-800 lg:text-lg">{place.name}</p>
+          <p className="mt-0.5 text-sm text-brand-800/65">{place.location} {place.province}</p>
+        </div>
+      </aside>
+
+      <section className="liquid-glass-card p-5 sm:p-7" aria-labelledby="record-heading">
+        {success ? (
+          <div className="flex flex-col items-center justify-center gap-3 py-12 text-center" role="status">
+            <CheckCircle2 className="h-10 w-10 text-brand-600" aria-hidden="true" />
+            <p className="text-lg font-bold text-brand-800">บันทึกสำเร็จ!</p>
+            <p className="text-sm text-brand-800/65">กำลังพาไปที่พาสปอร์ต…</p>
+          </div>
+        ) : (
+          <>
+            <h1 id="record-heading" className="text-xl font-bold text-brand-800 sm:text-2xl">บันทึกการเดินทาง</h1>
+            <p className="mt-1 text-sm text-brand-800/65">เลือกวันที่ไป แล้วเพิ่มรูปและความทรงจำของทริปนี้</p>
+
+            <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-6">
+              <div>
+                <label htmlFor="visitedAt" className="mb-1.5 block text-sm font-medium text-brand-800">
+                  วันที่ไป <span className="text-red-600" aria-hidden="true">*</span>
+                </label>
+                <input
+                  id="visitedAt"
+                  type="date"
+                  value={visitedAt}
+                  max={todayISO}
+                  onChange={(e) => {
+                    setVisitedAt(e.target.value);
+                    setErrors((prev) => ({ ...prev, visitedAt: "" }));
+                  }}
+                  required
+                  aria-invalid={!!errors.visitedAt}
+                  aria-describedby={errors.visitedAt ? "visitedAt-error" : undefined}
+                  className="glass-input block min-h-12 w-full px-4 text-brand-800 transition-shadow focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+                {errors.visitedAt && (
+                  <p id="visitedAt-error" role="alert" className="mt-1.5 text-xs text-red-700">
+                    {errors.visitedAt}
+                  </p>
+                )}
+              </div>
+
+              <PhotoUploader value={photos} onChange={setPhotos} importer={importer} loading={readingPhotos} />
+
+              <div>
+                <label htmlFor="note" className="mb-1.5 block text-sm font-medium text-brand-800">
+                  บันทึกความทรงจำ
+                </label>
+                <textarea
+                  id="note"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  rows={4}
+                  placeholder="สิ่งที่ประทับใจ หรือเคล็ดลับสำหรับครั้งหน้า"
+                  className="glass-input block w-full resize-none px-4 py-3 text-brand-800 placeholder-brand-800/45 transition-shadow focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+
+              <div>
+                <p className="text-sm font-medium text-brand-800">คะแนนส่วนตัว</p>
+                <div
+                  role="radiogroup"
+                  aria-label="คะแนนส่วนตัว 1 ถึง 5 ดาว"
+                  className="-ml-1.5 mt-1 flex"
+                  onMouseLeave={() => setHoverRating(0)}
+                >
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      role="radio"
+                      aria-checked={rating === star}
+                      aria-label={`${star} ดาว`}
+                      onClick={() => {
+                        setRating(rating === star ? 0 : star);
+                        setHoverRating(0);
+                      }}
+                      onMouseEnter={() => setHoverRating(star)}
+                      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 active:scale-90"
+                    >
+                      <Star
+                        aria-hidden="true"
+                        className={`h-6 w-6 transition-colors duration-100 ${
+                          star <= (hoverRating || rating)
+                            ? "fill-amber-400 text-amber-400"
+                            : "text-brand-800/25"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {errors.submit && (
+                <p role="alert" className="text-sm text-red-700">
+                  {errors.submit}
+                </p>
+              )}
+
+              <div className="border-t border-brand-800/10 pt-5">
+                <button
+                  type="submit"
+                  disabled={submitting || readingPhotos}
+                  className="glass-button flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl text-base font-semibold transition-opacity hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <Stamp className="h-5 w-5" aria-hidden="true" />
+                  {readingPhotos ? "กำลังอ่านรูปภาพ…" : submitting ? "กำลังบันทึก…" : "บันทึกลงพาสปอร์ต"}
+                </button>
+                <p className="mt-2 text-center text-xs text-brand-800/60">บันทึกและรูปภาพจะเก็บในบัญชีของคุณเท่านั้น</p>
+              </div>
+            </form>
+          </>
         )}
-      </div>
-
-      {/* Photo uploader */}
-      <PhotoUploader value={photos} onChange={setPhotos} importer={importer} loading={readingPhotos} />
-
-      {/* Note */}
-      <div>
-        <label htmlFor="note" className="block text-sm font-medium text-brand-800 mb-1.5">
-          <span className="flex items-center gap-1.5">
-            <FileText className="w-4 h-4" />
-            บันทึกความทรงจำ
-          </span>
-        </label>
-        <textarea
-          id="note"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          rows={4}
-          placeholder="เล่าประสบการณ์การเดินทาง สิ่งที่ประทับใจ หรือเคล็ดลับสำหรับการไปครั้งหน้า..."
-          className="glass-input block w-full px-3 py-2.5 text-brand-800 placeholder-brand-800/50 resize-none focus:outline-none focus:ring-2 focus:ring-brand-500 transition-shadow"
-        />
-      </div>
-
-      {/* Star rating */}
-      <div>
-        <p className="text-sm font-medium text-brand-800 mb-2">คะแนนส่วนตัว</p>
-        <div
-          role="radiogroup"
-          aria-label="คะแนนส่วนตัว 1 ถึง 5 ดาว"
-          className="flex gap-1"
-          onMouseLeave={() => setHoverRating(0)}
-        >
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              role="radio"
-              aria-checked={rating === star}
-              aria-label={`${star} ดาว`}
-              onClick={() => {
-                setRating(rating === star ? 0 : star);
-                setHoverRating(0);
-              }}
-              onMouseEnter={() => setHoverRating(star)}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center p-0.5 focus:outline-none focus:ring-2 focus:ring-brand-500 rounded transition-transform active:scale-90"
-            >
-              <Star
-                className={`w-7 h-7 transition-colors duration-100 ${
-                  star <= (hoverRating || rating)
-                    ? "fill-amber-400 text-amber-400"
-                    : "text-brand-800/30"
-                }`}
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Submit error */}
-      {errors.submit && (
-        <p role="alert" className="text-sm text-red-600">
-          {errors.submit}
-        </p>
-      )}
-
-      {/* Submit */}
-      <p className="text-sm text-brand-800/75">บันทึกและรูปภาพจะเก็บในบัญชีของคุณ</p>
-      <button
-        type="submit"
-        disabled={submitting || readingPhotos}
-        className="glass-button w-full py-3 text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        {readingPhotos ? "กำลังอ่านรูปภาพ…" : submitting ? "กำลังบันทึก…" : "บันทึกลงพาสปอร์ต"}
-      </button>
-    </form>
+      </section>
+    </div>
   );
 }

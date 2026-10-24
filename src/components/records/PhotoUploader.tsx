@@ -71,12 +71,12 @@ export function PhotoUploader({ value, onChange, importer, loading }: PhotoUploa
   const canUploadMore = value.length < RECORD_PHOTO_LIMIT;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium text-brand-800">
           รูปภาพ
-          <span className="ml-1 text-brand-800/65 font-normal">
-            ({value.length}/{RECORD_PHOTO_LIMIT} ต่อบันทึก)
+          <span className="font-num ml-1.5 font-normal text-brand-800/60">
+            {value.length}/{RECORD_PHOTO_LIMIT}
           </span>
         </label>
         {value.length === RECORD_PHOTO_LIMIT && (
@@ -95,8 +95,8 @@ export function PhotoUploader({ value, onChange, importer, loading }: PhotoUploa
           aria-label="อัปโหลดรูปภาพ"
           aria-disabled={loading}
           aria-busy={loading}
-          className={`relative flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200
-            ${dragging ? "border-brand-600 bg-brand-600/5" : "border-brand-800/10 hover:border-brand-600/50 hover:bg-brand-600/[0.02]"}
+          className={`relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-dashed px-4 py-4 transition-colors duration-200
+            ${dragging ? "border-brand-600 bg-brand-600/5" : "border-brand-800/15 bg-white/30 hover:border-brand-600/50 hover:bg-white/50"}
             focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2
             ${loading ? "opacity-60 pointer-events-none" : ""}`}
           onClick={(event) => {
@@ -112,12 +112,14 @@ export function PhotoUploader({ value, onChange, importer, loading }: PhotoUploa
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
         >
-          <Upload className={`w-8 h-8 ${dragging ? "text-brand-800" : "text-brand-800/65"}`} />
-          <div className="text-center">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-600/10 text-brand-600">
+            <Upload className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div>
             <p className="text-sm font-medium text-brand-800">
-              {loading ? "กำลังโหลด..." : "คลิกหรือลากไฟล์มาวางที่นี่"}
+              {loading ? "กำลังโหลด..." : "เลือกรูป หรือลากมาวางที่นี่"}
             </p>
-            <p className="text-xs text-brand-800/65 mt-0.5">JPG, PNG, WebP · สูงสุด 5 MB ต่อรูป</p>
+            <p className="mt-0.5 text-xs text-brand-800/60">JPG, PNG, WebP ไม่เกิน 5 MB ต่อรูป</p>
           </div>
 
           <input
@@ -151,9 +153,9 @@ export function PhotoUploader({ value, onChange, importer, loading }: PhotoUploa
 
       {/* Preview grid */}
       {value.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
           {value.map((photo, index) => (
-            <div key={index} className="group relative rounded-xl overflow-hidden bg-beige-100/20">
+            <div key={index} className="group relative overflow-hidden rounded-xl bg-white/50 ring-1 ring-brand-800/10">
               <div className="relative aspect-square">
                 <Image unoptimized
                   src={photo.dataUrl}
@@ -181,7 +183,7 @@ export function PhotoUploader({ value, onChange, importer, loading }: PhotoUploa
                   onChange={(e) => handleAltChange(index, e.target.value)}
                   placeholder="คำอธิบายรูป (alt)"
                   aria-label={`คำอธิบายสำหรับรูปที่ ${index + 1}`}
-                  className="w-full text-xs px-2 py-1 glass-input placeholder-brand-800/50 text-brand-800 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  className="glass-input w-full px-2 py-1.5 text-xs text-brand-800 placeholder-brand-800/45 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
             </div>

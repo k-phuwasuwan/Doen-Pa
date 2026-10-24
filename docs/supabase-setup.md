@@ -92,7 +92,7 @@ empty `identities`) and shows "อีเมลนี้มีบัญชีแ�
 `/auth/callback` exchanges a PKCE code. Default email links using this flow must
 be opened in the browser where signup/recovery began. `/auth/confirm` also accepts
 a single-use `token_hash` for SSR email templates, including another device.
-Recovery tokens always lead to `/reset-password`. After a password change the
+Recovery tokens always lead to `/reset-password`. A database trigger (`block_recovery_email_confirmation`, migration `20261025090000`) rejects the recovery-token update that would also mark an unconfirmed email as confirmed, so only the signup confirmation link activates an account. After a password change the
 current session signs out and Login asks for the new password.
 
 Successful login and confirmation initialize a missing `profiles` row through

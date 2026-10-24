@@ -19,6 +19,15 @@ test("real confirmation and recovery tokens establish SSR sessions and cannot be
     expect(unconfirmed.status()).toBe(400);
     expect((await unconfirmed.json()).error).toBe("กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ");
 
+    // A recovery link must not confirm an unconfirmed account.
+    const earlyRecovery = await admin.auth.admin.generateLink({ type: "recovery", email });
+    if (earlyRecovery.error) throw new Error(`Could not create recovery fixture: ${earlyRecovery.error.code}`);
+    await openPage(page, `/auth/confirm?token_hash=${earlyRecovery.data.properties.hashed_token}&type=recovery`);
+    await expect(page).toHaveURL(/\/login\?error=link$/);
+    const stillUnconfirmed = await page.request.post("/auth/login", { headers: { Origin: appOrigin }, data: { email, password } });
+    expect(stillUnconfirmed.status()).toBe(400);
+    expect((await stillUnconfirmed.json()).code).toBe("email_not_confirmed");
+
     await openPage(page, `/auth/confirm?token_hash=${signup.data.properties.hashed_token}&type=signup&next=/profile`);
     await expect(page).toHaveURL(/\/profile$/);
     await expect(page.getByRole("button", { name: "ออกจากระบบ", exact: true })).toBeVisible();

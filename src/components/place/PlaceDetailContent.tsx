@@ -27,7 +27,7 @@ export function PlaceDetailContent({ place, userId, readOnly = false, initialPho
       <PlaceGallery key={initialPhotoIndex} recordPhotos={photos} initialPhotoIndex={initialPhotoIndex} />
       <PlaceChips place={place} visitCount={placeRecords.length} />
 
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_21rem]">
+      <div className={`grid items-start gap-5 ${readOnly ? "" : "lg:grid-cols-[minmax(0,1fr)_21rem]"}`}>
         {!readOnly && (
           <div className="lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1">
             <PlaceActions placeId={place.id} visited={placeRecords.length > 0} />

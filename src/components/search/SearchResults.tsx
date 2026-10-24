@@ -6,7 +6,7 @@ import type { Place } from "@/types";
 import { createPlaceCatalog } from "@/domain/place-catalog";
 import { useSearchFilters } from "./useSearchFilters";
 import { PlaceList } from "./PlaceList";
-import { VisitedFilter } from "./VisitedFilter";
+import { PLACE_TYPE_LABELS } from "@/domain/place-display";
 
 interface SearchResultsProps {
   places: Place[];
@@ -29,14 +29,11 @@ export function SearchResults({ places, cards, userId }: SearchResultsProps) {
 
   return (
     <section aria-labelledby="places-heading">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 id="places-heading" className="text-xl font-bold text-brand-800">
-            {query ? `ผลการค้นหา "${query}"` : "สถานที่แนะนำ"}
-          </h2>
-          <span className="text-sm text-brand-800/65">{visibleCards.length} แห่ง</span>
-        </div>
-        <VisitedFilter current={visited} />
+      <div className="mb-3 flex items-baseline justify-between gap-3 px-1 sm:mb-4">
+        <h2 id="places-heading" className="min-w-0 truncate text-lg font-bold text-brand-800 sm:text-xl">
+          {query ? `ผลการค้นหา "${query}"` : type === "all" ? "สถานที่ทั้งหมด" : PLACE_TYPE_LABELS[type]}
+        </h2>
+        <span className="font-num shrink-0 text-sm text-brand-800/65">{visibleCards.length} แห่ง</span>
       </div>
       <PlaceList cards={visibleCards} />
     </section>

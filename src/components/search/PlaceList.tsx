@@ -4,12 +4,12 @@ import { SearchX } from "lucide-react";
 export function PlaceList({ cards }: { cards: ReactNode[] }) {
   if (cards.length === 0) {
     return (
-      <div id="search-place-list" className="liquid-glass-card scroll-mt-24 p-12 flex flex-col items-center justify-center text-center">
-        <div className="h-16 w-16 bg-beige-100/20 rounded-full flex items-center justify-center mb-4">
-          <SearchX className="w-8 h-8 text-brand-800/65" />
+      <div id="search-place-list" className="liquid-glass-card flex scroll-mt-40 flex-col items-center justify-center rounded-[1.75rem] p-12 text-center">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-brand-600/10">
+          <SearchX className="h-8 w-8 text-brand-600" aria-hidden="true" />
         </div>
-        <h3 className="text-lg font-bold text-brand-800 mb-2">ไม่พบสถานที่</h3>
-        <p className="text-brand-800/65 max-w-sm">
+        <h3 className="mb-2 text-lg font-bold text-brand-800">ไม่พบสถานที่</h3>
+        <p className="max-w-sm text-brand-800/65">
           ลองค้นหาด้วยคำอื่น หรือเลือกหมวดหมู่ทั้งหมดเพื่อดูสถานที่ทั้งหมด
         </p>
       </div>
@@ -17,7 +17,7 @@ export function PlaceList({ cards }: { cards: ReactNode[] }) {
   }
 
   return (
-    <div id="search-place-list" className="grid scroll-mt-24 items-stretch grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div id="search-place-list" className="grid scroll-mt-40 grid-cols-1 items-stretch gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
       {cards}
     </div>
   );

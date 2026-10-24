@@ -13,20 +13,19 @@ export default async function SearchPage() {
   const currentUser = await getAuthUser();
 
   return (
-    <>
+    <div className="page-shell">
       <SearchHero />
-
-      <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8">
+      <div className="mt-5">
         <CategoryGrid />
-        <CatalogContent>{(catalog) => {
-          const places = catalog.places;
-          return <SearchResults
-            places={places}
-            cards={places.map((place) => <PlaceCard key={place.id} place={place} userId={currentUser?.id ?? ""} />)}
-            userId={currentUser?.id ?? ""}
-          />;
-        }}</CatalogContent>
       </div>
-    </>
+      <CatalogContent>{(catalog) => {
+        const places = catalog.places;
+        return <SearchResults
+          places={places}
+          cards={places.map((place) => <PlaceCard key={place.id} place={place} userId={currentUser?.id ?? ""} />)}
+          userId={currentUser?.id ?? ""}
+        />;
+      }}</CatalogContent>
+    </div>
   );
 }

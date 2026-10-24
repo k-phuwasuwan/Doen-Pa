@@ -1,4 +1,4 @@
-import { BarChart3, ChartNoAxesCombined } from "lucide-react";
+import { ChartNoAxesCombined } from "lucide-react";
 import { StatsContent } from "@/components/stats/StatsContent";
 import { CatalogContent } from "@/components/place/CatalogContent";
 import { GuestPrivatePage } from "@/components/ui/GuestPrivatePage";
@@ -14,12 +14,9 @@ export default async function StatsPage({ searchParams }: StatsPageProps) {
   if (view === "guest" || !(await getAuthUser())) {
     return (
       <GuestPrivatePage
-        label="Doen Pa Stats"
-        title="สถิติของคุณ"
         emptyTitle="ยังไม่มีสถิติการเดินทาง"
         description="เข้าสู่ระบบเพื่อดูจำนวนสถานที่ จังหวัด ภูมิภาค และสถิติจากการเดินทางของคุณ"
         previewHref="/stats"
-        headerIcon={BarChart3}
         emptyIcon={ChartNoAxesCombined}
       />
     );

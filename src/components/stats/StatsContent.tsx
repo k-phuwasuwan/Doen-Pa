@@ -14,18 +14,14 @@ export function StatsContent() {
   const stats = memories.getStats();
 
   return (
-    <div className="min-h-screen">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <StatsHero stats={stats} journeyCount={memories.counts.records} />
+    <div className="page-shell">
+      <StatsHero stats={stats} journeyCount={memories.counts.records} />
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <div className="lg:col-span-2"><ProvinceProgress stats={stats} /></div>
-          <div className="lg:col-span-2">
-            <NationalParkProgress visitedCount={stats.visitedNationalParks} totalCount={stats.totalNationalParks} />
-          </div>
-          <CategoryStats stats={stats} />
-          <RegionStats stats={stats} />
-        </div>
+      <div className="mt-6 grid gap-4 sm:gap-5 lg:grid-cols-2">
+        <ProvinceProgress stats={stats} />
+        <NationalParkProgress visitedCount={stats.visitedNationalParks} totalCount={stats.totalNationalParks} />
+        <CategoryStats stats={stats} />
+        <RegionStats stats={stats} />
       </div>
     </div>
   );

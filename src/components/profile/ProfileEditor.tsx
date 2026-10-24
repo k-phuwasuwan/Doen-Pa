@@ -1,6 +1,5 @@
 "use client";
 
-import { DeleteAccountPanel } from "@/components/auth/DeleteAccountPanel";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -88,63 +87,67 @@ function ProfileEditorForm({ initialUser, setup }: { initialUser: User; setup: b
     } finally { setSaving(false); }
   }
 
+  const pickerClass = "inline-flex cursor-pointer items-center justify-center text-brand-800 transition-colors focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-600";
+
   return (
-    <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start lg:gap-8">
+    <div className="mt-6 space-y-5">
       <div>
-        <p className="mb-3 text-sm font-medium text-brand-800/65">ตัวอย่างโปรไฟล์ของคุณ</p>
-        <ProfileHeader user={previewUser} coverImage={coverImage} showEditButton={false} headingLevel={2} />
-        <p className="mt-3 text-center text-xs text-brand-800/55">ตัวอย่างจะเปลี่ยนตามข้อมูลที่คุณแก้ไข</p>
+        <ProfileHeader
+          user={previewUser}
+          coverImage={coverImage}
+          showEditButton={false}
+          headingLevel={2}
+          coverAction={
+            <label htmlFor="profile-cover" className={`${pickerClass} min-h-11 gap-1.5 rounded-full bg-white px-4 text-sm font-semibold shadow-lg shadow-brand-950/20`}>
+              <ImagePlus className="h-4 w-4" aria-hidden="true" />
+              เปลี่ยนภาพปก
+              <input id="profile-cover" type="file" accept={IMAGE_ACCEPT} onChange={(event) => void handleImageChange(event, "cover")} className="sr-only" />
+            </label>
+          }
+          avatarAction={
+            <label htmlFor="profile-avatar" aria-label="เปลี่ยนรูปโปรไฟล์" className={`${pickerClass} h-11 w-11 rounded-full border-2 border-white bg-brand-600 text-white shadow-glass hover:bg-brand-700`}>
+              <Camera className="h-5 w-5" aria-hidden="true" />
+              <input id="profile-avatar" type="file" accept={IMAGE_ACCEPT} onChange={(event) => void handleImageChange(event, "avatar")} className="sr-only" />
+            </label>
+          }
+        />
+        <p className="mt-2 px-1 text-xs text-brand-800/60">ตัวอย่างนี้เปลี่ยนตามที่คุณแก้ไข รูปภาพเป็น JPG, PNG หรือ WebP ไม่เกิน 1 MB</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="liquid-glass-card rounded-3xl p-5 sm:p-8" aria-labelledby="profile-form-heading">
-        <h2 id="profile-form-heading" className="text-2xl font-semibold text-brand-800">ข้อมูลโปรไฟล์</h2>
-        <div className="mt-5 space-y-5 border-t border-brand-700/10 pt-5">
+      <form onSubmit={handleSubmit} className="liquid-glass-card p-5 sm:p-7" aria-label="ข้อมูลโปรไฟล์">
+        <div className="grid gap-5 sm:grid-cols-2">
           <div>
-            <label htmlFor="profile-name" className="mb-2 block text-sm font-medium text-brand-800">ชื่อที่แสดง</label>
+            <label htmlFor="profile-name" className="mb-1.5 block text-sm font-medium text-brand-800">ชื่อที่แสดง</label>
             <input id="profile-name" value={name} onChange={(event) => setName(event.target.value)} required maxLength={60} className="glass-input min-h-12 w-full px-4 text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600" />
           </div>
           <div>
-            <label htmlFor="profile-username" className="mb-2 block text-sm font-medium text-brand-800">ชื่อผู้ใช้</label>
+            <label htmlFor="profile-username" className="mb-1.5 block text-sm font-medium text-brand-800">ชื่อผู้ใช้</label>
             <div className="relative">
               <span aria-hidden="true" className="absolute inset-y-0 left-4 flex items-center text-brand-800/55">@</span>
               <input id="profile-username" value={username} onChange={(event) => setUsername(event.target.value)} required minLength={3} maxLength={20} pattern="[a-zA-Z0-9_]{3,20}" title="ใช้ตัวอักษรภาษาอังกฤษ ตัวเลข หรือ _ จำนวน 3–20 ตัว" aria-describedby="username-help" className="glass-input min-h-12 w-full pl-9 pr-4 text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600" />
             </div>
-            <p id="username-help" className="mt-1.5 text-xs text-brand-800/55">ใช้ภาษาอังกฤษ ตัวเลข และ _ ได้ 3–20 ตัว</p>
+            <p id="username-help" className="mt-1.5 text-xs text-brand-800/55">ภาษาอังกฤษ ตัวเลข และ _ ได้ 3–20 ตัว</p>
           </div>
-          <div>
-            <div className="mb-2 flex items-center justify-between gap-3">
+          <div className="sm:col-span-2">
+            <div className="mb-1.5 flex items-center justify-between gap-3">
               <label htmlFor="profile-bio" className="text-sm font-medium text-brand-800">คำแนะนำตัว</label>
-              <span className="text-xs text-brand-800/55">{bio.length}/160</span>
+              <span className="font-num text-xs text-brand-800/55">{bio.length}/160</span>
             </div>
-            <textarea id="profile-bio" value={bio} onChange={(event) => setBio(event.target.value)} maxLength={160} rows={3} className="glass-input w-full resize-y px-4 py-3 text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600" />
+            <textarea id="profile-bio" value={bio} onChange={(event) => setBio(event.target.value)} maxLength={160} rows={3} className="glass-input w-full resize-none px-4 py-3 text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600" />
           </div>
         </div>
 
-        <h3 className="mt-7 border-b border-brand-700/10 pb-3 text-xl font-semibold text-brand-800">รูปภาพโปรไฟล์</h3>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <label htmlFor="profile-avatar" className="liquid-glass flex min-h-20 cursor-pointer items-center gap-3 rounded-2xl p-4 text-brand-800 transition-colors hover:bg-white/90 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-600">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700"><Camera className="h-5 w-5" aria-hidden="true" /></span>
-            <span className="text-sm font-medium">เปลี่ยนรูปโปรไฟล์</span>
-            <input id="profile-avatar" type="file" accept={IMAGE_ACCEPT} onChange={(event) => void handleImageChange(event, "avatar")} className="sr-only" />
-          </label>
-          <label htmlFor="profile-cover" className="liquid-glass flex min-h-20 cursor-pointer items-center gap-3 rounded-2xl p-4 text-brand-800 transition-colors hover:bg-white/90 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-600">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-700"><ImagePlus className="h-5 w-5" aria-hidden="true" /></span>
-            <span className="text-sm font-medium">เปลี่ยนภาพปก</span>
-            <input id="profile-cover" type="file" accept={IMAGE_ACCEPT} onChange={(event) => void handleImageChange(event, "cover")} className="sr-only" />
-          </label>
-        </div>
-        <p className="mt-2 text-xs text-brand-800/55">JPG, PNG หรือ WebP ขนาดไม่เกิน 1 MB ต่อรูป</p>
         <p role="status" aria-live="polite" className="sr-only">{readingImages ? "กำลังอ่านรูปภาพ" : ""}</p>
-        <p role="alert" className="mt-3 min-h-5 text-sm text-red-700">{error}</p>
+        <p role="alert" className="mt-4 text-sm text-red-700 empty:hidden">{error}</p>
 
-        <p className="mt-3 text-sm text-brand-800/75">บันทึกโปรไฟล์และรูปภาพในบัญชีของคุณ</p>
-        <button type="submit" disabled={readingImages || saving} className="disabled:cursor-wait disabled:opacity-60 glass-button mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 px-5 font-semibold transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
-          <Save className="h-5 w-5" aria-hidden="true" />
-          {readingImages ? "กำลังอ่านรูปภาพ…" : saving ? "กำลังบันทึก…" : "บันทึกการเปลี่ยนแปลง"}
-        </button>
-        {!setup && <Link href="/profile" className="mx-auto mt-3 flex min-h-11 w-fit items-center rounded-full px-4 text-sm text-brand-800/65 underline underline-offset-4 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-brand-600">ยกเลิก</Link>}
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-brand-800/10 pt-5 sm:flex-row sm:items-center sm:justify-end">
+          {!setup && <Link href="/profile" className="liquid-glass-capsule inline-flex min-h-12 items-center justify-center rounded-2xl px-6 font-semibold text-brand-800 transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">ยกเลิก</Link>}
+          <button type="submit" disabled={readingImages || saving} className="glass-button inline-flex min-h-12 items-center justify-center gap-2 px-6 font-semibold disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+            <Save className="h-5 w-5" aria-hidden="true" />
+            {readingImages ? "กำลังอ่านรูปภาพ…" : saving ? "กำลังบันทึก…" : "บันทึกการเปลี่ยนแปลง"}
+          </button>
+        </div>
       </form>
-      {!setup && <DeleteAccountPanel />}
     </div>
   );
 }

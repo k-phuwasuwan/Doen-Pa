@@ -1,10 +1,10 @@
 import { photoThumb } from "@/domain/account-data";
 import Image from "next/image";
 import Link from "next/link";
-import { CalendarDays, ChevronRight, MapPin, Star } from "lucide-react";
-import { formatDate } from "@/lib/utils";
-import { PLACE_TYPE_LABELS } from "@/domain/place-display";
+import { MapPin, Star } from "lucide-react";
+import { formatDate, formatStampDate } from "@/lib/utils";
 import type { Place, TravelRecord } from "@/types";
+import { InkStamp } from "@/components/ui/InkStamp";
 
 interface TravelRecordCardProps {
   record: TravelRecord;
@@ -13,11 +13,12 @@ interface TravelRecordCardProps {
 
 export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
   const image = record.photos[0];
+  const stampDate = formatStampDate(record.visitedAt);
 
   return (
-    <article className="liquid-glass-card h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-glass-card">
-      <Link href={`/places/${place.id}?from=passport`} className="group flex h-full flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset">
-        <div className="relative h-56 w-full shrink-0 overflow-hidden bg-beige-100/20">
+    <article className="liquid-glass-card h-full overflow-hidden">
+      <Link href={`/places/${place.id}?from=passport`} className="flex h-full flex-col rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500">
+        <div className={`relative aspect-[16/10] w-full shrink-0 overflow-hidden ${image ? "bg-beige-100" : "topo-fill"}`}>
           {image ? (
             <Image unoptimized
               src={photoThumb(image, 1280)}
@@ -27,49 +28,39 @@ export function TravelRecordCard({ record, place }: TravelRecordCardProps) {
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-brand-800/65">ไม่มีรูปภาพ</div>
+            <span className="sr-only">ไม่มีรูปภาพ</span>
           )}
-          <span className="absolute left-4 top-4 rounded-full bg-brand-600/90 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-            {PLACE_TYPE_LABELS[place.type]}
-          </span>
         </div>
 
-        <div className="flex min-h-60 flex-1 flex-col gap-4 p-5 sm:p-6">
-          <div className="space-y-3">
-            <div>
-              <h2 className="text-xl font-bold text-brand-800 group-hover:text-brand-800/80">{place.name}</h2>
-              <div className="mt-1 flex items-center gap-1 text-sm text-brand-800/65">
-                <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>{place.province}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-brand-800/65">
-              <span className="inline-flex items-center gap-1">
-                <CalendarDays className="h-4 w-4" aria-hidden="true" />
-                {formatDate(record.visitedAt)}
+        <div className="relative flex flex-1 flex-col p-4 sm:p-5">
+          <InkStamp
+            top={place.name}
+            bottom={place.province || "DOEN PA"}
+            center={stampDate.dayMonth}
+            sub={stampDate.year}
+            seed={record.id}
+            className="absolute right-3 top-3 h-24 w-24"
+          />
+          <p className="pr-24 text-xs text-brand-800/60">{formatDate(record.visitedAt)}</p>
+          <h2 className="mt-0.5 pr-24 text-base font-semibold leading-snug text-brand-800">{place.name}</h2>
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 pr-24 text-xs text-brand-800/65">
+            <span className="inline-flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              {place.province}
+            </span>
+            {record.rating > 0 && (
+              <span className="inline-flex items-center gap-1" aria-label={`คะแนน ${record.rating} จาก 5`}>
+                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" aria-hidden="true" />
+                {record.rating}/5
               </span>
-              {record.rating > 0 && (
-                <span className="inline-flex items-center gap-1" aria-label={`คะแนน ${record.rating} จาก 5`}>
-                  <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden="true" />
-                  {record.rating}/5
-                </span>
-              )}
-            </div>
+            )}
           </div>
 
           {record.note && (
-            <blockquote className="line-clamp-2 rounded-r-lg border-l-2 border-brand-500 bg-brand-50/70 px-3 py-1.5 text-sm italic leading-relaxed text-brand-800/75">
+            <blockquote className="mt-3 line-clamp-2 border-l-2 border-lichen pl-3 text-sm leading-relaxed text-brand-800/75">
               “{record.note}”
             </blockquote>
           )}
-
-          <div className="mt-auto flex items-center justify-between pt-2">
-            <span className="text-xs font-semibold tracking-wide text-brand-500">บันทึกสำเร็จ</span>
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-800/8 text-brand-800 transition-colors group-hover:bg-brand-600 group-hover:text-white" aria-hidden="true">
-              <ChevronRight className="h-5 w-5" />
-            </span>
-          </div>
         </div>
       </Link>
     </article>

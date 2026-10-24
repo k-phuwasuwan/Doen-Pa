@@ -2,43 +2,25 @@ import Link from "next/link";
 import { LogIn, type LucideIcon } from "lucide-react";
 
 interface GuestPrivatePageProps {
-  label: string;
-  title: string;
   emptyTitle: string;
   description: string;
   previewHref: string;
-  headerIcon: LucideIcon;
   emptyIcon: LucideIcon;
 }
 
-export function GuestPrivatePage({
-  label,
-  title,
-  emptyTitle,
-  description,
-  previewHref,
-  headerIcon: HeaderIcon,
-  emptyIcon: EmptyIcon,
-}: GuestPrivatePageProps) {
+/** Guest view of a personal page: an empty stamp slot waiting for the first visit. */
+export function GuestPrivatePage({ emptyTitle, description, previewHref, emptyIcon: EmptyIcon }: GuestPrivatePageProps) {
   return (
-    <div className="mx-auto flex min-h-[calc(100svh-7rem)] max-w-[1280px] flex-col px-4 py-8 sm:px-6 lg:px-8" aria-labelledby="guest-page-heading">
-      <section className="liquid-glass-card flex items-center gap-4 rounded-3xl p-5 sm:p-6">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand-600/10 text-brand-700">
-          <HeaderIcon className="h-7 w-7" aria-hidden="true" />
+    <div className="page-shell flex min-h-[calc(100svh-6rem)] flex-col">
+      <section className="liquid-glass-card flex flex-1 flex-col items-center justify-center px-6 py-12 text-center sm:py-16" aria-labelledby="guest-empty-heading">
+        <div className="flex h-28 w-28 rotate-[-8deg] items-center justify-center rounded-full border-[3px] border-dashed border-ink/35">
+          <div className="flex h-[5.5rem] w-[5.5rem] items-center justify-center rounded-full border border-dashed border-ink/25">
+            <EmptyIcon className="h-9 w-9 rotate-[8deg] text-ink/60" strokeWidth={1.5} aria-hidden="true" />
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-medium text-brand-800/65">{label}</p>
-          <h1 id="guest-page-heading" className="text-xl font-bold text-brand-800 sm:text-2xl">{title}</h1>
-        </div>
-      </section>
-
-      <section className="flex flex-1 flex-col items-center justify-center py-12 text-center sm:py-16" aria-labelledby="guest-empty-heading">
-        <div className="liquid-glass-card flex h-32 w-32 items-center justify-center rounded-full sm:h-36 sm:w-36">
-          <EmptyIcon className="h-14 w-14 text-brand-600" strokeWidth={1.5} aria-hidden="true" />
-        </div>
-        <h2 id="guest-empty-heading" className="mt-8 text-2xl font-bold text-brand-800 sm:text-3xl">{emptyTitle}</h2>
-        <p className="mt-3 max-w-sm text-base text-brand-800/65">{description}</p>
-        <Link href={`/login?from=${previewHref.slice(1)}`} className="liquid-glass mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl px-7 py-3 font-semibold text-brand-800 transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+        <h1 id="guest-empty-heading" className="mt-6 text-xl font-bold text-brand-800 sm:text-2xl">{emptyTitle}</h1>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-brand-800/65 sm:text-[15px]">{description}</p>
+        <Link href={`/login?from=${previewHref.slice(1)}`} className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-brand-600 px-6 font-semibold text-white shadow-glow-emerald transition-colors hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
           <LogIn className="h-5 w-5" aria-hidden="true" />
           เข้าสู่ระบบ
         </Link>

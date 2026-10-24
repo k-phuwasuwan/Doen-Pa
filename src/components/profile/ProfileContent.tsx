@@ -13,20 +13,20 @@ export function ProfileContent() {
   const { places: placeCount, provinces: provinceCount, photos: photoCount } = counts;
 
   return (
-    <div className="min-h-screen">
-      <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,2fr)] lg:items-start">
-          <div className="contents lg:block lg:space-y-6">
-            <ProfileHeader user={user} coverImage={user.coverImage} />
-            <ProfileStats
-              placeCount={placeCount}
-              provinceCount={provinceCount}
-              photoCount={photoCount}
-            />
-            <LogoutButton />
-          </div>
-          <PostGallery posts={posts} />
-        </div>
+    <div className="page-shell">
+      <ProfileHeader user={user} coverImage={user.coverImage} />
+      <div className="mt-4">
+        <ProfileStats
+          placeCount={placeCount}
+          provinceCount={provinceCount}
+          photoCount={photoCount}
+        />
+      </div>
+      <div className="mt-8">
+        <PostGallery posts={posts} />
+      </div>
+      <div className="mt-10 border-t border-brand-800/10 pt-5">
+        <LogoutButton />
       </div>
     </div>
   );

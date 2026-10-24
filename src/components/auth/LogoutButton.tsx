@@ -24,11 +24,11 @@ export function LogoutButton() {
       setBusy(false);
     }
   }
-  return <div className="order-last lg:order-none">
-    <button type="button" disabled={busy} onClick={() => void logout()} className="liquid-glass-card group flex min-h-14 w-full items-center gap-4 rounded-3xl px-5 py-3 text-brand-800 hover:bg-white/90 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-brand-600">
-      <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-600/10"><LogOut className="h-5 w-5" aria-hidden="true" /></span>
-      <span className="font-semibold">{busy ? "กำลังออกจากระบบ…" : "ออกจากระบบ"}</span>
+  return <div>
+    <button type="button" disabled={busy} onClick={() => void logout()} className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-medium text-brand-800/75 transition-colors hover:bg-white/70 hover:text-brand-800 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">
+      <LogOut className="h-4 w-4" aria-hidden="true" />
+      {busy ? "กำลังออกจากระบบ…" : "ออกจากระบบ"}
     </button>
-    <p role="alert" className="mt-2 text-sm text-red-700">{error}</p>
+    <p role="alert" className="mt-2 text-sm text-red-700 empty:hidden">{error}</p>
   </div>;
 }

@@ -1,8 +1,8 @@
 import { photoThumb } from "@/domain/account-data";
 import Image from "next/image";
-import { MapPin, Mountain, Route, X } from "lucide-react";
+import { X } from "lucide-react";
 import type { Place } from "@/types";
-import { displayPlaceValue } from "@/domain/place-display";
+import { displayPlaceValue, PLACE_TYPE_LABELS } from "@/domain/place-display";
 
 interface SelectedPlaceCardProps {
   place: Place;
@@ -10,60 +10,54 @@ interface SelectedPlaceCardProps {
   onClose: () => void;
 }
 
+/** Compact sheet over the map: photo, name and two readings, leaving most of the map visible. */
 export function SelectedPlaceCard({ place, photo, onClose }: SelectedPlaceCardProps) {
   return (
     <aside
-      className="absolute bottom-28 left-1/2 z-[1000] max-h-[calc(100dvh-13.5rem)] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 overflow-y-auto overscroll-contain rounded-3xl lg:bottom-7 lg:max-h-[calc(100dvh-8rem)]"
+      className="absolute bottom-[8.25rem] left-1/2 z-[1000] w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 lg:bottom-6 lg:left-8 lg:translate-x-0"
       aria-label={`รายละเอียด ${place.name}`}
     >
-      <div className="liquid-glass-card map-place-card overflow-hidden rounded-3xl p-3 shadow-glass-card sm:p-4">
-        <div className="map-place-photo relative h-36 overflow-hidden rounded-2xl bg-beige-100 sm:h-40">
+      <div className="liquid-glass-card map-place-card flex gap-3 p-2.5 pr-3 shadow-glass-card sm:gap-4 sm:p-3">
+        <div className={`map-place-photo relative h-28 w-28 shrink-0 overflow-hidden rounded-2xl sm:h-32 sm:w-32 ${photo ? "bg-beige-100" : "topo-fill"}`}>
           {photo && (
             <Image unoptimized
-              src={photoThumb(photo, 1280)}
+              src={photoThumb(photo, 640)}
               alt={`ภาพบันทึกการเดินทางที่${place.name}`}
               fill
-              sizes="(max-width: 640px) 100vw, 448px"
+              sizes="128px"
               className="object-cover"
             />
           )}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full border border-white/80 bg-white/90 text-brand-800 shadow-glass transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
-            aria-label="ปิดรายละเอียดสถานที่"
-          >
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
         </div>
 
-        <div className="px-1 pt-4">
-          <h2 className="text-lg font-semibold leading-snug text-brand-800 sm:text-xl">{place.name}</h2>
-          <span className="mt-2 inline-flex max-w-full items-center gap-1.5 rounded-full border border-brand-200/80 bg-brand-50/90 px-3 py-1.5 text-xs font-medium text-brand-700 sm:text-sm">
-            <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+        <div className="flex min-w-0 flex-1 flex-col py-1">
+          <div className="flex items-start gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-brand-600">{PLACE_TYPE_LABELS[place.type]}</p>
+              <h2 className="mt-0.5 line-clamp-2 text-base font-semibold leading-snug text-brand-800">{place.name}</h2>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="-mr-1 -mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-brand-800/70 transition-colors hover:bg-brand-800/5 hover:text-brand-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+              aria-label="ปิดรายละเอียดสถานที่"
+            >
+              <X className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
+          <span className="mt-1 inline-flex w-fit max-w-full items-center rounded-full bg-brand-600/10 px-2.5 py-0.5 text-xs font-medium text-brand-700">
             <span className="truncate">{place.province}</span>
           </span>
-
-          <div className="mt-4 grid grid-cols-2 gap-2 border-t border-brand-800/10 pt-3">
-            <div className="flex min-w-0 items-center gap-2 rounded-2xl border border-white/80 bg-white/60 p-2.5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
-                <Route className="h-4 w-4" aria-hidden="true" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-xs text-brand-800/65">ระยะทาง</p>
-                <p className="truncate text-sm font-semibold text-brand-800">{displayPlaceValue(place.distance)}</p>
-              </div>
+          <dl className="mt-auto flex gap-5 pt-2 text-xs">
+            <div>
+              <dt className="text-brand-800/55">ระยะทาง</dt>
+              <dd className="font-num text-sm font-semibold text-brand-800">{displayPlaceValue(place.distance)}</dd>
             </div>
-            <div className="flex min-w-0 items-center gap-2 rounded-2xl border border-white/80 bg-white/60 p-2.5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
-                <Mountain className="h-4 w-4" aria-hidden="true" />
-              </span>
-              <div className="min-w-0">
-                <p className="text-xs text-brand-800/65">ความสูง</p>
-                <p className="truncate text-sm font-semibold text-brand-800">{displayPlaceValue(place.altitude)}</p>
-              </div>
+            <div>
+              <dt className="text-brand-800/55">ความสูง</dt>
+              <dd className="font-num text-sm font-semibold text-brand-800">{displayPlaceValue(place.altitude)}</dd>
             </div>
-          </div>
+          </dl>
         </div>
       </div>
     </aside>

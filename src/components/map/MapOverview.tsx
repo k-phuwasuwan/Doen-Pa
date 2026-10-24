@@ -19,8 +19,9 @@ export function MapOverview() {
 
       {places.length === 0 && (
         <div className="pointer-events-none absolute inset-0 z-[1000] flex items-center justify-center px-4">
-          <p className="max-w-sm rounded-3xl border border-white bg-white/95 px-5 py-4 text-center text-sm font-medium text-brand-900 shadow-glass backdrop-blur-xl">
-            ยังไม่มีสถานที่บนแผนที่
+          <p className="liquid-glass-card max-w-xs px-5 py-4 text-center text-sm text-brand-800">
+            <span className="block font-semibold">ยังไม่มีสถานที่บนแผนที่</span>
+            <span className="mt-1 block text-brand-800/65">สแตมป์สถานที่ที่เคยไป แล้วหมุดจะปรากฏที่นี่</span>
           </p>
         </div>
       )}

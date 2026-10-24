@@ -36,7 +36,7 @@ This file describes the **current implementation and accepted behavior**, not a 
 | `/forgot-password` | Request a password recovery link; no email-send success notice or extra Login footer link. |
 | `/reset-password` | Requires a verified session; sets a new password, signs out the current session and returns to Login. Retains the top Back control; no duplicate Login footer link. |
 | `/login` | Real email/password login. Normal login ends at Search; explicit `next` accepts allowed app destinations only. Legacy `from` controls Back, not the login destination. Newly registered users with pending profile setup open `/profile/edit` first and reach Search after saving. Returning users skip setup. |
-| `/auth/delete-account` | POST only: password re-check, deletes photo rows and Storage objects, then `delete_my_account()` removes the Auth user. Shown as "ลบบัญชี" on `/profile/edit` (not during setup). |
+| `/auth/delete-account` | POST only: password re-check, deletes photo rows and Storage objects, then `delete_my_account()` removes the Auth user. No UI currently links to it: the "ลบบัญชี" button was removed from `/profile/edit` on 2026-10-25 at the user's request. |
 | `/stats` | Personal travel statistics by province, place type, and region. Badge UI is deferred. |
 | `/stats?view=guest` | Optional guest Stats preview with Login; anonymous `/stats` shows the same guest screen. |
 | `/profile` | Personal profile and photo gallery. |
@@ -84,7 +84,9 @@ Place images shown in personal surfaces must come from records the user creates,
 
 ## Design system and references
 
-The current visual language is **Design System v2**: forest-green `brand` tokens, light `canvas`, beige placeholders, rounded cards, soft contour dots, ambient glows, and Liquid Glass surfaces. Consult the implemented classes and tokens in `app/globals.css` and `tailwind.config.ts` rather than copying a long CSS snapshot into this document. Preserve `.liquid-glass`, `.liquid-glass-card`, `.liquid-glass-capsule`, `.hero-glass-console`, and the shared root background. Use the existing green type chips consistently on Search and Passport.
+The current visual language is **"Contour & Stamp"** (user-requested redesign, 2026-10-25): forest-green `brand` tokens on a misty `canvas` (`#EDF1EC`), a seamless topographic backdrop (`public/images/contours.svg` via `.topo-backdrop`/`.topo-fill`), `lichen` highlights, Liquid Glass surfaces, and one signature element — the ink passport stamp (`src/components/ui/InkStamp.tsx`, `ink` color). Visited-place stamps print the place name, visit date and province. Place-type icons (`PlaceTypeIcon`) appear only in the Search filter bar. Cards have no hover lift. Consult `app/globals.css` and `tailwind.config.ts` rather than copying CSS here. Preserve `.liquid-glass`, `.liquid-glass-card`, `.liquid-glass-capsule`, `.hero-glass-console`, `.page-shell` (the shared 72rem content column aligned with TopNav) and the shared root background.
+
+Type scale: only the Search hero uses display size (up to 2.75rem); page titles 1.5–2.25rem; section headings 1.125–1.25rem; card titles 15–16px; metadata 12–14px at reduced opacity. Each page keeps one focal point; buttons and inputs are 44–48px tall. Auth screens (login, signup, forgot/reset password) show a passport-cover panel on the left and the form card centered in the right half on desktop, the form alone on phones; the Back button sits at the far left of the page. Profile keeps its low-priority logout button at the bottom of the page. Every Back button (`BackButton` and the auth “กลับ” link) and the Profile edit/cover-picker buttons are solid white with a shadow and no hover color change.
 
 Use Figma mobile mockups as **structure/content references**. Stitch desktop mockups established the visual language. More recent accepted screenshots and explicit user decisions override older visual references. Do not copy generic booking, social, aggregate-rating, or recommendation UI from a mockup.
 
@@ -95,18 +97,19 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 ### Search
 
 - `app/search/page.tsx` supplies the full Supabase catalog snapshot and server-rendered place cards. `SearchResults` filters those cards in the browser using `q`, `type`, and `visited` URL parameters and the current user's records. Search controls update native browser history so selection and results do not wait for another Auth/catalog request; direct links, reload and Back/Forward retain the filters. An open Search page keeps its catalog snapshot until navigation or reload. `createPlaceCatalog` normalizes searchable text once per immutable snapshot; create a new catalog when place data changes. Query/type results are memoized independently of the visited filter and account updates.
-- Search category options show only their names. On mobile, categories form one horizontally scrollable row. Choosing a category preserves the page's scroll position on mobile and desktop.
+- Category options (with type icons) and the visited filter share one sticky glass bar; each group has a sliding pill like TopNav (`useSlidingIndicator`). On mobile the bar scrolls horizontally. Choosing a category preserves the page's scroll position on mobile and desktop.
+- Place cards are compact rows on phones and photo-first cards from `sm` up (type chip on the topo-filled frame, which is reserved for future national-park photos; name, location, a two-line description, then a bordered footer with altitude/distance and the Stamp button). Location and province are separated by a space, never a comma.
 - Place cards link to full Place Details. Their green type chip is a place category, not booking status. The personal visit count appears only when positive. The card's Stamp action opens the record form with `returnTo=search`.
 - The card's Stamp link is a sibling of its details link, never an interactive element nested inside it. Stamp links load the form on demand with `prefetch={false}`.
 - No public aggregate rating, review count, booking badge, or popularity recommendation.
 
 ### Place Details and records
 
-- Desktop Place Details uses a gallery column and a `.liquid-glass-card` info column. Show text-only type → altitude → distance chips, description, and **all** matching personal records. Location, region, and record-date chips also have no icons.
+- Place Details reads title → wide photo stage (4:3 on phones, 2:1 from `sm`, 21:9 on desktop, full column width) → altitude/distance/visit-count readings → description and **all** matching personal records, with the Stamp bar beside the story on desktop (sticky) and above it on phones. Location and region chips have no icons.
 - Gallery shows one large photo at a time. Previous/next controls are dark frosted vertical rectangles, vertically centered and inset from the photo edges; a position counter sits near the top. No thumbnail row and no image zoom on hover.
 - Clicking a gallery photo opens a fixed full-screen lightbox. Use the same style of controls; close by clicking outside the displayed photo or pressing Escape. There is no visible X button.
 - If the user entered from Passport, suppress `PlaceActions` but keep the records and gallery visible.
-- Record form: date, up to five photos **per record**, memory note, optional personal 1–5 star rating. On save, create a new record then route to Passport. Never turn personal ratings into public aggregates.
+- Record form: date, up to five photos **per record**, memory note, optional personal 1–5 star rating, beside a live stamp preview that re-presses when the date changes. On save, create a new record then route to Passport. Never turn personal ratings into public aggregates.
 
 ### Map
 
@@ -115,15 +118,15 @@ Desktop TopNav is a broad floating glass capsule with five links and a green act
 - Keep Stadia Maps, Stamen Design, OpenMapTiles, and OpenStreetMap attribution visible; only Leaflet's optional prefix is hidden.
 - Constrain panning to Thailand and its nearby region. Show visited-place pins only, neutral province outlines and small Thai province names from `public/data/thailand.json`, and noninteractive Thai labels for neighboring countries. Do not shade provinces by visit status.
 - Pin selection reuses existing Leaflet markers and changes only the old/new selected icons; rebuild markers when place data changes. Enter and Space select a focused pin without losing keyboard focus.
-- Selecting a pin shows a bottom card on desktop and mobile with record photo when available, place name, **province chip**, distance, and altitude. It displays information only.
+- Selecting a pin shows a compact horizontal card (bottom-center above the attribution on mobile, bottom-left on desktop) with record photo when available, place name, **province chip**, distance, and altitude. It displays information only. The map has no count chip.
 
 ### Passport, Stats, Profile
 
 - Passport lists all travel records without a category filter. Cards open read-only Place Details with `from=passport`; they do not offer stamping there.
 - `/passport?view=guest`, `/stats?view=guest`, and `/profile?view=guest` are optional guest design previews alongside real authentication. Keep them distinct from signed-in empty-data states.
-- Guest Passport, Stats and Profile show Login without a separate “ค้นหาสถานที่” link.
+- Guest Passport, Stats and Profile show only the empty-stamp card with a Login button: no page title block and no separate “ค้นหาสถานที่” link.
 - Stats and Profile derive personal counts from the current user's records. Stats shows travel, place, province, region, national park, and place-type counts; the badge teaser and collection are deferred. The national-park progress card sits below province progress. Its total comes from catalog places marked `isNationalPark`, independent of their display type. Visited progress counts each eligible place once; adding another park changes the total automatically. The place-type section uses progress bars and remaining catalog counts. Region progress bars and remaining counts use national parks in each region. Profile uses a real photo count in place of the former badge count. Profile photo tiles link to Place Details with `from=profile`.
-- The Profile edit button opens `/profile/edit`; its form offers live preview, validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves to Supabase. The form verifies the account before saving; profile text and photo metadata commit together, and replaced objects are cleaned afterward.
+- The Profile edit button opens `/profile/edit`; the live preview carries the cover and avatar pickers in place, and the form validates display name and username, accepts optional bio plus JPG/PNG/WebP avatar and cover images up to 1 MB each, and saves to Supabase. The form verifies the account before saving; profile text and photo metadata commit together, and replaced objects are cleaned afterward.
 - New registrations set Auth user metadata `profile_setup_pending: true`. Login and email confirmation open profile setup first; recovery always opens `/reset-password`. First-time setup requires a display name and username of the user's own: the placeholder defaults (`นักเดินทาง`, `new_hiker`) are rejected in the form and by the handler (`src/lib/auth/profile-setup.ts`). After a successful profile save, a same-origin authenticated handler clears that flag and returns Search. It is an onboarding preference, independent of access control/RLS; existing accounts without the flag skip setup.
 - Profile logout revokes the current session with `scope: local`, clears its cookies, notifies other tabs and reloads the guest Profile. It preserves local originals and account-scoped memories; other device sessions are not intentionally signed out.
 - Keep ratings personal, avoid public review or social features.

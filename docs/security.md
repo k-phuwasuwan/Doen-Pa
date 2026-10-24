@@ -56,7 +56,9 @@ upload still keeps its metadata. Never trust it as the only privacy control.
 
 ## Privacy decisions (accepted 2026-10-22)
 
-* **Account deletion.** Profile → Edit profile → "ลบบัญชี" asks for the password,
+* **Account deletion.** The "ลบบัญชี" button was removed from Edit profile on
+  2026-10-25; the `/auth/delete-account` handler and `delete_my_account()` remain
+  without any UI. The handler asks for the password,
   deletes photo rows and Storage objects, then calls `delete_my_account()`, which
   removes the Auth user; foreign keys cascade profile and records. It is immediate
   and irreversible. Apply migration `20261022120000_delete_own_account.sql` to the

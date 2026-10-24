@@ -4,17 +4,17 @@ import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 interface IndicatorBox { left: number; top: number; width: number; height: number }
 
-/** Tracks the active link's box inside a container so one shared pill can slide between tabs. */
-export function useSlidingIndicator(activeHref: string) {
+/** Tracks the active item's box inside a container so one shared pill can slide between tabs. */
+export function useSlidingIndicator(activeKey: string, activeSelector = "[aria-current='page']") {
   const containerRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<IndicatorBox | null>(null);
 
   const measure = useCallback(() => {
-    const active = containerRef.current?.querySelector<HTMLElement>("[aria-current='page']");
+    const active = containerRef.current?.querySelector<HTMLElement>(activeSelector);
     if (!active || active.offsetWidth === 0) return setBox(null);
     const next = { left: active.offsetLeft, top: active.offsetTop, width: active.offsetWidth, height: active.offsetHeight };
     setBox((prev) => prev && prev.left === next.left && prev.top === next.top && prev.width === next.width && prev.height === next.height ? prev : next);
-  }, []);
+  }, [activeSelector]);
 
   useLayoutEffect(() => {
     measure();
@@ -23,7 +23,7 @@ export function useSlidingIndicator(activeHref: string) {
     const observer = new ResizeObserver(measure);
     observer.observe(container);
     return () => observer.disconnect();
-  }, [activeHref, measure]);
+  }, [activeKey, measure]);
 
   return { containerRef, box };
 }

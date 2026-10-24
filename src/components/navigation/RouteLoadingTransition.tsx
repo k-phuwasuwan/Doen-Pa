@@ -150,8 +150,9 @@ export function RouteLoadingProvider({ children }: { children: React.ReactNode }
     <RouteLoadingContext.Provider value={context}>
       {children}
       {visible && (
-        <div className={`route-loading-overlay contour-pattern fixed inset-0 z-30 isolate flex items-center justify-center overflow-hidden bg-canvas px-4${leaving ? " is-leaving" : ""}`} data-route-loading-overlay>
+        <div className={`route-loading-overlay fixed inset-0 z-30 isolate flex items-center justify-center overflow-hidden bg-canvas px-4${leaving ? " is-leaving" : ""}`} data-route-loading-overlay>
           <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+            <div className="topo-backdrop absolute inset-0" />
             <div className="ambient-glow-mesh-1 left-[-20rem] top-[-18rem]" />
             <div className="ambient-glow-mesh-2 right-[-18rem] top-[20rem]" />
             <div className="ambient-glow-mesh-3 bottom-[-22rem] left-[30%]" />

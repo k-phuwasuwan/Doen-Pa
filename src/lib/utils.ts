@@ -10,3 +10,9 @@ export function formatDate(date: Date): string {
 
   return `${day} ${month} ${year}`;
 }
+
+/** Splits a visit date into the two lines printed inside a passport stamp. */
+export function formatStampDate(date: Date): { dayMonth: string; year: string } {
+  const [day, month, year] = formatDate(date).split(" ");
+  return { dayMonth: `${day} ${month}`, year };
+}

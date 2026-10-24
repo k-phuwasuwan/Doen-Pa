@@ -19,10 +19,12 @@ const config: Config = {
           900: "#081c14",
           950: "#04110c",
         },
-        canvas: "#F4F2EB",
+        canvas: "#EDF1EC",
         beige: {
-          100: "#EDE8DD",
+          100: "#E2E8DF",
         },
+        lichen: { DEFAULT: "#C9DA6B", soft: "#EEF4C9" },
+        ink: "#3D4A94",
       },
       boxShadow: {
         glass:

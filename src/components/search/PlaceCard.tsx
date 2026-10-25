@@ -5,6 +5,7 @@ import { StampButton } from "./PlaceCardActions";
 import { VisitCount, VisitStamp } from "./VisitCount";
 import { displayPlaceValue, PLACE_TYPE_LABELS } from "@/domain/place-display";
 import { placeImageUrl } from "@/domain/place-image";
+import { ReadingValue } from "@/components/ui/ReadingValue";
 
 /** Compact row on phones, photo-first card from tablet up; parks without a photo keep the topo frame. */
 export function PlaceCard({ place, userId }: { place: Place; userId: string }) {
@@ -41,11 +42,11 @@ export function PlaceCard({ place, userId }: { place: Place; userId: string }) {
         <dl className="flex gap-5 text-xs">
           <div>
             <dt className="text-brand-800/55">ความสูง</dt>
-            <dd className="font-num text-sm font-semibold text-brand-800">{displayPlaceValue(place.altitude)}</dd>
+            <dd className="font-num text-sm font-semibold text-brand-800"><ReadingValue value={place.altitude} /></dd>
           </div>
           <div>
             <dt className="text-brand-800/55">ระยะทาง</dt>
-            <dd className="font-num text-sm font-semibold text-brand-800">{displayPlaceValue(place.distance)}</dd>
+            <dd className="font-num text-sm font-semibold text-brand-800"><ReadingValue value={place.distance} /></dd>
           </div>
         </dl>
         <StampButton placeId={place.id} />

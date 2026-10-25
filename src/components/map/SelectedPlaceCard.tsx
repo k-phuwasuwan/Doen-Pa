@@ -2,7 +2,8 @@ import { photoThumb } from "@/domain/account-data";
 import Image from "next/image";
 import { X } from "lucide-react";
 import type { Place } from "@/types";
-import { displayPlaceValue, PLACE_TYPE_LABELS } from "@/domain/place-display";
+import { PLACE_TYPE_LABELS } from "@/domain/place-display";
+import { ReadingValue } from "@/components/ui/ReadingValue";
 
 interface SelectedPlaceCardProps {
   place: Place;
@@ -51,11 +52,11 @@ export function SelectedPlaceCard({ place, photo, onClose }: SelectedPlaceCardPr
           <dl className="mt-auto flex gap-5 pt-2 text-xs">
             <div>
               <dt className="text-brand-800/55">ระยะทาง</dt>
-              <dd className="font-num text-sm font-semibold text-brand-800">{displayPlaceValue(place.distance)}</dd>
+              <dd className="font-num text-sm font-semibold text-brand-800"><ReadingValue value={place.distance} /></dd>
             </div>
             <div>
               <dt className="text-brand-800/55">ความสูง</dt>
-              <dd className="font-num text-sm font-semibold text-brand-800">{displayPlaceValue(place.altitude)}</dd>
+              <dd className="font-num text-sm font-semibold text-brand-800"><ReadingValue value={place.altitude} /></dd>
             </div>
           </dl>
         </div>

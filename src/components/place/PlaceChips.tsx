@@ -1,5 +1,6 @@
 import type { Place } from "@/types";
 import { displayPlaceValue } from "@/domain/place-display";
+import { ReadingValue } from "@/components/ui/ReadingValue";
 
 interface PlaceChipsProps {
   place: Place;
@@ -18,7 +19,7 @@ export function PlaceChips({ place, visitCount }: PlaceChipsProps) {
       {readings.map((reading) => (
         <div key={reading.key} aria-label={`${reading.name}: ${reading.value}`} className="min-w-0 px-4">
           <dt className="text-xs text-brand-800/60">{reading.name}</dt>
-          <dd className="font-num mt-0.5 truncate text-lg font-semibold text-brand-800 sm:text-xl">{reading.value}</dd>
+          <dd className="font-num mt-0.5 truncate text-lg font-semibold text-brand-800 sm:text-xl"><ReadingValue value={reading.value} /></dd>
         </div>
       ))}
       <div className="min-w-0 px-4">

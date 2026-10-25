@@ -20,6 +20,15 @@ test("database fields map to Place without replacing missing measurements or rea
   });
 });
 
+test("optional photo attribution maps to Place.image and rejects partial values", () => {
+  const photo = { image_path: "place-khao-sam-roi-yod.webp", image_author: "ช่างภาพ", image_license: "CC BY-SA 4.0", image_license_url: null, image_source_url: "https://commons.wikimedia.org/wiki/File:Test.jpg" };
+  assert.deepEqual(decodePlace({ ...park, ...photo }).image, {
+    path: photo.image_path, author: photo.image_author, license: photo.image_license, sourceUrl: photo.image_source_url,
+  });
+  assert.equal("image" in decodePlace({ ...park, image_path: null }), false);
+  assert.throws(() => decodePlace({ ...park, image_path: "x.webp", image_author: null, image_license: null, image_source_url: null }), /Invalid/);
+});
+
 test("catalog reads paginate through project row caps and only send public read credentials", async () => {
   const offsets: string[] = [];
   const request: typeof fetch = async (input, init) => {

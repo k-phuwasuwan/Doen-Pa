@@ -1,8 +1,8 @@
-import type { Place, PlaceType, Region } from "../types";
+import type { Place, PlaceImage, PlaceType, Region } from "../types";
 
 const PAGE_SIZE = 500;
 const REQUEST_TIMEOUT_MS = 10_000;
-const COLUMNS = "id,name,location,province,region,description,type,is_national_park,latitude,longitude,altitude,distance";
+const COLUMNS = "id,name,location,province,region,description,type,is_national_park,latitude,longitude,altitude,distance,image_path,image_author,image_license,image_license_url,image_source_url";
 
 function isPlaceType(value: unknown): value is PlaceType {
   return value === "mountain" || value === "waterfall" || value === "cave" || value === "island";
@@ -27,6 +27,16 @@ function optionalText(value: unknown): string | undefined {
   return value;
 }
 
+function decodeImage(row: Record<string, unknown>): PlaceImage | undefined {
+  if (row.image_path === null || row.image_path === undefined) return undefined;
+  const { image_path: path, image_author: author, image_license: license, image_source_url: sourceUrl, image_license_url: licenseUrl } = row;
+  if (typeof path !== "string" || typeof author !== "string" || typeof license !== "string" || typeof sourceUrl !== "string" ||
+    (licenseUrl !== null && licenseUrl !== undefined && typeof licenseUrl !== "string")) {
+    throw new Error("Invalid place image in catalog response");
+  }
+  return { path, author, license, sourceUrl, ...(licenseUrl ? { licenseUrl } : {}) };
+}
+
 export function decodePlace(value: unknown): Place {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Invalid place in catalog response");
   const row = value as Record<string, unknown>;
@@ -37,12 +47,14 @@ export function decodePlace(value: unknown): Place {
     typeof row.is_national_park !== "boolean") {
     throw new Error("Invalid place fields in catalog response");
   }
+  const image = decodeImage(row);
   return {
     id: row.id, name: row.name, location: row.location, province: row.province,
     region: row.region, description: row.description, type: row.type,
     isNationalPark: row.is_national_park,
     latitude: coordinate(row.latitude, 90), longitude: coordinate(row.longitude, 180),
     altitude: optionalText(row.altitude), distance: optionalText(row.distance),
+    ...(image ? { image } : {}),
   };
 }
 

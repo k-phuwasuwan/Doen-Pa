@@ -1,10 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Place } from "@/types";
 import { StampButton } from "./PlaceCardActions";
 import { VisitCount, VisitStamp } from "./VisitCount";
 import { displayPlaceValue, PLACE_TYPE_LABELS } from "@/domain/place-display";
+import { placeImageUrl } from "@/domain/place-image";
 
-/** Compact row on phones, photo-first card from tablet up; the frame waits for park photos. */
+/** Compact row on phones, photo-first card from tablet up; parks without a photo keep the topo frame. */
 export function PlaceCard({ place, userId }: { place: Place; userId: string }) {
   const description = place.description.trim();
 
@@ -15,6 +17,16 @@ export function PlaceCard({ place, userId }: { place: Place; userId: string }) {
         className="flex flex-1 items-center gap-3 rounded-3xl p-3 pb-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:flex-col sm:items-stretch sm:gap-0 sm:p-0"
       >
         <div className="topo-fill relative aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-xl sm:aspect-[16/10] sm:w-full sm:rounded-none">
+          {place.image && (
+            <Image
+              unoptimized
+              src={placeImageUrl(place.image, 640)}
+              alt={`ภาพ${place.name}`}
+              fill
+              sizes="(max-width: 640px) 112px, (max-width: 1280px) 33vw, 384px"
+              className="object-cover"
+            />
+          )}
           <span className="absolute left-2 top-2 rounded-full bg-brand-600/90 px-2 py-0.5 text-[11px] font-medium text-white sm:left-3 sm:top-3 sm:px-2.5 sm:text-xs">{PLACE_TYPE_LABELS[place.type]}</span>
           <VisitStamp placeId={place.id} userId={userId} province={place.province} />
         </div>

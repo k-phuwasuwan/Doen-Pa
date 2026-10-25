@@ -24,7 +24,7 @@ export function PlaceDetailContent({ place, userId, readOnly = false, initialPho
   return (
     <div className="space-y-5">
       <PlaceInfo place={place} />
-      <PlaceGallery key={initialPhotoIndex} recordPhotos={photos} initialPhotoIndex={initialPhotoIndex} />
+      <PlaceGallery key={initialPhotoIndex} recordPhotos={photos} initialPhotoIndex={initialPhotoIndex} placeImage={place.image} placeName={place.name} />
       <PlaceChips place={place} visitCount={placeRecords.length} />
 
       <div className={`grid items-start gap-5 ${readOnly ? "" : "lg:grid-cols-[minmax(0,1fr)_21rem]"}`}>

@@ -1,6 +1,8 @@
 "use client";
 
 import { photoThumb } from "@/domain/account-data";
+import { placeImageCredit, placeImageUrl } from "@/domain/place-image";
+import type { PlaceImage } from "@/types";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Camera, ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,9 +12,12 @@ interface PlaceGalleryProps {
   /** User's own uploaded photos from TravelRecord. Empty = no record or no uploads. */
   recordPhotos: string[];
   initialPhotoIndex?: number;
+  /** Freely licensed park photo shown until the user adds their own. */
+  placeImage?: PlaceImage;
+  placeName?: string;
 }
 
-export function PlaceGallery({ recordPhotos, initialPhotoIndex = 0 }: PlaceGalleryProps) {
+export function PlaceGallery({ recordPhotos, initialPhotoIndex = 0, placeImage, placeName = "" }: PlaceGalleryProps) {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(initialPhotoIndex);
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -40,7 +45,13 @@ export function PlaceGallery({ recordPhotos, initialPhotoIndex = 0 }: PlaceGalle
 
   return (
     <div className={`relative aspect-[4/3] w-full overflow-hidden rounded-3xl shadow-glass sm:aspect-[2/1] lg:aspect-[21/9] ${visiblePhoto ? "bg-beige-100" : "topo-fill"}`}>
-      {!visiblePhoto && (
+      {!visiblePhoto && placeImage && (
+        <>
+          <Image unoptimized src={placeImageUrl(placeImage, 1280)} alt={`ภาพ${placeName}`} fill priority className="object-cover object-center" sizes="(max-width: 1152px) 100vw, 1152px" />
+          <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-950/70 to-transparent px-4 pb-3 pt-10 text-xs text-white/90">{placeImageCredit(placeImage)}</p>
+        </>
+      )}
+      {!visiblePhoto && !placeImage && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#edf1ec]/55 px-6 text-center">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/80 text-brand-600 shadow-glass">
             <Camera className="h-5 w-5" aria-hidden="true" />

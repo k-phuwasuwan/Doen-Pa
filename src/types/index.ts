@@ -22,6 +22,16 @@ export interface User {
   needsProfileSetup?: boolean;
 }
 
+/** Freely licensed park photo; attribution must be shown wherever it is displayed. */
+export interface PlaceImage {
+  /** File name under `public/images/parks/640/` and `public/images/parks/1280/`. */
+  path: string;
+  author: string;
+  license: string;
+  licenseUrl?: string;
+  sourceUrl: string;
+}
+
 export interface Place {
   id: string;
   name: string;
@@ -36,6 +46,7 @@ export interface Place {
   longitude?: number;
   altitude?: string;
   distance?: string;
+  image?: PlaceImage;
 }
 
 export interface TravelRecord {

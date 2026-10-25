@@ -12,9 +12,9 @@ export function PlaceCard({ place, userId }: { place: Place; userId: string }) {
     <div className="liquid-glass-card relative flex h-full flex-col overflow-hidden">
       <Link
         href={`/places/${place.id}`}
-        className="flex flex-1 gap-3 rounded-3xl p-3 pb-14 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:flex-col sm:gap-0 sm:p-0 sm:pb-0"
+        className="flex flex-1 items-center gap-3 rounded-3xl p-3 pb-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 sm:flex-col sm:items-stretch sm:gap-0 sm:p-0"
       >
-        <div className="topo-fill relative aspect-square w-24 shrink-0 overflow-hidden rounded-2xl sm:aspect-[16/10] sm:w-full sm:rounded-none">
+        <div className="topo-fill relative aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-xl sm:aspect-[16/10] sm:w-full sm:rounded-none">
           <span className="absolute left-2 top-2 rounded-full bg-brand-600/90 px-2 py-0.5 text-[11px] font-medium text-white sm:left-3 sm:top-3 sm:px-2.5 sm:text-xs">{PLACE_TYPE_LABELS[place.type]}</span>
           <VisitStamp placeId={place.id} userId={userId} province={place.province} />
         </div>
@@ -25,7 +25,7 @@ export function PlaceCard({ place, userId }: { place: Place; userId: string }) {
           <VisitCount placeId={place.id} userId={userId} />
         </div>
       </Link>
-      <div className="absolute inset-x-3 bottom-3 left-[7.5rem] flex items-end justify-between gap-3 sm:static sm:mx-5 sm:mb-5 sm:items-center sm:border-t sm:border-brand-800/10 sm:pt-4">
+      <div className="mx-3 mb-3 flex items-center justify-between gap-3 border-t border-brand-800/10 pt-2 sm:mx-5 sm:mb-5 sm:pt-4">
         <dl className="flex gap-5 text-xs">
           <div>
             <dt className="text-brand-800/55">ความสูง</dt>

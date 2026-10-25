@@ -35,7 +35,7 @@ The table follows the current `Place` interface, using `is_national_park` for
 Coordinates are nullable numbers; altitude and distance retain their reviewed
 display strings (`1351 m`, `8 กม.`). Missing coordinates and measurements are
 `NULL`; missing descriptions and locations remain empty strings. Zero is a real
-value, never a placeholder. No photos or personal data are imported.
+value, never a placeholder. No personal data is imported. Optional park photos are imported as attribution columns (`image_path`, `image_author`, `image_license`, `image_license_url`, `image_source_url`, added by migration `20261025120000_place_photos.sql`); the resized files ship in `public/images/parks/`. Apply that migration before deploying the app version that reads these columns, otherwise catalog reads fail with `column places.image_path does not exist`.
 
 The old Sam Roi Yot alias remains resolved by `src/data/place-identities.ts`.
 History-only Chiang Dao metadata stays in `src/data/archived-places.ts`, outside

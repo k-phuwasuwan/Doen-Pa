@@ -51,7 +51,7 @@ export function PassportContent() {
                 <span className="font-num text-sm font-semibold text-brand-600">{group.year}</span>
                 <span className="h-px flex-1 border-t border-dashed border-brand-800/20" aria-hidden="true" />
               </div>
-              <div className="grid gap-4 sm:gap-5">
+              <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
                 {group.entries.map(({ record, place }) => (
                   <TravelRecordCard key={record.id} record={record} place={place} />
                 ))}

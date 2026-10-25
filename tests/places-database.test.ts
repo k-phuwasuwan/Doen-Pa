@@ -6,7 +6,11 @@ import { test } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 import { readReviewedCatalog } from "./helpers/place-catalog";
 
-const places = readReviewedCatalog();
+/** The importer's JSON adds flat photo fields beside the application `Place` shape. */
+type ReviewedPlace = ReturnType<typeof readReviewedCatalog>[number] & {
+  imagePath?: string; imageAuthor?: string; imageLicense?: string; imageLicenseUrl?: string | null; imageSourceUrl?: string;
+};
+const places = readReviewedCatalog() as ReviewedPlace[];
 
 test("place migrations and seed preserve the catalog and enforce public read-only access", async (t) => {
   const generated = spawnSync("python3", ["scripts/import-national-parks.py", "--check"], { encoding: "utf8" });
@@ -23,9 +27,12 @@ test("place migrations and seed preserve the catalog and enforce public read-onl
       grant all on tables to anon, authenticated, service_role;
   `);
   const migrationDir = join(process.cwd(), "supabase/migrations");
-  const migrationFiles = readdirSync(migrationDir).filter((name) => name.endsWith("_create_places.sql"));
-  assert.equal(migrationFiles.length, 1);
-  await db.exec(readFileSync(join(migrationDir, migrationFiles[0]), "utf8"));
+  // Table first, then the photo columns the CSV-generated seed fills.
+  for (const suffix of ["_create_places.sql", "_place_photos.sql"]) {
+    const migrationFiles = readdirSync(migrationDir).filter((name) => name.endsWith(suffix));
+    assert.equal(migrationFiles.length, 1, suffix);
+    await db.exec(readFileSync(join(migrationDir, migrationFiles[0]), "utf8"));
+  }
   const seed = readFileSync("supabase/seed.sql", "utf8");
   await db.exec(seed);
 
@@ -44,6 +51,11 @@ test("place migrations and seed preserve the catalog and enforce public read-onl
       longitude: place.longitude ?? null,
       altitude: place.altitude ?? null,
       distance: place.distance ?? null,
+      image_path: place.imagePath ?? null,
+      image_author: place.imageAuthor ?? null,
+      image_license: place.imageLicense ?? null,
+      image_license_url: place.imageLicenseUrl ?? null,
+      image_source_url: place.imageSourceUrl ?? null,
     })).sort((a, b) => a.id.localeCompare(b.id));
     assert.equal(rows.length, 156);
     assert.deepEqual(rows, expected);

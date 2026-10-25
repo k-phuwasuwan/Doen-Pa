@@ -40,25 +40,57 @@ EXISTING_IDS = {
     "ตาดโตน": "place-tat-ton",
 }
 
-def load_places():
+BASE_FIELDS = ["หน่วยงาน", "ชื่อหน่วยงาน", "อำเภอ", "จังหวัด", "lat", "long", "description", "altitude", "distance", "type"]
+# Optional freely licensed photo: all five values together, or all empty.
+IMAGE_FIELDS = ["image_path", "image_author", "image_license", "image_license_url", "image_source_url"]
+IMAGE_DIR = ROOT / "public/images/parks"
+IMAGE_WIDTHS = (640, 1280)
+
+
+def read_rows():
     with SOURCE.open(encoding="utf-8-sig", newline="") as source:
         reader = csv.DictReader(source)
-        assert reader.fieldnames == ["หน่วยงาน", "ชื่อหน่วยงาน", "อำเภอ", "จังหวัด", "lat", "long", "description", "altitude", "distance", "type"]
-        rows = list(reader)
+        assert reader.fieldnames in (BASE_FIELDS, BASE_FIELDS + IMAGE_FIELDS), reader.fieldnames
+        return list(reader)
+
+
+def place_id(name):
+    short_name = name.removeprefix("อุทยานแห่งชาติ")
+    return EXISTING_IDS.get(short_name, "national-park-" + hashlib.sha256(name.encode()).hexdigest()[:12])
+
+
+def parse_image(row, pid, name):
+    values = {field: (row.get(field) or "").strip() for field in IMAGE_FIELDS}
+    if not any(values.values()):
+        return {}
+    assert values["image_path"] == f"{pid}.webp", (name, "image_path must be <id>.webp")
+    for field in ("image_author", "image_license", "image_source_url"):
+        assert values[field], (name, f"{field} is required with a photo")
+    for field in ("image_license_url", "image_source_url"):
+        assert not values[field] or values[field].startswith("https://"), (name, field)
+    for width in IMAGE_WIDTHS:
+        assert (IMAGE_DIR / str(width) / values["image_path"]).is_file(), (name, f"missing public/images/parks/{width}/{values['image_path']}")
+    return {
+        "imagePath": values["image_path"], "imageAuthor": values["image_author"], "imageLicense": values["image_license"],
+        "imageLicenseUrl": values["image_license_url"] or None, "imageSourceUrl": values["image_source_url"],
+    }
+
+
+def load_places():
+    rows = read_rows()
     assert len(rows) == 156
     places = []
     for row in rows:
         name = row["ชื่อหน่วยงาน"].strip()
         assert row["หน่วยงาน"].strip() == "อุทยานแห่งชาติ"
         assert name.startswith("อุทยานแห่งชาติ")
-        short_name = name.removeprefix("อุทยานแห่งชาติ")
         kind = row["type"].strip()
         assert kind in {"mountain", "waterfall", "cave", "island"}, name
         province = row["จังหวัด"].strip()
         assert province in REGION_BY_PROVINCE, province
         district = row["อำเภอ"].strip()
         place = {
-            "id": EXISTING_IDS.get(short_name, "national-park-" + hashlib.sha256(name.encode()).hexdigest()[:12]),
+            "id": place_id(name),
             "name": name,
             "location": "อำเภอ" + district if district and not district.startswith("อำเภอ") else district,
             "province": province,
@@ -78,6 +110,7 @@ def load_places():
             if value:
                 assert re.fullmatch(r"\d+(?:\.\d+)? m" if field == "altitude" else r"\d+(?:\.\d+)? กม\.", value), (name, field, value)
                 place[field] = value
+        place.update(parse_image(row, place["id"], name))
         places.append(place)
     assert len({p["id"] for p in places}) == len({p["name"] for p in places}) == 156
     return places
@@ -105,6 +138,8 @@ def render_seed(places):
         ("is_national_park", "isNationalPark"), ("latitude", "latitude"),
         ("longitude", "longitude"), ("altitude", "altitude"),
         ("distance", "distance"),
+        ("image_path", "imagePath"), ("image_author", "imageAuthor"), ("image_license", "imageLicense"),
+        ("image_license_url", "imageLicenseUrl"), ("image_source_url", "imageSourceUrl"),
     ]
     columns = ", ".join(column for column, _ in fields)
     rows = ",\n".join(

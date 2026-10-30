@@ -29,7 +29,7 @@ export function SearchHero() {
       />
       <div className="relative z-10 px-5 py-7 sm:px-8 sm:py-9 lg:px-12 lg:py-11">
         <h1 id="search-hero-title" className="text-[1.875rem] font-bold leading-tight tracking-tight text-brand-900 sm:text-4xl lg:text-[2.75rem]">
-          ไปไหนมาแล้วบ้าง?
+          ค้นหาสถานที่ที่ต้องการ
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-brand-800/75 sm:text-base">
           ค้นหาภูเขา น้ำตก ถ้ำ และทะเลที่คุณเคยไป แล้วประทับตราเก็บไว้ใน<span className="whitespace-nowrap">พาสปอร์ต</span>

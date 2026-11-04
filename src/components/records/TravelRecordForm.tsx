@@ -201,7 +201,6 @@ export function TravelRecordForm({ place }: TravelRecordFormProps) {
                   <Stamp className="h-5 w-5" aria-hidden="true" />
                   {readingPhotos ? "กำลังอ่านรูปภาพ…" : submitting ? "กำลังบันทึก…" : "บันทึกลงพาสปอร์ต"}
                 </button>
-                <p className="mt-2 text-center text-xs text-brand-800/60">บันทึกและรูปภาพจะเก็บในบัญชีของคุณเท่านั้น</p>
               </div>
             </form>
           </>

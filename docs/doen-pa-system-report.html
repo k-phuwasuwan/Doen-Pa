@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Doen Pa — รายงานระบบและสถาปัตยกรรม</title>
+<style>
+@font-face{font-family:Kanit;font-weight:400;src:url("../public/fonts/kanit-400-thai.woff2");unicode-range:U+0E01-0E5B,U+200C-200D,U+25CC}
+@font-face{font-family:Kanit;font-weight:400;src:url("../public/fonts/kanit-400-latin.woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Kanit;font-weight:500;src:url("../public/fonts/kanit-500-thai.woff2");unicode-range:U+0E01-0E5B,U+200C-200D,U+25CC}
+@font-face{font-family:Kanit;font-weight:500;src:url("../public/fonts/kanit-500-latin.woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Kanit;font-weight:600;src:url("../public/fonts/kanit-600-thai.woff2");unicode-range:U+0E01-0E5B,U+200C-200D,U+25CC}
+@font-face{font-family:Kanit;font-weight:600;src:url("../public/fonts/kanit-600-latin.woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:Kanit;font-weight:700;src:url("../public/fonts/kanit-700-thai.woff2");unicode-range:U+0E01-0E5B,U+200C-200D,U+25CC}
+@font-face{font-family:Kanit;font-weight:700;src:url("../public/fonts/kanit-700-latin.woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{--g9:#0f291e;--g8:#1b4332;--g6:#2d6a4f;--g3:#b7e4c7;--g1:#eaf4ec;--ink:#24352c;--mute:#5d7066;--line:#d5e0d8;--warn:#9a5b00;--warnbg:#fff4de}
+@page{size:A4;margin:16mm 15mm 18mm;@bottom-center{content:"Doen Pa · รายงานระบบและสถาปัตยกรรม · หน้า " counter(page);font:400 8pt Kanit,sans-serif;color:#7a8c82}}
+@page:first{margin:0;@bottom-center{content:""}}
+*{box-sizing:border-box}
+body{margin:0;font:400 9.6pt/1.62 Kanit,sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h1,h2,h3{color:var(--g8);font-weight:600;line-height:1.3;margin:0}
+h2{font-size:17pt;margin:0 0 4mm;padding-bottom:2mm;border-bottom:2px solid var(--g3);break-after:avoid}
+h3{font-size:11.5pt;margin:5mm 0 2mm;break-after:avoid}
+p{margin:0 0 2.6mm}
+ul,ol{margin:0 0 3mm;padding-left:5.5mm}li{margin:0 0 1mm}
+code,.mono{font-family:Menlo,Consolas,monospace;font-size:8.2pt;background:#f0f4f1;border-radius:3px;padding:0 3px;color:#14402b}
+pre{font:400 8pt/1.5 Menlo,Consolas,monospace;background:#f3f6f4;border:1px solid var(--line);border-radius:6px;padding:3mm;margin:0 0 3.5mm;white-space:pre-wrap;break-inside:avoid}
+section{break-before:auto;margin-bottom:6mm}
+section.pb{break-before:page}
+table{width:100%;border-collapse:collapse;margin:1mm 0 4mm;font-size:8.8pt;break-inside:auto}
+th{background:var(--g8);color:#fff;font-weight:500;text-align:left;padding:1.6mm 2.2mm}
+td{padding:1.6mm 2.2mm;border-bottom:1px solid var(--line);vertical-align:top}
+tr{break-inside:avoid}
+tr:nth-child(even) td{background:#f7faf8}
+.box{border-radius:8px;padding:3mm 4mm;margin:0 0 4mm;break-inside:avoid;font-size:9.2pt}
+.note{background:var(--g1);border-left:4px solid var(--g6)}
+.warn{background:var(--warnbg);border-left:4px solid #d08a1a}
+.box b{color:var(--g8)}.warn b{color:var(--warn)}
+figure{margin:0 0 4mm;break-inside:avoid}
+figcaption{font-size:8.4pt;color:var(--mute);text-align:center;margin-top:1.5mm}
+svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;background:#fcfdfc}
+svg text{font-family:Kanit,sans-serif}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.pill{display:inline-block;background:var(--g1);color:var(--g8);border-radius:99px;padding:0 2.4mm;font-size:8pt;font-weight:500}
+.cover{height:297mm;background:linear-gradient(160deg,#0f291e 0%,#1b4332 55%,#2d6a4f 100%);color:#fff;padding:30mm 22mm;position:relative;break-after:page;overflow:hidden}
+.cover h1{color:#fff;font-size:34pt;font-weight:700;margin:60mm 0 4mm}
+.cover .sub{font-size:14pt;color:var(--g3);max-width:130mm}
+.cover .meta{position:absolute;left:22mm;bottom:26mm;font-size:10pt;color:#cfe8d8;line-height:1.9}
+.cover .topo{position:absolute;right:-30mm;top:-20mm;width:170mm;opacity:.18}
+.toc li{margin:0 0 1.6mm;font-size:10.5pt}.toc ol{padding-left:6mm}
+.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;margin:0 0 4mm}
+.stat div{background:var(--g1);border-radius:8px;padding:3mm;text-align:center}
+.stat b{display:block;font-size:17pt;color:var(--g8);font-weight:700;line-height:1.2}
+.stat span{font-size:8.2pt;color:var(--mute)}
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+  <svg class="topo" viewBox="0 0 400 400" style="border:0;background:none"><g fill="none" stroke="#b7e4c7" stroke-width="1.4"><ellipse cx="200" cy="200" rx="190" ry="150"/><ellipse cx="205" cy="195" rx="160" ry="124"/><ellipse cx="210" cy="190" rx="132" ry="98"/><ellipse cx="215" cy="186" rx="104" ry="74"/><ellipse cx="220" cy="182" rx="76" ry="50"/><ellipse cx="224" cy="180" rx="48" ry="28"/><ellipse cx="228" cy="178" rx="22" ry="12"/></g></svg>
+  <div style="font-size:11pt;letter-spacing:.3em;color:var(--g3)">DOEN PA</div>
+  <h1>รายงานระบบ<br>และสถาปัตยกรรม</h1>
+  <div class="sub">สมุดพาสปอร์ตเดินป่าดิจิทัลสำหรับนักเดินป่าชาวไทย — เครื่องมือ การเชื่อมต่อ โครงสร้างไฟล์ ข้อมูล สถาปัตยกรรม data flow workflow สถานการณ์ใช้งาน และข้อแนะนำ</div>
+  <div class="meta">จัดทำวันที่ 30 ตุลาคม 2569 (30 Oct 2026)<br>Next.js 16.4.2 · React 19 · Supabase · Vercel<br>https://doen-pa.vercel.app</div>
+</div>
+
+<!-- ============ TOC ============ -->
+<section class="flow">
+  <h2>สารบัญ</h2>
+  <ol class="toc">
+    <li>ภาพรวมโปรเจค</li>
+    <li>เครื่องมือและเทคโนโลยีที่ใช้ (Frontend · Backend · Database · Infrastructure)</li>
+    <li>สถาปัตยกรรมระบบ (Architecture)</li>
+    <li>การเชื่อมต่อและการรับส่งข้อมูล ระหว่างไคลเอนต์ เซิร์ฟเวอร์ และอินเทอร์เน็ต</li>
+    <li>โครงสร้างไฟล์และหน้าที่ของแต่ละไฟล์</li>
+    <li>โมเดลข้อมูลและความสัมพันธ์ของข้อมูล</li>
+    <li>Data Flow</li>
+    <li>Workflow (การพัฒนา การนำเข้าข้อมูล CI/CD)</li>
+    <li>สถานการณ์ใช้งาน (Scenarios)</li>
+    <li>ความปลอดภัยและความเป็นส่วนตัว</li>
+    <li>สิ่งที่ควรรู้ ข้อจำกัด และความเสี่ยง</li>
+    <li>คำแนะนำและสิ่งที่ควรทำต่อ</li>
+    <li>ภาคผนวก: คำสั่งที่ใช้บ่อยและเอกสารอ้างอิง</li>
+  </ol>
+  <div class="box note"><b>วิธีอ่านรายงานนี้</b> เนื้อหาสรุปจากโค้ดและเอกสารใน repo ณ วันที่จัดทำ ส่วนใดที่เป็นการประมาณหรือยังไม่ได้ตรวจกับระบบจริงจะระบุไว้ในข้อความ ค่าตั้งของ Supabase dashboard (เช่น rate limit, เทมเพลตอีเมล) อ้างตามที่ผู้ดูแลแจ้ง ไม่ได้อ่านจากโค้ด</div>
+</section>
+
+<!-- ============ 1 OVERVIEW ============ -->
+<section>
+  <h2>1. ภาพรวมโปรเจค</h2>
+  <p><b>Doen Pa (เดิ่นป่า)</b> คือ Digital Hiking Passport ส่วนตัวสำหรับนักเดินป่าชาวไทย แนวคิดหลักคือ <b>“บันทึกการเดินทาง ไม่ใช่วางแผนการเดินทาง”</b> ผู้ใช้ค้นหาสถานที่ → “ประทับตรา” การเยือนด้วยการสร้าง travel record (วันที่ รูป ข้อความ คะแนนส่วนตัว) → ดูความทรงจำใน Passport, หน้ารายละเอียดสถานที่, แผนที่, สถิติ และโปรไฟล์</p>
+  <div class="stat">
+    <div><b>156</b><span>อุทยานแห่งชาติใน catalog</span></div>
+    <div><b>123</b><span>แห่งมีรูปถ่ายลิขสิทธิ์เปิด</span></div>
+    <div><b>7</b><span>หน้าหลัก (ค้นหา แผนที่ พาสปอร์ต สถิติ โปรไฟล์ …)</span></div>
+    <div><b>63</b><span>unit/DB test (+ e2e Playwright 14 สเปค)</span></div>
+  </div>
+  <h3>สิ่งที่อยู่ในขอบเขต (MVP)</h3>
+  <ul>
+    <li>ค้นหา/กรองสถานที่ (ประเภท ภูเขา น้ำตก ถ้ำ หมู่เกาะ · เคยไปแล้ว/ยังไม่เคย)</li>
+    <li>หน้ารายละเอียดสถานที่ และการประทับตราสร้างบันทึกการเดินทาง (สูงสุด 5 รูปต่อบันทึก)</li>
+    <li>Passport (รายการบันทึกทั้งหมด) · แผนที่เฉพาะที่เคยไป · สถิติรายจังหวัด/ภาค/ประเภท/อุทยาน · โปรไฟล์</li>
+    <li>บัญชีผู้ใช้ด้วยอีเมล/รหัสผ่าน (สมัคร ยืนยันอีเมล เข้าสู่ระบบ กู้รหัสผ่าน ออกจากระบบ)</li>
+  </ul>
+  <h3>สิ่งที่อยู่นอกขอบเขตจนกว่าจะอนุมัติ</h3>
+  <p>ระบบ badge, social, โปรไฟล์/รีวิว/คะแนนสาธารณะ, จอง/ชำระเงิน, วางแผนเส้นทาง, GPS สด, พยากรณ์อากาศ, ระบบแนะนำ, activity feed, ข้อความ — คะแนนดาวของผู้ใช้เป็นข้อมูลส่วนตัวเท่านั้น ไม่ถูกรวมเป็นคะแนนสาธารณะ</p>
+  <h3>สถานะปัจจุบัน</h3>
+  <ul>
+    <li>รันจริงบน Vercel ที่ <span class="mono">https://doen-pa.vercel.app</span> ใช้ Supabase (Auth, Postgres, Storage) เป็น backend ทั้งหมด</li>
+    <li>ดีไซน์ปัจจุบันคือ “Contour &amp; Stamp” (เขียวป่า พื้นหลังเส้นชั้นความสูง ตราประทับหมึก กระจก Liquid Glass)</li>
+    <li>เลื่อนไว้: Google login, หน้า badge, นโยบายรูปสถานที่ถาวรระยะยาว</li>
+  </ul>
+</section>
+
+<!-- ============ 2 TECH ============ -->
+<section>
+  <h2>2. เครื่องมือและเทคโนโลยีที่ใช้</h2>
+  <h3>2.1 Frontend (ฝั่งแสดงผล)</h3>
+  <table>
+    <tr><th style="width:27%">เครื่องมือ</th><th>บทบาทในโปรเจค</th></tr>
+    <tr><td><b>Next.js 16.4.2</b> (App Router)</td><td>เฟรมเวิร์กหลัก ทั้งหน้าเว็บ (Server/Client Components) และ Route Handlers เวอร์ชันนี้มีการเปลี่ยนแปลงจากที่เคยรู้จัก เช่น ใช้ <code>proxy.ts</code> แทน middleware เดิม และ build ด้วย Webpack (<code>next build --webpack</code>)</td></tr>
+    <tr><td><b>React 19</b></td><td>UI และ hooks; ใช้ <code>useSyncExternalStore</code> ผูก state บัญชีกับหน้าจอ</td></tr>
+    <tr><td><b>TypeScript</b> (strict)</td><td>ความถูกต้องของชนิดข้อมูล; ชนิดหลักอยู่ที่ <code>src/types/index.ts</code></td></tr>
+    <tr><td><b>Tailwind CSS 4</b></td><td>สไตล์ทั้งหมด; token ดีไซน์อยู่ที่ <code>app/globals.css</code> และ <code>tailwind.config.ts</code></td></tr>
+    <tr><td><b>Leaflet 1.9</b></td><td>แผนที่ (เรียกใช้ตรง ไม่ผ่าน wrapper) โหลดแบบไม่ใช้ SSR; กระเบื้องแผนที่จาก Stadia Maps (Stamen Terrain)</td></tr>
+    <tr><td><b>Lucide React</b></td><td>ไอคอน</td></tr>
+    <tr><td><b>ฟอนต์ Kanit, Plus Jakarta Sans</b></td><td>บรรจุไว้ใน <code>public/fonts/</code> ไม่ดึงจาก Google ตอน build</td></tr>
+  </table>
+  <p>ไม่มี Zustand หรือ store ภายนอก: state มาจาก React hooks, พารามิเตอร์ใน URL (เช่น <code>q</code>, <code>type</code>, <code>visited</code> ของหน้าค้นหา) และ snapshot ของบัญชีที่ยืนยันแล้วจาก Supabase</p>
+
+  <h3>2.2 Backend (ฝั่งเซิร์ฟเวอร์)</h3>
+  <table>
+    <tr><th style="width:27%">เครื่องมือ</th><th>บทบาท</th></tr>
+    <tr><td><b>Next.js Server Components</b></td><td>โหลด catalog สถานที่ (<code>getPlaceCatalog</code>) และตรวจตัวตนก่อน render ข้อมูลส่วนตัว</td></tr>
+    <tr><td><b>Route Handlers</b></td><td><code>/api/account</code> (อ่านข้อมูลบัญชี), <code>/api/photos/[id]</code> (ส่งรูปส่วนตัว), <code>/auth/[action]</code> (เข้าสู่ระบบ ออก สมัคร ฯลฯ), <code>/auth/callback</code>, <code>/auth/confirm</code></td></tr>
+    <tr><td><b>proxy.ts</b></td><td>รันก่อนทุกหน้า (ยกเว้นไฟล์ static) เพื่อรีเฟรช session cookie ของ Supabase ด้วย <code>getClaims</code></td></tr>
+    <tr><td><b>@supabase/ssr</b> + <b>supabase-js</b></td><td>ไลบรารีเชื่อม Supabase ทั้งฝั่งเซิร์ฟเวอร์ (อ่าน/เขียน cookie) และเบราว์เซอร์</td></tr>
+    <tr><td><b>sharp</b></td><td>ย่อรูปและหมุนตามแนวภาพเป็น WebP ใน <code>/api/photos/[id]</code> (ขนาด 256/640/1280) และใช้ทำรูปอุทยานตอนเตรียมข้อมูล</td></tr>
+  </table>
+
+  <h3>2.3 Database และ Storage (Supabase)</h3>
+  <table>
+    <tr><th style="width:27%">ส่วนประกอบ</th><th>บทบาท</th></tr>
+    <tr><td><b>Supabase Auth</b></td><td>อีเมล/รหัสผ่าน ยืนยันอีเมลผ่านลิงก์ TokenHash กู้รหัสผ่าน; ส่งอีเมลผ่าน Gmail SMTP (บัญชีผู้ส่งเฉพาะ + App Password เก็บใน Supabase เท่านั้น)</td></tr>
+    <tr><td><b>PostgreSQL + RLS</b></td><td>ตาราง <code>places</code> (catalog สาธารณะอ่านอย่างเดียว), <code>profiles</code>, <code>travel_records</code>, <code>photos</code> (ส่วนตัวต่อเจ้าของด้วย Row Level Security) และฟังก์ชัน RPC เช่น <code>save_travel_record</code>, <code>save_account_profile</code>, <code>delete_my_account</code></td></tr>
+    <tr><td><b>Supabase Storage</b></td><td>bucket ส่วนตัว <code>travel-photos</code> (รูปบันทึก ≤5 MB) และ <code>profile-photos</code> (อวตาร์/ปก ≤1 MB) เข้าถึงได้เฉพาะเจ้าของ</td></tr>
+  </table>
+
+  <h3>2.4 Infrastructure และบริการภายนอก</h3>
+  <table>
+    <tr><th style="width:27%">บริการ</th><th>บทบาท</th></tr>
+    <tr><td><b>Vercel</b></td><td>โฮสต์แอป (deploy จาก <code>main</code>); โดเมน doen-pa.vercel.app (ไม่มีโดเมนซื้อเอง)</td></tr>
+    <tr><td><b>GitHub + GitHub Actions</b></td><td>เก็บโค้ด; CI รัน secret scan, dependency audit, tsc, lint, test, build ทุกครั้งที่ push</td></tr>
+    <tr><td><b>Stadia Maps</b></td><td>กระเบื้องแผนที่ภูมิประเทศ ยืนยันด้วยโดเมน (ไม่มี API key) — ดูข้อควรรู้เรื่องแผน Free ในบทที่ 11</td></tr>
+    <tr><td><b>Gmail SMTP</b></td><td>ส่งอีเมลยืนยัน/กู้รหัสผ่าน ผ่านการตั้งค่า Custom SMTP ของ Supabase</td></tr>
+    <tr><td><b>Wikimedia Commons</b></td><td>แหล่งรูปอุทยาน (ใช้ตอนเตรียมข้อมูลเท่านั้น ไม่ได้เรียกขณะผู้ใช้ใช้งาน)</td></tr>
+  </table>
+
+  <h3>2.5 เครื่องมือพัฒนาและทดสอบ</h3>
+  <p><b>pnpm</b> (ตัวจัดการแพ็กเกจ, Node 22+) · <b>ESLint</b> · <b>PGlite</b> (Postgres จำลองในหน่วยความจำสำหรับทดสอบ migration/seed/RLS โดยไม่ต้องใช้ Docker) · <b>Playwright</b> (e2e บนเดสก์ท็อปและมือถือ) · <b>Supabase CLI</b> (push migration, รัน SQL) · <b>Python 3</b> (สคริปต์นำเข้า catalog จาก CSV)</p>
+</section>
+
+<!-- ============ 3 ARCH ============ -->
+<section class="pb">
+  <h2>3. สถาปัตยกรรมระบบ (Architecture)</h2>
+  <p>ระบบเป็นแอป Next.js ตัวเดียวบน Vercel ที่คุยกับ Supabase เป็นแหล่งข้อมูลเดียว ไคลเอนต์เรียก Supabase ได้โดยตรงสำหรับการเขียนที่ต้องมีธุรกรรมและการอัปโหลดรูป ส่วนการอ่านข้อมูลส่วนตัวผ่านเซิร์ฟเวอร์ของเราเพื่อให้ตรวจตัวตนก่อนทุกครั้ง</p>
+  <figure>
+    <svg viewBox="0 0 760 470" role="img" aria-label="แผนภาพสถาปัตยกรรมระบบ">
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2d6a4f"/></marker>
+      <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8a9b91"/></marker></defs>
+      <!-- Client -->
+      <rect x="14" y="40" width="210" height="300" rx="12" fill="#eaf4ec" stroke="#2d6a4f"/>
+      <text x="119" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#1b4332">ไคลเอนต์ (เบราว์เซอร์)</text>
+      <rect x="28" y="76" width="182" height="46" rx="7" fill="#fff" stroke="#b7e4c7"/><text x="119" y="96" text-anchor="middle" font-size="11" fill="#24352c">React 19 UI / Tailwind</text><text x="119" y="111" text-anchor="middle" font-size="9.5" fill="#5d7066">หน้า Search Place Passport Stats</text>
+      <rect x="28" y="130" width="182" height="46" rx="7" fill="#fff" stroke="#b7e4c7"/><text x="119" y="150" text-anchor="middle" font-size="11" fill="#24352c">Account store (in-memory)</text><text x="119" y="165" text-anchor="middle" font-size="9.5" fill="#5d7066">useSyncExternalStore snapshot</text>
+      <rect x="28" y="184" width="182" height="46" rx="7" fill="#fff" stroke="#b7e4c7"/><text x="119" y="204" text-anchor="middle" font-size="11" fill="#24352c">Supabase browser client</text><text x="119" y="219" text-anchor="middle" font-size="9.5" fill="#5d7066">อัปโหลดรูป · เรียก RPC</text>
+      <rect x="28" y="238" width="182" height="46" rx="7" fill="#fff" stroke="#b7e4c7"/><text x="119" y="258" text-anchor="middle" font-size="11" fill="#24352c">Leaflet แผนที่</text><text x="119" y="273" text-anchor="middle" font-size="9.5" fill="#5d7066">โหลดแบบไม่ใช้ SSR</text>
+      <rect x="28" y="292" width="182" height="36" rx="7" fill="#fff" stroke="#b7e4c7"/><text x="119" y="314" text-anchor="middle" font-size="10.5" fill="#24352c">localStorage (สัญญาณข้ามแท็บ)</text>
+
+      <!-- Vercel -->
+      <rect x="278" y="40" width="210" height="300" rx="12" fill="#f3f6f4" stroke="#1b4332"/>
+      <text x="383" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#1b4332">Vercel · Next.js 16</text>
+      <rect x="292" y="76" width="182" height="40" rx="7" fill="#fff" stroke="#c9d6ce"/><text x="383" y="95" text-anchor="middle" font-size="11" fill="#24352c">proxy.ts</text><text x="383" y="108" text-anchor="middle" font-size="9.5" fill="#5d7066">รีเฟรช session (getClaims)</text>
+      <rect x="292" y="124" width="182" height="46" rx="7" fill="#fff" stroke="#c9d6ce"/><text x="383" y="144" text-anchor="middle" font-size="11" fill="#24352c">Server Components</text><text x="383" y="159" text-anchor="middle" font-size="9.5" fill="#5d7066">catalog · ตรวจตัวตน (getUser)</text>
+      <rect x="292" y="178" width="182" height="46" rx="7" fill="#fff" stroke="#c9d6ce"/><text x="383" y="198" text-anchor="middle" font-size="11" fill="#24352c">/api/account</text><text x="383" y="213" text-anchor="middle" font-size="9.5" fill="#5d7066">ข้อมูลบัญชี (JSON)</text>
+      <rect x="292" y="232" width="182" height="46" rx="7" fill="#fff" stroke="#c9d6ce"/><text x="383" y="252" text-anchor="middle" font-size="11" fill="#24352c">/api/photos/[id]</text><text x="383" y="267" text-anchor="middle" font-size="9.5" fill="#5d7066">รูปส่วนตัว + ย่อด้วย sharp</text>
+      <rect x="292" y="286" width="182" height="42" rx="7" fill="#fff" stroke="#c9d6ce"/><text x="383" y="305" text-anchor="middle" font-size="11" fill="#24352c">/auth/* handlers</text><text x="383" y="319" text-anchor="middle" font-size="9.5" fill="#5d7066">login signup callback confirm</text>
+
+      <!-- Supabase -->
+      <rect x="542" y="40" width="204" height="300" rx="12" fill="#eaf4ec" stroke="#2d6a4f"/>
+      <text x="644" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#1b4332">Supabase</text>
+      <rect x="556" y="76" width="176" height="62" rx="7" fill="#fff" stroke="#b7e4c7"/><text x="644" y="97" text-anchor="middle" font-size="11" font-weight="500" fill="#24352c">Auth</text><text x="644" y="112" text-anchor="middle" font-size="9.5" fill="#5d7066">อีเมล/รหัสผ่าน · JWT cookie</text><text x="644" y="126" text-anchor="middle" font-size="9.5" fill="#5d7066">ส่งอีเมลผ่าน Gmail SMTP</text>
+      <rect x="556" y="148" width="176" height="86" rx="7" fill="#fff" stroke="#b7e4c7"/><text x="644" y="169" text-anchor="middle" font-size="11" font-weight="500" fill="#24352c">Postgres + RLS</text><text x="644" y="184" text-anchor="middle" font-size="9.5" fill="#5d7066">places (สาธารณะ)</text><text x="644" y="198" text-anchor="middle" font-size="9.5" fill="#5d7066">profiles · travel_records · photos</text><text x="644" y="212" text-anchor="middle" font-size="9.5" fill="#5d7066">RPC: save_travel_record ฯลฯ</text>
+      <rect x="556" y="244" width="176" height="72" rx="7" fill="#fff" stroke="#b7e4c7"/><text x="644" y="265" text-anchor="middle" font-size="11" font-weight="500" fill="#24352c">Storage (private)</text><text x="644" y="280" text-anchor="middle" font-size="9.5" fill="#5d7066">travel-photos · profile-photos</text><text x="644" y="294" text-anchor="middle" font-size="9.5" fill="#5d7066">เจ้าของเท่านั้น</text>
+
+      <!-- arrows client<->vercel -->
+      <path d="M224 150 H278" stroke="#2d6a4f" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)" fill="none"/>
+      <text x="251" y="142" text-anchor="middle" font-size="9" fill="#2d6a4f">HTTPS</text>
+      <!-- vercel -> supabase -->
+      <path d="M488 107 H542" stroke="#2d6a4f" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)" fill="none"/>
+      <path d="M488 191 H542" stroke="#2d6a4f" stroke-width="1.6" marker-end="url(#a)" marker-start="url(#a)" fill="none"/>
+      <path d="M488 255 H542" stroke="#2d6a4f" stroke-width="1.6" marker-end="url(#a)" fill="none"/>
+      <text x="515" y="100" text-anchor="middle" font-size="9" fill="#2d6a4f">REST</text>
+      <!-- client -> supabase direct -->
+      <path d="M119 340 V372 H644 V340" stroke="#2d6a4f" stroke-width="1.6" fill="none" marker-end="url(#a)" marker-start="url(#a)" stroke-dasharray="5 3"/>
+      <text x="381" y="366" text-anchor="middle" font-size="9.5" fill="#2d6a4f">เบราว์เซอร์เรียก Supabase ตรง: อัปโหลดรูปเข้า Storage + RPC (ใช้ JWT ของผู้ใช้ ผ่าน RLS)</text>
+
+      <!-- external -->
+      <rect x="14" y="396" width="150" height="56" rx="9" fill="#fff" stroke="#8a9b91"/><text x="89" y="418" text-anchor="middle" font-size="11" font-weight="500" fill="#24352c">Stadia Maps</text><text x="89" y="434" text-anchor="middle" font-size="9.5" fill="#5d7066">กระเบื้องแผนที่ (PNG)</text>
+      <rect x="196" y="396" width="150" height="56" rx="9" fill="#fff" stroke="#8a9b91"/><text x="271" y="418" text-anchor="middle" font-size="11" font-weight="500" fill="#24352c">Gmail SMTP</text><text x="271" y="434" text-anchor="middle" font-size="9.5" fill="#5d7066">ส่งอีเมลยืนยัน/กู้รหัส</text>
+      <rect x="378" y="396" width="170" height="56" rx="9" fill="#fff" stroke="#8a9b91"/><text x="463" y="418" text-anchor="middle" font-size="11" font-weight="500" fill="#24352c">GitHub → Actions CI</text><text x="463" y="434" text-anchor="middle" font-size="9.5" fill="#5d7066">push → ตรวจ → Vercel deploy</text>
+      <rect x="580" y="396" width="166" height="56" rx="9" fill="#fff" stroke="#8a9b91"/><text x="663" y="418" text-anchor="middle" font-size="11" font-weight="500" fill="#24352c">Wikimedia Commons</text><text x="663" y="434" text-anchor="middle" font-size="9.5" fill="#5d7066">รูปอุทยาน (ตอนเตรียมข้อมูล)</text>
+      <text x="380" y="24" text-anchor="middle" font-size="12" font-weight="600" fill="#1b4332">Doen Pa — System Architecture</text>
+    </svg>
+    <figcaption>รูปที่ 1 สถาปัตยกรรมภาพรวม เส้นทึบ = ผ่านเซิร์ฟเวอร์ Next.js เส้นประ = เบราว์เซอร์เรียก Supabase โดยตรง</figcaption>
+  </figure>
+  <h3>หลักการออกแบบสำคัญ</h3>
+  <ul>
+    <li><b>Server Components เป็นค่าเริ่มต้น</b> ใช้ Client Components เฉพาะเรื่องที่ต้องใช้ API เบราว์เซอร์ (Leaflet ฟอร์ม ตัวกรอง state บัญชี)</li>
+    <li><b>ความจริงอยู่ที่ฐานข้อมูล</b> ไม่มี catalog สำรองในแอป ถ้าโหลด catalog ไม่ได้ จะแสดงหน้า “โหลดข้อมูลไม่สำเร็จ” แทนที่จะแสดงสถิติว่างเปล่าที่ผิดความจริง</li>
+    <li><b>ตรวจสิทธิ์สองชั้น</b> เซิร์ฟเวอร์ตรวจตัวตนก่อน render ข้อมูลส่วนตัว และ RLS ในฐานข้อมูลบังคับสิทธิ์อีกชั้นแม้โค้ดผิดพลาด</li>
+    <li><b>เขียนข้อมูลแบบ atomic</b> บันทึกการเดินทางและรูปที่เกี่ยวข้องถูกยืนยันเข้าฐานข้อมูลในฟังก์ชัน RPC เดียว</li>
+  </ul>
+</section>
+
+<!-- ============ 4 CONNECTIONS ============ -->
+<section class="pb">
+  <h2>4. การเชื่อมต่อและการรับส่งข้อมูล</h2>
+  <p>ตารางนี้แสดงว่าใครคุยกับใคร ส่งอะไร ด้วยการยืนยันตัวตนแบบไหน และแคชอย่างไร (ไคลเอนต์ ↔ เซิร์ฟเวอร์ ↔ อินเทอร์เน็ต) การสื่อสารทั้งหมดเป็น HTTPS</p>
+  <h3>4.1 ไคลเอนต์ ↔ เซิร์ฟเวอร์ Next.js (Vercel)</h3>
+  <table>
+    <tr><th style="width:21%">ช่องทาง</th><th style="width:12%">เมธอด</th><th>ข้อมูลที่ส่ง → ได้รับ</th><th style="width:20%">ยืนยันตัวตน/แคช</th></tr>
+    <tr><td>หน้าเว็บ <span class="mono">/search, /places/[id], /passport …</span></td><td>GET</td><td>ส่ง cookie session + query (<code>q, type, visited, from, photo</code>) → ได้ HTML/RSC ที่ render แล้ว (catalog 156 แห่งฝังมากับหน้า Search)</td><td>cookie Supabase (SameSite=Lax) · ข้อมูลส่วนตัวไม่แคชร่วม</td></tr>
+    <tr><td><span class="mono">/api/account</span></td><td>GET</td><td>ส่ง cookie → ได้ JSON: โปรไฟล์ ข้อมูลบันทึกการเดินทาง และ metadata รูป ของผู้ใช้คนนั้น (ดึงซ้ำเมื่อโฟกัสหน้าต่าง/แท็บอื่นเปลี่ยนข้อมูล)</td><td><code>getUser()</code> ยืนยันจริง · <code>no-store</code></td></tr>
+    <tr><td><span class="mono">/api/photos/[id]?owner=&amp;w=</span></td><td>GET</td><td>ส่ง id รูป + owner + ความกว้าง (256/640/1280) → ได้ไฟล์รูป (WebP ย่อแล้ว หรือต้นฉบับ)</td><td><code>getClaims()</code> + RLS · <code>private, max-age=1 ปี, immutable</code> (เบราว์เซอร์เดียวของเจ้าของ)</td></tr>
+    <tr><td><span class="mono">/auth/login, signup, resend, forgot-password, logout, complete-profile-setup, delete-account, …</span></td><td>POST (JSON)</td><td>ส่งอีเมล/รหัสผ่าน หรือคำสั่ง → ได้ JSON ผลลัพธ์ + <code>next</code> ปลายทาง; ตั้ง/ล้าง cookie session</td><td>รับเฉพาะคำขอ same-origin แบบ JSON · <code>private, no-store</code> · ส่ง <code>Clear-Site-Data: "cache"</code> เมื่อ login/logout/ลบบัญชี</td></tr>
+    <tr><td><span class="mono">/auth/confirm</span></td><td>GET</td><td>ลิงก์ในอีเมล: <code>token_hash</code> + <code>type</code> (email/recovery) → แลกเป็น session แล้ว redirect (สมัครใหม่ → ตั้งโปรไฟล์, กู้รหัส → <code>/reset-password</code>)</td><td>token ใช้ได้ครั้งเดียว; เปิดต่างอุปกรณ์ได้</td></tr>
+    <tr><td><span class="mono">/auth/callback</span></td><td>GET</td><td>รองรับลิงก์แบบ PKCE (<code>code</code>) — ต้องเปิดในเบราว์เซอร์เดียวกับที่เริ่ม จึงไม่ใช้กับอีเมลปัจจุบัน</td><td>ต้องมี code verifier cookie</td></tr>
+    <tr><td>ไฟล์ static (<span class="mono">/images/parks/{640,1280}/*.webp, ฟอนต์, thailand.json</span>)</td><td>GET</td><td>รูปอุทยาน ฟอนต์ และเส้นแบ่งจังหวัด — ไม่ผ่าน proxy</td><td>แคชด้วย CDN ของ Vercel</td></tr>
+  </table>
+
+  <h3>4.2 ไคลเอนต์ ↔ Supabase โดยตรง (เบราว์เซอร์ → อินเทอร์เน็ต)</h3>
+  <table>
+    <tr><th style="width:27%">การทำงาน</th><th>รายละเอียด</th></tr>
+    <tr><td>อัปโหลดรูปเข้า Storage</td><td>เบราว์เซอร์ลบ EXIF/XMP/GPS ออกก่อน (<code>strip-metadata.ts</code>) แล้ว upload ไปที่ <code>travel-photos/&lt;uid&gt;/record-photos/&lt;id&gt;.ext</code> หรือ <code>profile-photos</code> ด้วย JWT ของผู้ใช้ — policy บังคับให้เขียนได้เฉพาะโฟลเดอร์ของตัวเอง</td></tr>
+    <tr><td>RPC <code>save_travel_record</code></td><td>ส่ง JSON ของบันทึก + รายการรูปที่อัปโหลดแล้ว ฟังก์ชันตรวจว่าไฟล์อยู่ใน Storage ขนาดและชนิดตรงกันจริง ก่อน insert ทั้งหมดในธุรกรรมเดียว; ID ที่ส่งซ้ำ (retry) ไม่สร้างซ้ำ</td></tr>
+    <tr><td>RPC <code>save_account_profile</code></td><td>บันทึกชื่อ/username/bio พร้อม metadata ของอวตาร์/ปก แบบ atomic แล้วคืนรายการไฟล์เก่าที่ต้องลบ</td></tr>
+    <tr><td>ลบไฟล์เก่า (cleanup)</td><td>ลบไฟล์ใน Storage หลังข้อมูลใน DB เปลี่ยนแล้วเท่านั้น (policy ไม่ให้ลบไฟล์ที่ยังถูกอ้างอิง)</td></tr>
+  </table>
+
+  <h3>4.3 เซิร์ฟเวอร์ ↔ Supabase และบริการอื่น</h3>
+  <table>
+    <tr><th style="width:27%">การเชื่อมต่อ</th><th>รายละเอียด</th></tr>
+    <tr><td>อ่าน catalog <code>places</code></td><td>REST ด้วย publishable key (สิทธิ์ SELECT อย่างเดียว) <code>no-store</code> แบ่งหน้า 500 แถว timeout 10 วินาที ตรวจรูปแบบข้อมูลก่อนใช้ แคชหนึ่ง snapshot ต่อหนึ่ง request ด้วย React <code>cache</code></td></tr>
+    <tr><td>อ่านข้อมูลบัญชี</td><td>ด้วย SSR client ที่ถือ session ผู้ใช้ (ผ่าน RLS) อ่านเป็นหน้า ๆ ตามจำนวนจริง เพื่อไม่ให้เพดานแถวของโปรเจคตัดข้อมูลผู้ใช้</td></tr>
+    <tr><td>Supabase Auth → Gmail SMTP</td><td>Supabase ส่งอีเมลยืนยัน/กู้รหัสผ่านผ่าน SMTP ที่ตั้งไว้ (เทมเพลตภาษาไทยแก้ที่ Supabase dashboard ไม่ได้ deploy ไปกับ Vercel)</td></tr>
+  </table>
+
+  <h3>4.4 เบราว์เซอร์ ↔ บริการภายนอก</h3>
+  <table>
+    <tr><th style="width:27%">บริการ</th><th>รายละเอียด</th></tr>
+    <tr><td>Stadia Maps</td><td>Leaflet ขอกระเบื้อง PNG จาก <code>tiles.stadiamaps.com</code> ส่ง Referer ของเว็บให้ตรวจโดเมน (แคชได้ 24 ชั่วโมง)</td></tr>
+    <tr><td>นโยบาย CSP</td><td>จำกัดแหล่งที่เบราว์เซอร์ติดต่อได้: <code>img-src 'self' data: blob: tiles.stadiamaps.com</code>, <code>connect-src 'self' https://*.supabase.co</code>, ห้าม frame, ห้าม object</td></tr>
+  </table>
+  <div class="box note"><b>สรุปเส้นทางที่ “ไม่” ผ่านเซิร์ฟเวอร์เรา:</b> ไบต์ของรูปส่วนตัวตอนอัปโหลด (เบราว์เซอร์ → Supabase Storage) และการเรียก RPC ตอนบันทึก ส่วนตอน “ดู” รูป ไบต์ผ่าน <span class="mono">/api/photos</span> เสมอ เพื่อให้เซิร์ฟเวอร์ตรวจสิทธิ์ก่อนและควบคุมการแคช</div>
+</section>
+
+<!-- ============ 5 FILES ============ -->
+<section class="pb">
+  <h2>5. โครงสร้างไฟล์และหน้าที่ของแต่ละไฟล์</h2>
+  <p>หน้า (pages) และ CSS ส่วนกลางอยู่ใน <code>app/</code> ที่ราก ส่วนคอมโพเนนต์ บริการ ข้อมูล ชนิดข้อมูล และ hooks อยู่ใน <code>src/</code> (ห้ามสร้าง <code>src/app/</code> ซ้ำ)</p>
+  <h3>5.1 รากโปรเจค และ app/ (เส้นทางและ API)</h3>
+  <table>
+    <tr><th style="width:36%">ไฟล์</th><th>หน้าที่</th></tr>
+    <tr><td><code>AGENTS.md</code> / <code>CLAUDE.md</code></td><td>ข้อตกลงการทำงานและพฤติกรรมที่ยอมรับแล้วของโปรเจค (แหล่งอ้างอิงหลัก)</td></tr>
+    <tr><td><code>proxy.ts</code> + <code>src/lib/supabase/proxy.ts</code></td><td>รีเฟรช session cookie ก่อนทุกหน้า; ถ่ายทอด cookie/แคช header ไปยัง response</td></tr>
+    <tr><td><code>next.config.ts</code></td><td>Security headers (CSP, X-Frame-Options, nosniff, Referrer/Permissions policy) และ allowed dev origins</td></tr>
+    <tr><td><code>app/layout.tsx</code>, <code>globals.css</code></td><td>โครงหน้าหลัก ผู้ให้บริการ (AuthProvider, catalog, loading) และ token ดีไซน์/Liquid Glass</td></tr>
+    <tr><td><code>app/page.tsx</code></td><td>redirect <code>/</code> → <code>/search</code></td></tr>
+    <tr><td><code>app/search/page.tsx</code></td><td>โหลด catalog ฝั่งเซิร์ฟเวอร์ แล้ว render การ์ดสถานที่</td></tr>
+    <tr><td><code>app/places/[id]/page.tsx</code></td><td>หน้ารายละเอียดสถานที่ (ID ไม่พบ → <code>notFound()</code>); รับ <code>from=passport|profile</code></td></tr>
+    <tr><td><code>app/records/new/page.tsx</code></td><td>ฟอร์มประทับตรา (ต้องล็อกอินจริง)</td></tr>
+    <tr><td><code>app/passport|map|stats|profile/page.tsx</code></td><td>หน้า Passport / แผนที่ / สถิติ / โปรไฟล์ (ผู้ที่ยังไม่ล็อกอินเห็นหน้า guest)</td></tr>
+    <tr><td><code>app/profile/edit/page.tsx</code></td><td>แก้ไขโปรไฟล์ และตั้งค่าโปรไฟล์ครั้งแรกหลังสมัคร</td></tr>
+    <tr><td><code>app/login|signup|forgot-password|reset-password/page.tsx</code></td><td>หน้ากลุ่มยืนยันตัวตน</td></tr>
+    <tr><td><code>app/api/account/route.ts</code></td><td>GET ข้อมูลบัญชีของผู้ใช้ที่ล็อกอิน</td></tr>
+    <tr><td><code>app/api/photos/[id]/route.ts</code></td><td>ส่งรูปส่วนตัวพร้อมตรวจสิทธิ์ ย่อด้วย sharp และตั้งแคช</td></tr>
+    <tr><td><code>app/auth/[action]/route.ts</code></td><td>ตัวจัดการ POST ของ login, signup, resend, forgot-password, logout, ตั้งโปรไฟล์เสร็จ, ลบบัญชี, เปลี่ยนรหัสผ่าน</td></tr>
+    <tr><td><code>app/auth/callback</code>, <code>app/auth/confirm</code></td><td>แลก code/token_hash จากลิงก์อีเมลเป็น session</td></tr>
+    <tr><td><code>app/global-error.tsx</code></td><td>หน้า error รวม (เช่น อ่านข้อมูลบัญชีครั้งแรกไม่สำเร็จ)</td></tr>
+  </table>
+
+  <h3>5.2 src/lib (โครงสร้างพื้นฐาน)</h3>
+  <table>
+    <tr><th style="width:36%">ไฟล์</th><th>หน้าที่</th></tr>
+    <tr><td><code>lib/supabase/{client,server,route,proxy,config}.ts</code></td><td>สร้าง Supabase client สำหรับเบราว์เซอร์ / Server Component / Route Handler / proxy และอ่านค่า URL+key จาก env</td></tr>
+    <tr><td><code>lib/auth/server.ts</code>, <code>browser.ts</code></td><td><code>getAuthUser</code> (ยืนยันด้วย getUser), บังคับล็อกอิน (<code>requireAuthUser</code>), สร้างแถว profile ที่ขาด</td></tr>
+    <tr><td><code>lib/auth/redirects.ts</code>, <code>profile-setup.ts</code></td><td>อนุญาตเฉพาะปลายทาง redirect ที่ปลอดภัย · กติกาตั้งโปรไฟล์ครั้งแรก (ห้ามใช้ชื่อ/username ตั้งต้น)</td></tr>
+    <tr><td><code>lib/account/server.ts</code>, <code>read-rows.ts</code></td><td>โหลดโปรไฟล์/บันทึก/รูปของบัญชีแบบแบ่งหน้าตามจำนวนจริง</td></tr>
+    <tr><td><code>lib/account/browser.ts</code></td><td><b>Account store</b> ฝั่งเบราว์เซอร์: snapshot, refresh, อัปโหลดรูป, เรียก RPC, สัญญาณข้ามแท็บผ่าน localStorage</td></tr>
+    <tr><td><code>lib/images/{strip-metadata,image-import}.ts</code></td><td>ลบ EXIF/GPS, ตรวจชนิด/ขนาด, อ่านไฟล์เป็น data URL</td></tr>
+    <tr><td><code>lib/use-*.ts</code>, <code>utils.ts</code></td><td>hooks: ผู้ใช้ปัจจุบัน, read model ของบันทึก, นำเข้ารูป; ฟังก์ชันเล็ก ๆ</td></tr>
+  </table>
+
+  <h3>5.3 src/domain, services, data, types (ตรรกะล้วนและข้อมูล)</h3>
+  <table>
+    <tr><th style="width:36%">ไฟล์</th><th>หน้าที่</th></tr>
+    <tr><td><code>types/index.ts</code></td><td>ชนิดข้อมูลหลัก: <code>Place</code> (+ <code>PlaceImage</code>), <code>TravelRecord</code>, Region, PlaceType</td></tr>
+    <tr><td><code>services/place.service.ts</code>, <code>place-catalog-source.ts</code></td><td>โหลด catalog จาก Supabase (<code>server-only</code>) พร้อมตรวจชนิดข้อมูลและแบ่งหน้า</td></tr>
+    <tr><td><code>domain/place-catalog.ts</code></td><td>สร้างดัชนีค้นหา (normalize ข้อความครั้งเดียวต่อ snapshot), ตัวนับอุทยานที่เข้าเกณฑ์</td></tr>
+    <tr><td><code>domain/travel-record-read-model.ts</code></td><td>รวม catalog + บันทึกของผู้ใช้ → สถิติ รูปรวมต่อสถานที่ ข้อมูลแผนที่ (ไม่คำนวณซ้ำถ้าข้อมูลเดิม)</td></tr>
+    <tr><td><code>domain/account-data.ts</code>, <code>place-display.ts</code>, <code>place-image.ts</code></td><td>ตรวจรูปแบบ snapshot บัญชี / ป้ายประเภท ภาค / URL และเครดิตรูปอุทยาน</td></tr>
+    <tr><td><code>data/place-identities.ts</code>, <code>archived-places.ts</code></td><td>ตารางนามแฝงของ ID เก่า (เช่น สามร้อยยอด) และข้อมูลสถานที่ที่อ่านย้อนหลังได้แต่ไม่แสดงในการค้นหา</td></tr>
+  </table>
+
+  <h3>5.4 src/components (UI แยกตามฟีเจอร์)</h3>
+  <table>
+    <tr><th style="width:21%">โฟลเดอร์</th><th>หน้าที่ของคอมโพเนนต์หลัก</th></tr>
+    <tr><td><code>navigation/</code></td><td>TopNav (เดสก์ท็อป), BottomNav (มือถือ), <code>activeNav.ts</code> (ลิงก์/แท็บที่ active), NavigationState, RouteLoadingTransition (หน้าโหลดนักเดินป่า)</td></tr>
+    <tr><td><code>search/</code></td><td>SearchHero, SearchBar, ตัวกรองประเภท/เคยไปแล้ว (แถบ sticky พร้อม pill เลื่อน), <code>useSearchFilters</code>, SearchResults, PlaceList, PlaceCard (Server Component), ปุ่ม Stamp, VisitCount</td></tr>
+    <tr><td><code>place/</code></td><td>CatalogContent/Provider (ส่ง catalog ลง client), PlaceDetailContent, PlaceGallery + PhotoLightbox, PlaceInfo/Chips/Description, PlaceRecord, PlaceActions, BackButton (ใช้ href ชัดเจน ไม่ใช้ history)</td></tr>
+    <tr><td><code>records/</code></td><td>TravelRecordForm (วันที่ รูป โน้ต ดาว + ตราตัวอย่าง), PhotoUploader</td></tr>
+    <tr><td><code>passport/</code>, <code>stats/</code>, <code>profile/</code></td><td>การ์ดบันทึก; ภาพรวมสถิติ วงแหวนความคืบหน้า จังหวัด/ภาค/ประเภท/อุทยาน; ส่วนหัวโปรไฟล์ แกลเลอรีรูป ฟอร์มแก้ไข</td></tr>
+    <tr><td><code>map/</code></td><td>ThailandMap (Leaflet), DynamicThailandMap (โหลดไม่ใช้ SSR), MapOverview, SelectedPlaceCard, ป้ายชื่อจังหวัด</td></tr>
+    <tr><td><code>auth/</code>, <code>ui/</code></td><td>AuthProvider/Panel/LoginForm/LogoutButton; ส่วนประกอบกลาง: InkStamp (ตราหมึก), HikerLoader, PlaceTypeIcon, StatCard, GuestPrivatePage</td></tr>
+  </table>
+
+  <h3>5.5 supabase/, data/, scripts/, tests/, docs/</h3>
+  <table>
+    <tr><th style="width:36%">ไฟล์/โฟลเดอร์</th><th>หน้าที่</th></tr>
+    <tr><td><code>supabase/migrations/*.sql</code></td><td>ประวัติโครงสร้างฐานข้อมูล: สร้าง places, ข้อมูลส่วนตัว+RLS, Storage, ลบบัญชีตัวเอง, กฎกู้รหัสผ่าน, คอลัมน์รูปอุทยาน</td></tr>
+    <tr><td><code>supabase/seed.sql</code></td><td>สร้างจาก CSV โดยสคริปต์ (<code>on conflict … do update</code>, รันซ้ำได้)</td></tr>
+    <tr><td><code>supabase/templates/*.html</code>, <code>config.toml</code></td><td>เทมเพลตอีเมลยืนยัน/กู้รหัสผ่าน (ต้องวางใน dashboard ด้วยเอง) และตั้งค่า Supabase ในเครื่อง</td></tr>
+    <tr><td><code>data/national-parks-156.csv</code></td><td>ต้นฉบับ catalog ที่ผ่านการตรวจ (รวมคอลัมน์รูปและเครดิต 5 คอลัมน์)</td></tr>
+    <tr><td><code>data/place-photos.json</code></td><td>ผลค้นรูปจาก Commons และบันทึกการคัดทิ้ง (<code>approved: false</code>)</td></tr>
+    <tr><td><code>public/images/parks/{640,1280}/</code></td><td>ไฟล์ WebP รูปอุทยาน 123 แห่ง (รวมราว 34 MB)</td></tr>
+    <tr><td><code>scripts/import-national-parks.py</code></td><td>ตรวจ CSV → สร้าง <code>seed.sql</code>; <code>--check</code> ตรวจว่า seed ล้าสมัยหรือไม่; <code>--json</code> ให้ข้อมูลกับเทสต์</td></tr>
+    <tr><td><code>scripts/find|build-place-photos.mjs</code>, <code>merge-place-photos.py</code></td><td>ค้นรูป → ดาวน์โหลดและย่อ → เติมคอลัมน์ลง CSV</td></tr>
+    <tr><td><code>scripts/scan-secrets.mjs</code>, <code>test.mjs</code>, <code>setup-auth-test-users.mjs</code></td><td>ตรวจความลับหลุดใน git · ตัวรัน test · สร้างบัญชีทดสอบ QA ผ่าน Admin API</td></tr>
+    <tr><td><code>tests/*.test.ts</code>, <code>tests/e2e/*.spec.ts</code></td><td>unit/DB test (PGlite: migration, seed, RLS, backup/restore) และ e2e Playwright</td></tr>
+    <tr><td><code>.github/workflows/ci.yml</code></td><td>ขั้นตอน CI</td></tr>
+    <tr><td><code>docs/*.md</code></td><td>คู่มือเชิงลึก: places-backend, private-data-backend, supabase-setup, security, testing ฯลฯ</td></tr>
+  </table>
+</section>
+
+<!-- ============ 6 DATA MODEL ============ -->
+<section class="pb">
+  <h2>6. โมเดลข้อมูลและความสัมพันธ์ของข้อมูล</h2>
+  <figure>
+    <svg viewBox="0 0 760 420" role="img" aria-label="ER diagram">
+      <defs><marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2d6a4f"/></marker></defs>
+      <text x="380" y="22" text-anchor="middle" font-size="12" font-weight="600" fill="#1b4332">ความสัมพันธ์ของข้อมูล (ER)</text>
+      <!-- auth.users -->
+      <rect x="290" y="38" width="180" height="62" rx="8" fill="#fff" stroke="#1b4332" stroke-width="1.6"/><rect x="290" y="38" width="180" height="22" rx="8" fill="#1b4332"/><text x="380" y="54" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">auth.users (Supabase Auth)</text>
+      <text x="300" y="76" font-size="9.5" fill="#24352c">id (uuid) · email · metadata</text><text x="300" y="90" font-size="9.5" fill="#5d7066">profile_setup_pending</text>
+      <!-- profiles -->
+      <rect x="20" y="150" width="200" height="106" rx="8" fill="#fff" stroke="#2d6a4f"/><rect x="20" y="150" width="200" height="22" rx="8" fill="#2d6a4f"/><text x="120" y="166" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">profiles</text>
+      <text x="30" y="190" font-size="9.5" fill="#24352c">user_id (PK, FK→users)</text><text x="30" y="204" font-size="9.5" fill="#24352c">name · username · bio</text><text x="30" y="218" font-size="9.5" fill="#24352c">created_at</text><text x="30" y="240" font-size="9" fill="#5d7066">RLS: เจ้าของเท่านั้น</text>
+      <!-- travel_records -->
+      <rect x="280" y="150" width="200" height="124" rx="8" fill="#fff" stroke="#2d6a4f"/><rect x="280" y="150" width="200" height="22" rx="8" fill="#2d6a4f"/><text x="380" y="166" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">travel_records</text>
+      <text x="290" y="190" font-size="9.5" fill="#24352c">(user_id, id) PK · FK→users</text><text x="290" y="204" font-size="9.5" fill="#24352c">place_id (ไม่มี FK) · visited_at</text><text x="290" y="218" font-size="9.5" fill="#24352c">note · rating 0–5 · created_at</text><text x="290" y="240" font-size="9" fill="#5d7066">index: (user_id, visited_at desc)</text><text x="290" y="256" font-size="9" fill="#5d7066">RLS: เจ้าของเท่านั้น</text>
+      <!-- photos -->
+      <rect x="540" y="150" width="200" height="146" rx="8" fill="#fff" stroke="#2d6a4f"/><rect x="540" y="150" width="200" height="22" rx="8" fill="#2d6a4f"/><text x="640" y="166" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">photos</text>
+      <text x="550" y="190" font-size="9.5" fill="#24352c">(user_id, id) PK</text><text x="550" y="204" font-size="9.5" fill="#24352c">kind: travel | avatar | cover</text><text x="550" y="218" font-size="9.5" fill="#24352c">travel_record_id (FK) · position 0–4</text><text x="550" y="232" font-size="9.5" fill="#24352c">object_path (unique) · mime_type</text><text x="550" y="246" font-size="9.5" fill="#24352c">size_bytes</text><text x="550" y="268" font-size="9" fill="#5d7066">RLS: เจ้าของเท่านั้น</text>
+      <!-- places -->
+      <rect x="20" y="318" width="270" height="90" rx="8" fill="#fff" stroke="#8a9b91" stroke-width="1.4"/><rect x="20" y="318" width="270" height="22" rx="8" fill="#5d7066"/><text x="155" y="334" text-anchor="middle" font-size="11" font-weight="600" fill="#fff">places (catalog 156 แห่ง)</text>
+      <text x="30" y="354" font-size="9.5" fill="#24352c">id (text PK) · name · location · province · region</text><text x="30" y="368" font-size="9.5" fill="#24352c">type · is_national_park · lat/long · altitude · distance</text><text x="30" y="382" font-size="9.5" fill="#24352c">image_path/author/license/license_url/source_url</text><text x="30" y="398" font-size="9" fill="#5d7066">อ่านได้สาธารณะ (SELECT) · เขียนผ่านการนำเข้าเท่านั้น</text>
+      <!-- storage -->
+      <rect x="400" y="330" width="340" height="68" rx="8" fill="#eaf4ec" stroke="#2d6a4f" stroke-dasharray="5 3"/><text x="570" y="350" text-anchor="middle" font-size="11" font-weight="600" fill="#1b4332">Storage (private buckets)</text>
+      <text x="570" y="366" text-anchor="middle" font-size="9.5" fill="#24352c">travel-photos/&lt;uid&gt;/record-photos/&lt;id&gt;.ext (≤5 MB)</text><text x="570" y="381" text-anchor="middle" font-size="9.5" fill="#24352c">profile-photos/&lt;uid&gt;/profile/&lt;id&gt;.ext (≤1 MB)</text>
+      <!-- relations -->
+      <path d="M335 100 V125 H120 V150" fill="none" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#e)"/>
+      <path d="M380 100 V150" fill="none" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#e)"/>
+      <path d="M425 100 V125 H640 V150" fill="none" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#e)"/>
+      <text x="232" y="120" font-size="9" fill="#2d6a4f">1 : 1</text><text x="388" y="128" font-size="9" fill="#2d6a4f">1 : N</text><text x="520" y="120" font-size="9" fill="#2d6a4f">1 : N</text>
+      <path d="M480 212 H540" fill="none" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#e)"/><text x="510" y="204" text-anchor="middle" font-size="9" fill="#2d6a4f">1 : 0..5</text>
+      <path d="M280 236 H230 V318" fill="none" stroke="#8a9b91" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#e)"/><text x="244" y="290" font-size="9" fill="#5d7066">place_id อ้างอิงเชิงตรรกะ</text>
+      <path d="M640 296 V330" fill="none" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#e)"/><text x="648" y="316" font-size="9" fill="#5d7066">object_path</text>
+    </svg>
+    <figcaption>รูปที่ 2 ความสัมพันธ์ของข้อมูล เส้นทึบ = foreign key เส้นประสีเทา = อ้างอิงเชิงตรรกะ (ไม่มี FK) เส้นประสีเขียว = ชี้ไปยังไฟล์ใน Storage</figcaption>
+  </figure>
+  <h3>จุดออกแบบที่ควรรู้</h3>
+  <ul>
+    <li><b><code>travel_records.place_id</code> ไม่มี foreign key ไป <code>places</code> โดยตั้งใจ</b> เพื่อให้บันทึกเก่าที่อ้าง ID ซึ่งเปลี่ยนชื่อหรือถูกเลิกใช้ ยังอ่านได้ ไม่ทำให้ catalog ใหม่ทำลายข้อมูลผู้ใช้ มีตารางนามแฝงใน <code>place-identities.ts</code> และข้อมูลสถานที่ย้อนหลังใน <code>archived-places.ts</code></li>
+    <li><b>ID ของระเบียนผู้ใช้เป็นข้อความที่ผูกกับบัญชี</b> (<code>(user_id, id)</code> เป็น primary key) ส่ง ID ซ้ำหมายถึง retry จึงไม่สร้างบันทึกซ้ำ</li>
+    <li><b>รูปต่อบันทึกจำกัด 5 รูป</b> บังคับที่ฐานข้อมูล (<code>position</code> 0–4 และ unique index) ส่วนสถานที่หนึ่งแห่งแสดงรูปรวมจากหลายบันทึกได้ไม่จำกัด</li>
+    <li><b>รูปอุทยาน (catalog) ไม่อยู่ใน Storage</b> เก็บเป็นไฟล์ static ใน <code>public/images/parks/</code> โดย DB เก็บเฉพาะชื่อไฟล์และเครดิต</li>
+    <li><b>สถิติไม่ได้เก็บในฐานข้อมูล</b> คำนวณทุกครั้งจากบันทึกของผู้ใช้ + catalog (นับสถานที่/จังหวัด/อุทยานที่ไม่ซ้ำ)</li>
+    <li>ชนิด <code>Place.type</code> มี 4 ค่า (mountain, waterfall, cave, island) ส่วนการนับ “อุทยานแห่งชาติ” ใช้ฟิลด์ <code>is_national_park</code> แยกต่างหาก ไม่ขึ้นกับประเภทที่แสดง</li>
+  </ul>
+</section>
+
+<!-- ============ 7 DATA FLOW ============ -->
+<section>
+  <h2>7. Data Flow</h2>
+  <h3>7.1 การอ่านข้อมูล (Read path)</h3>
+  <figure>
+    <svg viewBox="0 0 760 300" role="img" aria-label="การอ่านข้อมูล">
+      <defs><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2d6a4f"/></marker></defs>
+      <text x="380" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#1b4332">การอ่านข้อมูล 2 เส้นทาง</text>
+      <text x="14" y="52" font-size="11" font-weight="600" fill="#2d6a4f">A. Catalog สถานที่ (สาธารณะ)</text>
+      <g font-size="10.5" text-anchor="middle" fill="#24352c">
+        <rect x="14" y="62" width="130" height="50" rx="8" fill="#eaf4ec" stroke="#2d6a4f"/><text x="79" y="83">เบราว์เซอร์</text><text x="79" y="99" font-size="9" fill="#5d7066">เปิด /search</text>
+        <rect x="190" y="62" width="150" height="50" rx="8" fill="#f3f6f4" stroke="#1b4332"/><text x="265" y="83">Server Component</text><text x="265" y="99" font-size="9" fill="#5d7066">getPlaceCatalog() (cache/request)</text>
+        <rect x="386" y="62" width="150" height="50" rx="8" fill="#eaf4ec" stroke="#2d6a4f"/><text x="461" y="83">Postgres: places</text><text x="461" y="99" font-size="9" fill="#5d7066">SELECT ทีละ 500 แถว</text>
+        <rect x="582" y="62" width="164" height="50" rx="8" fill="#fff" stroke="#8a9b91"/><text x="664" y="83">HTML + catalog</text><text x="664" y="99" font-size="9" fill="#5d7066">+ รูป /images/parks/640/…</text>
+      </g>
+      <path d="M144 87 H190" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#r)"/><path d="M340 87 H386" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#r)"/><path d="M536 87 H582" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#r)"/>
+      <text x="14" y="150" font-size="11" font-weight="600" fill="#2d6a4f">B. ข้อมูลบัญชีส่วนตัว (ต้องล็อกอิน)</text>
+      <g font-size="10.5" text-anchor="middle" fill="#24352c">
+        <rect x="14" y="160" width="130" height="62" rx="8" fill="#eaf4ec" stroke="#2d6a4f"/><text x="79" y="182">Account store</text><text x="79" y="198" font-size="9" fill="#5d7066">โหลด / focus / ข้ามแท็บ</text><text x="79" y="211" font-size="9" fill="#5d7066">→ refresh</text>
+        <rect x="190" y="160" width="150" height="62" rx="8" fill="#f3f6f4" stroke="#1b4332"/><text x="265" y="182">GET /api/account</text><text x="265" y="198" font-size="9" fill="#5d7066">getUser() ยืนยันตัวตน</text><text x="265" y="211" font-size="9" fill="#5d7066">no-store</text>
+        <rect x="386" y="160" width="150" height="62" rx="8" fill="#eaf4ec" stroke="#2d6a4f"/><text x="461" y="182">profiles · travel_records</text><text x="461" y="198">· photos (RLS)</text><text x="461" y="211" font-size="9" fill="#5d7066">แบ่งหน้าตามจำนวนจริง</text>
+        <rect x="582" y="160" width="164" height="62" rx="8" fill="#fff" stroke="#8a9b91"/><text x="664" y="182">JSON → snapshot</text><text x="664" y="198" font-size="9" fill="#5d7066">read model รวมกับ catalog</text><text x="664" y="211" font-size="9" fill="#5d7066">→ Passport / Stats / Map</text>
+      </g>
+      <path d="M144 190 H190" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#r)"/><path d="M340 190 H386" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#r)"/><path d="M536 190 H582" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#r)"/>
+      <rect x="14" y="246" width="732" height="40" rx="8" fill="#fff4de" stroke="#d08a1a"/>
+      <text x="26" y="263" font-size="10" fill="#6b4300">รูปส่วนตัว: เบราว์เซอร์ขอ /api/photos/&lt;id&gt;?owner=&lt;uid&gt;&amp;w=640 → เซิร์ฟเวอร์ตรวจ JWT + RLS → ดาวน์โหลดจาก Storage → ย่อเป็น WebP → ส่งกลับ (แคชในเบราว์เซอร์เจ้าของ 1 ปี)</text>
+      <text x="26" y="278" font-size="10" fill="#6b4300">ถ้าอ่านครั้งแรกล้มเหลว จะขึ้นหน้า error รวม ถ้าล้มเหลวภายหลังจะคง snapshot ล่าสุดไว้และแจ้งให้ลองใหม่</text>
+    </svg>
+    <figcaption>รูปที่ 3 เส้นทางการอ่าน: catalog สาธารณะ (A) และข้อมูลส่วนตัว (B)</figcaption>
+  </figure>
+
+  <h3>7.2 การเขียนข้อมูล (Write path) — บันทึกการเดินทาง</h3>
+  <ol>
+    <li>ผู้ใช้เลือกรูป (JPG/PNG/WebP ≤5 MB, ≤5 รูป) → เบราว์เซอร์ <b>ลบ EXIF/GPS</b> และแสดงตัวอย่าง</li>
+    <li>เมื่อกดบันทึก account store <b>ยืนยันตัวตนปัจจุบัน</b> แล้วอัปโหลดรูปเข้า <code>travel-photos/&lt;uid&gt;/…</code> โดยตรง</li>
+    <li>เรียก RPC <code>save_travel_record(record, photos)</code> — ฐานข้อมูลตรวจว่าไฟล์อยู่จริง ขนาด/ชนิดตรง แล้ว insert บันทึก + แถวรูปในธุรกรรมเดียว (ID เดิม = no-op)</li>
+    <li>สำเร็จ: ส่งสัญญาณข้ามแท็บ (localStorage) → รีเฟรช snapshot → ไปหน้า Passport</li>
+    <li>ล้มเหลว: ฟอร์มยังเก็บร่างไว้; ระบบพยายามลบไฟล์ที่อัปโหลดไปแล้วแต่ไม่ได้ผูก (ถ้าลบไม่ได้อาจเหลือไฟล์ค้างส่วนตัว ซึ่งต้องล้างภายหลัง)</li>
+  </ol>
+  <h3>7.3 การไหลของข้อมูล catalog (ก่อนถึงผู้ใช้)</h3>
+  <pre>CSV (data/national-parks-156.csv)        ← แก้ที่นี่ที่เดียว (รวมคอลัมน์รูป/เครดิต)
+   │  pnpm import:places  (Python: ตรวจ → สร้าง SQL)
+   ▼
+supabase/seed.sql                          ← สร้างอัตโนมัติ ห้ามแก้มือ
+   │  pnpm db:seed:places  (supabase db query --linked)
+   ▼
+public.places (Postgres)  ──REST/SELECT──▶  Server Component  ──▶  HTML ที่ผู้ใช้เห็น
+public/images/parks/*.webp ──────────── (ไฟล์ static ผ่าน CDN)  ──▶  การ์ด/หน้ารายละเอียด</pre>
+</section>
+
+<!-- ============ 8 WORKFLOW ============ -->
+<section class="pb">
+  <h2>8. Workflow</h2>
+  <h3>8.1 ขั้นตอนพัฒนาและส่งมอบ</h3>
+  <ol>
+    <li>แก้โค้ดในเครื่อง (<code>pnpm dev</code>; ถ้ามี dev server ของผู้ใช้อยู่แล้วให้ใช้ตัวเดิม) — dev server ใช้ฐานข้อมูล Supabase ชุดเดียวกับ production</li>
+    <li>ตรวจ: <code>pnpm exec tsc --noEmit</code>, <code>pnpm lint</code>, <code>git diff --check</code>, <code>pnpm test</code> (ต้อง Node 22+), <code>pnpm build</code> เมื่อจำเป็น</li>
+    <li>ตรวจหน้าจริงบนเดสก์ท็อปและมือถือเมื่อแก้ UI (อ่านโค้ดหรือ lint อย่างเดียวไม่นับเป็นการตรวจภาพ)</li>
+    <li>commit แยกตามประเภท <code>feat:</code> <code>fix:</code> <code>style:</code> <code>copy:</code> <code>docs:</code> และอัปเดต <code>AGENTS.md</code> เมื่อพฤติกรรมหรือการไหลของข้อมูลเปลี่ยน</li>
+    <li><code>git push</code> → GitHub Actions CI → Vercel deploy จาก <code>main</code></li>
+  </ol>
+  <h3>8.2 CI (<code>.github/workflows/ci.yml</code>)</h3>
+  <table>
+    <tr><th style="width:5%">#</th><th style="width:40%">ขั้นตอน</th><th>ทำอะไร</th></tr>
+    <tr><td>1</td><td>Secret scan</td><td>ตรวจว่าไม่มีรหัส/คีย์หลุดเข้า git</td></tr>
+    <tr><td>2</td><td>Dependency audit (production, high+)</td><td>ล้ม CI ถ้ามีช่องโหว่ระดับ high ขึ้นไปใน dependency ที่ใช้จริง (เคยจับช่องโหว่ Next.js ได้เมื่อ 23 ต.ค.)</td></tr>
+    <tr><td>3</td><td>Dependency audit (ทั้งหมด)</td><td>แจ้งเตือนอย่างเดียว (ช่องโหว่ dev-only เช่น <code>braces</code> ยังเปิดอยู่)</td></tr>
+    <tr><td>4–5</td><td><code>tsc --noEmit</code>, <code>lint</code></td><td>ตรวจชนิดข้อมูลและกฎโค้ด</td></tr>
+    <tr><td>6</td><td>Unit/migration/RLS/backup-restore</td><td>รัน migration และ seed จริงบน PGlite, ตรวจสิทธิ์ RLS, ทดสอบสำรอง/กู้คืน</td></tr>
+    <tr><td>7</td><td><code>pnpm build</code></td><td>build production</td></tr>
+  </table>
+  <p>หมายเหตุ: การ push หลาย commit รวดเดียวทำให้ CI ทำงานทีละ commit ถ้า commit กลางทางไม่สมบูรณ์ (เช่น ลบไฟล์แต่ยังมี import ค้าง) CI ของ commit นั้นจะแดงชั่วคราว (เคยเกิดขึ้นเมื่อ 25 ต.ค.)</p>
+
+  <h3>8.3 การเปลี่ยนโครงสร้างฐานข้อมูล</h3>
+  <ol>
+    <li>เขียนไฟล์ migration ใหม่ใน <code>supabase/migrations/</code> พร้อมเทสต์ PGlite</li>
+    <li><code>supabase db push --linked --dry-run</code> ตรวจรายการที่จะถูก apply แล้วจึง <code>db push --linked</code></li>
+    <li>ถ้าข้อมูลมาจาก CSV: <code>pnpm import:places</code> → <code>pnpm db:seed:places</code></li>
+    <li><b>apply migration ก่อน แล้วค่อย deploy โค้ดที่อ่านคอลัมน์ใหม่</b> ไม่เช่นนั้นการโหลด catalog จะล้ม (<code>column … does not exist</code>)</li>
+  </ol>
+  <h3>8.4 การเพิ่ม/อัปเดตรูปอุทยาน</h3>
+  <pre>node scripts/find-place-photos.mjs      # ค้นผู้สมัครจาก Commons → data/place-photos.json
+(ตรวจด้วยตา ตั้ง "approved": false กับรูปที่ไม่เหมาะ)
+node scripts/build-place-photos.mjs     # ดาวน์โหลด + ย่อ 640/1280 → public/images/parks/
+python3 scripts/merge-place-photos.py   # เติมคอลัมน์ image_* ลง CSV
+pnpm import:places && pnpm db:seed:places</pre>
+  <h3>8.5 การตั้งค่าอีเมล (ทำที่ dashboard)</h3>
+  <p>แก้เทมเพลตใน Supabase → Authentication → Emails ทุกครั้งที่ไฟล์ใน <code>supabase/templates/</code> เปลี่ยน (Vercel ไม่ deploy ให้) ลิงก์ในอีเมลต้องเป็นแบบ <code>{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email|recovery</code> และ Site URL ต้องเป็น <code>https://doen-pa.vercel.app</code></p>
+</section>
+
+<!-- ============ 9 SCENARIOS ============ -->
+<section class="pb">
+  <h2>9. สถานการณ์ใช้งาน (Scenarios)</h2>
+  <h3>สถานการณ์ A: ผู้ใช้ใหม่สมัครและตั้งโปรไฟล์</h3>
+  <figure>
+    <svg viewBox="0 0 760 390" role="img" aria-label="ลำดับการสมัคร">
+      <defs><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1b4332"/></marker></defs>
+      <g font-size="11" font-weight="600" text-anchor="middle" fill="#fff">
+        <rect x="14" y="14" width="130" height="28" rx="6" fill="#2d6a4f"/><text x="79" y="33">ผู้ใช้/เบราว์เซอร์</text>
+        <rect x="204" y="14" width="140" height="28" rx="6" fill="#1b4332"/><text x="274" y="33">Next.js /auth/*</text>
+        <rect x="404" y="14" width="130" height="28" rx="6" fill="#2d6a4f"/><text x="469" y="33">Supabase Auth</text>
+        <rect x="594" y="14" width="152" height="28" rx="6" fill="#5d7066"/><text x="670" y="33">Gmail SMTP → กล่องจดหมาย</text>
+      </g>
+      <g stroke="#b7e4c7" stroke-dasharray="4 3"><path d="M79 42V380"/><path d="M274 42V380"/><path d="M469 42V380"/><path d="M670 42V380"/></g>
+      <g font-size="10" fill="#24352c" stroke="none">
+        <path d="M79 70H274" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)"/><text x="86" y="64">1 POST /auth/signup {email, password}</text>
+        <path d="M274 96H469" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)"/><text x="282" y="90">2 signUp (metadata: profile_setup_pending)</text>
+        <path d="M469 122H670" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)"/><text x="478" y="116">3 ส่งอีเมลยืนยัน (ลิงก์ TokenHash)</text>
+        <path d="M469 148H274" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)" stroke-dasharray="3 2"/><text x="282" y="142">4 ตอบสำเร็จ (ไม่เผยว่าอีเมลซ้ำหรือไม่)</text>
+        <path d="M274 174H79" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)" stroke-dasharray="3 2"/><text x="90" y="168">5 JSON ok → ผู้ใช้รอเปิดอีเมล</text>
+        <path d="M670 214H79" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)"/><text x="130" y="208">6 ผู้ใช้เปิดอีเมล กดปุ่ม (เบราว์เซอร์ใดก็ได้)</text>
+        <path d="M79 240H274" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)"/><text x="86" y="234">7 GET /auth/confirm?token_hash&amp;type=email</text>
+        <path d="M274 266H469" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)"/><text x="282" y="260">8 verifyOtp → session (cookie)</text>
+        <path d="M274 292H79" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)"/><text x="90" y="286">9 สร้างแถว profiles · redirect /profile/edit?setup=1</text>
+        <path d="M79 326H274" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)"/><text x="86" y="320">10 บันทึกชื่อ/username (RPC) → complete-profile-setup</text>
+        <path d="M274 352H79" stroke="#1b4332" stroke-width="1.4" marker-end="url(#s)" stroke-dasharray="3 2"/><text x="90" y="346">11 ล้างธง pending → เข้าหน้า /search</text>
+      </g>
+    </svg>
+    <figcaption>รูปที่ 4 ลำดับการสมัครและยืนยันอีเมล</figcaption>
+  </figure>
+  <p><b>กรณีพิเศษ:</b> (1) สมัครด้วยอีเมลที่มีบัญชีแล้ว Supabase ตอบสำเร็จแต่ <b>ไม่ส่งอีเมล</b> (กันการเดาอีเมล) ผู้ใช้ควรไปหน้าเข้าสู่ระบบ (2) กดส่งซ้ำเร็วกว่า 60 วินาที หรือเกินโควต้าอีเมลต่อชั่วโมง จะได้ข้อความ “ทำรายการบ่อยเกินไป” (3) อีเมลองค์กร/มหาวิทยาลัยอาจกัก/ทิ้งอีเมลเงียบ ๆ (ส่งออกแล้วแต่ไม่ถึง) (4) ปุ่มส่งซ้ำมีตัวนับถอยหลัง 60 วินาที</p>
+
+  <h3>สถานการณ์ B: ค้นหาอุทยานแล้วประทับตรา</h3>
+  <figure>
+    <svg viewBox="0 0 760 360" role="img" aria-label="ลำดับการประทับตรา">
+      <defs><marker id="t" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1b4332"/></marker></defs>
+      <g font-size="11" font-weight="600" text-anchor="middle" fill="#fff">
+        <rect x="14" y="14" width="140" height="28" rx="6" fill="#2d6a4f"/><text x="84" y="33">เบราว์เซอร์</text>
+        <rect x="214" y="14" width="130" height="28" rx="6" fill="#1b4332"/><text x="279" y="33">Next.js (Vercel)</text>
+        <rect x="404" y="14" width="150" height="28" rx="6" fill="#2d6a4f"/><text x="479" y="33">Supabase Postgres</text>
+        <rect x="614" y="14" width="132" height="28" rx="6" fill="#5d7066"/><text x="680" y="33">Supabase Storage</text>
+      </g>
+      <g stroke="#b7e4c7" stroke-dasharray="4 3"><path d="M84 42V350"/><path d="M279 42V350"/><path d="M479 42V350"/><path d="M680 42V350"/></g>
+      <g font-size="10" fill="#24352c">
+        <path d="M84 68H279" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)"/><text x="92" y="62">1 GET /search (พิมพ์ค้นหา/กรอง = เปลี่ยน URL ฝั่งเบราว์เซอร์)</text>
+        <path d="M279 94H479" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)"/><text x="288" y="88">2 SELECT places (catalog 156 แถว)</text>
+        <path d="M279 120H84" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)" stroke-dasharray="3 2"/><text x="96" y="114">3 HTML + การ์ด (รูป /images/parks/640/…)</text>
+        <path d="M84 156H279" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)"/><text x="92" y="150">4 กด Stamp → GET /records/new?placeId=…&amp;returnTo=search</text>
+        <path d="M279 182H84" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)" stroke-dasharray="3 2"/><text x="96" y="176">5 ตรวจล็อกอิน (ไม่ล็อกอิน → /login?next=…) แล้วส่งฟอร์ม</text>
+        <path d="M84 218H680" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)"/><text x="260" y="212">6 อัปโหลดรูป (ลบ EXIF แล้ว) → travel-photos/&lt;uid&gt;/…</text>
+        <path d="M84 246H479" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)"/><text x="196" y="240">7 RPC save_travel_record(record, photos)</text>
+        <path d="M479 270H680" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)"/><text x="492" y="264">8 ตรวจว่ามีไฟล์ ขนาด/ชนิดตรง</text>
+        <path d="M479 296H84" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)" stroke-dasharray="3 2"/><text x="170" y="290">9 insert records + photos สำเร็จ (ธุรกรรมเดียว)</text>
+        <path d="M84 326H279" stroke="#1b4332" stroke-width="1.4" marker-end="url(#t)"/><text x="92" y="320">10 refresh /api/account → ไปหน้า /passport (เห็นตราและรูปใหม่)</text>
+      </g>
+    </svg>
+    <figcaption>รูปที่ 5 ลำดับการค้นหาและประทับตรา</figcaption>
+  </figure>
+
+  <h3>สถานการณ์ C: ดูรูปและแผนที่ที่เคยไป</h3>
+  <ul>
+    <li><b>หน้ารายละเอียดจาก Search:</b> ถ้ายังไม่มีรูปของตัวเอง เห็นรูปอุทยานพร้อมเครดิต (ข้อความธรรมดา); เมื่อมีรูปของตัวเอง รูปของผู้ใช้จะแทนที่ (รูปส่วนตัวผ่าน <span class="mono">/api/photos</span>)</li>
+    <li><b>หน้ารายละเอียดจาก Passport/Profile:</b> โหมดอ่านอย่างเดียว ไม่มีปุ่ม Stamp การ์ดข้อมูลกว้างเต็มคอลัมน์</li>
+    <li><b>แผนที่:</b> แสดงหมุดเฉพาะสถานที่ที่เคยไปและมีพิกัด; เลือกหมุดแล้วขึ้นการ์ดข้อมูล (ไม่นำทางไปไหน) กระเบื้องมาจาก Stadia โดยตรง</li>
+  </ul>
+
+  <h3>สถานการณ์ D: ลืมรหัสผ่าน</h3>
+  <p>กรอกอีเมลที่ <span class="mono">/forgot-password</span> → Supabase ส่งลิงก์ (<code>type=recovery</code>) → <span class="mono">/auth/confirm</span> แลก session แล้วพาไป <span class="mono">/reset-password</span> เสมอ → ตั้งรหัสใหม่ → ระบบออกจากระบบและพาไปหน้า Login ให้เข้าด้วยรหัสใหม่ (บัญชีที่ยังไม่ยืนยันอีเมลไม่สามารถกู้รหัสได้)</p>
+
+  <h3>สถานการณ์ E: ผู้ใช้ออกจากระบบ/ลบบัญชี</h3>
+  <p>ออกจากระบบ: ยกเลิก session ปัจจุบัน (<code>scope: local</code>) ล้าง cookie และแคชรูป แจ้งแท็บอื่น (ไม่ออกจากอุปกรณ์อื่น) · ลบบัญชี: endpoint <span class="mono">/auth/delete-account</span> ตรวจรหัสผ่านซ้ำ → ลบแถวรูปและไฟล์ใน Storage → <code>delete_my_account()</code> ลบผู้ใช้ (ข้อมูลที่เกี่ยวข้องหายตาม cascade) <b>ปัจจุบันยังไม่มีปุ่มใน UI ที่เรียก endpoint นี้</b> (ถูกเอาออกตามคำขอ)</p>
+</section>
+
+<!-- ============ 10 SECURITY ============ -->
+<section>
+  <h2>10. ความปลอดภัยและความเป็นส่วนตัว</h2>
+  <table>
+    <tr><th style="width:28%">ด้าน</th><th>มาตรการในระบบ</th></tr>
+    <tr><td>การยืนยันตัวตน</td><td>Supabase Auth; proxy รีเฟรชด้วย <code>getClaims</code> (ตรวจ JWT ในเครื่อง) ส่วนก่อน render ข้อมูลส่วนตัวใช้ <code>getUser</code> ยืนยันกับเซิร์ฟเวอร์ Auth; cookie SameSite=Lax</td></tr>
+    <tr><td>การควบคุมสิทธิ์</td><td>RLS แบบ “เจ้าของเท่านั้น” ทุกตารางส่วนตัวและ bucket ส่วนตัว; catalog ให้ SELECT อย่างเดียวแก่ anon/authenticated ไม่มีสิทธิ์เขียน/ลบ/truncate; การนำเข้าใช้สิทธิ์ผู้ดูแลนอกโค้ดไคลเอนต์</td></tr>
+    <tr><td>ข้อมูลใน request</td><td>รับเฉพาะคำขอ JSON same-origin ที่ <code>/auth/*</code>; รายการปลายทาง redirect (<code>next</code>) ผ่านรายการที่อนุญาตเท่านั้น (กัน open redirect)</td></tr>
+    <tr><td>ความเป็นส่วนตัวของรูป</td><td>ลบ EXIF/XMP/GPS ในเบราว์เซอร์ก่อนอัปโหลด; รูปส่วนตัวไม่เป็นสาธารณะ ส่งผ่านเซิร์ฟเวอร์ที่ตรวจสิทธิ์; แคชเฉพาะเบราว์เซอร์เจ้าของและล้างด้วย <code>Clear-Site-Data</code> เมื่อ login/logout; ไม่ใช้ตัวปรับรูปของ Next (ไม่ให้ไบต์ส่วนตัวเข้าแคชร่วม)</td></tr>
+    <tr><td>Header ความปลอดภัย</td><td>CSP จำกัดแหล่งที่มา, X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy (ปิดกล้อง ไมค์ ตำแหน่ง การชำระเงิน)</td></tr>
+    <tr><td>ความลับ</td><td>App Password ของ Gmail อยู่ใน Supabase เท่านั้น; คีย์ผู้ดูแลไม่อยู่ใน git/แอป; CI สแกนความลับ</td></tr>
+    <tr><td>ห่วงโซ่อุปทาน</td><td>CI ตรวจช่องโหว่ dependency ระดับ high ขึ้นไป (production)</td></tr>
+  </table>
+  <div class="box warn"><b>ข้อจำกัดที่เอกสารของโปรเจคยอมรับไว้:</b> ไม่มี rate limit ฝั่งแอปสำหรับ login (พึ่ง Supabase) · CSP ยังต้องใช้ <code>'unsafe-inline'</code> สำหรับสคริปต์ (ข้อมูล hydration ของ Next) · เมื่อตรวจ CSP แล้ว flow ที่ล็อกอิน (อัปโหลด แก้โปรไฟล์) ยังไม่ได้ตรวจใต้ CSP ควรรัน production journey หลัง deploy</div>
+</section>
+
+<!-- ============ 11 KNOW ============ -->
+<section>
+  <h2>11. สิ่งที่ควรรู้ ข้อจำกัด และความเสี่ยง</h2>
+  <h3>11.1 เรื่องที่ทำให้ทำงานผิดพลาดได้ง่าย</h3>
+  <ul>
+    <li><b>Next.js 16 ต่างจากที่เคยรู้จัก</b> อ่านคู่มือใน <code>node_modules/next/dist/docs/</code> ก่อนเขียนโค้ด (ใช้ <code>proxy.ts</code>, build ด้วย Webpack)</li>
+    <li><b>Node 22+</b> สำหรับเทสต์ ถ้าใช้ Node 20 ที่เป็นค่าเริ่มต้นบางเครื่อง เทสต์ 5 ข้อล้มด้วย “native WebSocket not found” (ไม่ใช่บั๊กโค้ด) CI เองยังตั้ง Node 20 และมีคำเตือน deprecated</li>
+    <li><b>dev server ใช้ฐานข้อมูลจริง</b> <code>.env.local</code> ชี้ไป Supabase production ไม่มีฐานข้อมูล staging ดังนั้นการทดสอบฝั่งเขียนในเครื่องเขียนข้อมูลจริง (ใช้บัญชี QA ที่แยกไว้)</li>
+    <li><b>ลำดับ deploy</b> migration ก่อน แล้วค่อยโค้ดที่อ่านคอลัมน์ใหม่ (บทที่ 8.3)</li>
+    <li><b>เทมเพลตอีเมลต้องวางเองใน dashboard</b> การ push โค้ดไม่เปลี่ยนค่าบน Supabase</li>
+    <li><b>ห้ามนำข้อมูลตัวอย่างกลับมา</b> ไม่ใส่บันทึกหรือรูปตัวอย่างของผู้ใช้; ห้ามใช้ URL รูป Stitch (<code>lh3.googleusercontent.com/aida-public/…</code>) เป็นแหล่งรูปจริง</li>
+    <li><b>alt text ของรูป</b> กรอกได้ในฟอร์มแต่ไม่ถูกบันทึก (ต้องตัดสินใจเรื่องโมเดลข้อมูลก่อนแก้)</li>
+  </ul>
+  <h3>11.2 บริการภายนอกและข้อจำกัดของแผนที่ใช้อยู่</h3>
+  <table>
+    <tr><th style="width:24%">เรื่อง</th><th>สถานะ/ความเสี่ยง</th></tr>
+    <tr><td><b>Stadia Maps</b></td><td>ช่วงทดลอง Professional 14 วันจะหมดราว 5 พ.ย. 2569 แล้วย้ายไปแผน <b>Free</b> (200,000 เครดิต/เดือน, <b>ห้ามใช้เชิงพาณิชย์</b>) โปรเจคส่วนตัวไม่มีรายได้จึงใช้ได้ แต่ถ้าเกินโควต้าแผนที่อาจโหลดไม่ได้ และถ้าแอปกลายเป็นเชิงพาณิชย์ต้องเปลี่ยนแผนหรือผู้ให้บริการ ควรเปิดหน้าแผนที่บนเว็บจริงหลังวันที่หมดทดลองเพื่อยืนยัน</td></tr>
+    <tr><td><b>การส่งอีเมล</b></td><td>ใช้ Gmail SMTP ของบัญชีผู้ส่งธรรมดา: โอกาสเข้าสแปม/ถูกกรอง (โดยเฉพาะอีเมลสถาบัน เช่น <span class="mono">@go.buu.ac.th</span>) ค่า rate limit อีเมล 30 ฉบับ/ชม. ทั้งโปรเจค และเว้น 60 วินาทีต่อผู้ใช้ (ตามที่ผู้ดูแลแจ้ง) และข้อจำกัดอีเมล Gmail ต่อวัน — ทางแก้ระยะยาวคือใช้โดเมนของตัวเองกับผู้ให้บริการอีเมลธุรกรรม พร้อม SPF/DKIM/DMARC</td></tr>
+    <tr><td><b>รูปอุทยานจาก Commons</b></td><td>แสดงเครดิตเป็นข้อความธรรมดา (ผู้ถ่าย · สัญญา) ซึ่งครบข้อบังคับหลักของ CC BY/BY-SA แต่ CC BY 4.0 ยังขอลิงก์ไปยังสัญญา “เมื่อทำได้สมควร” ลิงก์ต้นทางและสัญญายังเก็บใน DB พร้อมทำหน้ารวมเครดิตได้ · 33 อุทยานยังไม่มีรูป (แสดงกรอบ topo)</td></tr>
+    <tr><td><b>แผน Supabase Free</b></td><td>ควรตรวจนโยบายสำรองข้อมูลและโควต้า (ฐานข้อมูล/Storage/แบนด์วิธ) ของแผนที่ใช้อยู่ ว่ารองรับการเติบโตและการกู้คืนที่ต้องการหรือไม่ (รายงานนี้ไม่ได้ตรวจค่าตั้งของแผน)</td></tr>
+  </table>
+  <h3>11.3 ประสิทธิภาพ</h3>
+  <ul>
+    <li>หน้า Search ฝัง catalog 156 แห่งมาในหน้าเดียวแล้วกรองในเบราว์เซอร์ จึงตอบสนองเร็วหลังโหลดแล้ว แต่การโหลดแรกใหญ่ขึ้นเมื่อ catalog โตขึ้นหรือมีรูปมาก</li>
+    <li>หน้าโหลด “นักเดินป่า” รอรูปบนหน้าจอให้โหลดเสร็จ (สูงสุด 10 วินาที) บน dev server เห็นหน้า Search ครั้งแรกช้า 10–15 วินาที ซึ่งยังไม่ได้วัดบน production</li>
+    <li>รูปอุทยาน 123 รูปหนักราว 34 MB ใน git (ประวัติไบนารีสะสม) ควรระวังการเปลี่ยนรูปบ่อย ๆ</li>
+  </ul>
+</section>
+
+<!-- ============ 12 RECS ============ -->
+<section class="pb">
+  <h2>12. คำแนะนำและสิ่งที่ควรทำต่อ</h2>
+  <h3>12.1 ลำดับความสำคัญสูง (ก่อนเปิดให้คนทั่วไปใช้)</h3>
+  <table>
+    <tr><th style="width:4%">#</th><th style="width:31%">เรื่อง</th><th>เหตุผล / ขั้นตอนโดยสรุป</th></tr>
+    <tr><td>1</td><td>ย้ายการส่งอีเมลไปโดเมนของตัวเอง</td><td>แก้ปัญหาอีเมลเข้าสแปม/ถูกอีเมลสถาบันกรอง ใช้ผู้ให้บริการอีเมลธุรกรรม + SPF/DKIM/DMARC แล้วใส่ใน Custom SMTP ของ Supabase</td></tr>
+    <tr><td>2</td><td>ยืนยันแผนที่หลังช่วงทดลอง Stadia</td><td>ตรวจหลัง 5 พ.ย.; ตั้งแจ้งเตือนการใช้งาน; เตรียมแผนสำรองถ้าเกินโควต้าหรือเปลี่ยนเป็นเชิงพาณิชย์</td></tr>
+    <tr><td>3</td><td>ปรับ rate limit อีเมลและเพิ่มข้อความช่วยผู้ใช้</td><td>เพิ่มโควต้าต่อชั่วโมงให้เหมาะกับจำนวนผู้ใช้; แจ้งในหน้าสมัครให้ตรวจโฟลเดอร์สแปม; แจ้ง “อีเมลนี้มีบัญชีแล้ว” อย่างระมัดระวังเรื่องความเป็นส่วนตัว (ต้องตัดสินใจเชิงนโยบาย)</td></tr>
+    <tr><td>4</td><td>ตรวจ flow ที่ล็อกอินใต้ CSP แล้วรัน production journey</td><td>เอกสารความปลอดภัยระบุว่ายังไม่ได้ตรวจการอัปโหลดรูปและแก้โปรไฟล์ภายใต้ CSP</td></tr>
+    <tr><td>5</td><td>ตั้ง CI และเครื่องพัฒนาให้ใช้ Node 22</td><td>ตัดคำเตือน Node 20 deprecated; ใส่ <code>.nvmrc</code>; เทสต์ในเครื่องจะผ่านครบ</td></tr>
+    <tr><td>6</td><td>ตั้งการแจ้งเตือนค่าใช้จ่าย/การใช้งาน</td><td>Vercel และ Supabase ตามที่เอกสารความปลอดภัยแนะนำไว้</td></tr>
+  </table>
+  <h3>12.2 ระยะกลาง</h3>
+  <ul>
+    <li><b>แยกฐานข้อมูล staging</b> หรือ Supabase branch เพื่อไม่ให้ dev server เขียนข้อมูล production</li>
+    <li><b>หน้า “เครดิตรูปภาพ”</b> รวมทั้ง 123 รูปพร้อมลิงก์ต้นทาง/สัญญา เพื่อให้ครบตามเงื่อนไข CC BY โดยไม่ทำให้การ์ดรก</li>
+    <li><b>หารูปให้ 33 อุทยานที่ยังไม่มี</b> (ถ่ายเอง ขออนุญาตกรมอุทยานฯ หรือค้นเพิ่มจาก Commons ด้วยคำค้นอื่น) และตัดสินใจนโยบายรูปสถานที่ถาวร</li>
+    <li><b>บันทึก alt text ของรูป</b> (เพิ่มคอลัมน์ใน <code>photos</code> และ RPC) เพื่อความเข้าถึงได้</li>
+    <li><b>วัดประสิทธิภาพบน production build</b> (หน้า Search ครั้งแรก, ขนาดหน้า) แล้วพิจารณาแบ่งหน้า/โหลดรูปตามหน้าจอ</li>
+    <li><b>Nonce สำหรับ CSP</b> เพื่อเลิกใช้ <code>'unsafe-inline'</code> (ต้องเทียบกับต้นทุนที่ทุกหน้าต้อง render ตามคำขอ)</li>
+    <li><b>วางแผนสำรองข้อมูล</b> ตรวจ/ซ้อมกู้คืนข้อมูลผู้ใช้ให้เหมาะกับแผน Supabase ที่ใช้</li>
+  </ul>
+  <h3>12.3 ฟีเจอร์ที่เลื่อนไว้ (ต้องได้รับอนุมัติก่อน)</h3>
+  <p>Google login · หน้าสะสม badge · (นอกขอบเขต MVP: social, รีวิวสาธารณะ ฯลฯ) — ก่อนทำฟีเจอร์ใหม่ ให้ตรวจเป้าหมายผู้ใช้ เส้นทาง คอมโพเนนต์ data flow การแสดงผลบนมือถือ และการเข้าถึง และถามเมื่อเรื่องผลิตภัณฑ์/ดีไซน์/ข้อมูลยังไม่ชัดเจน</p>
+  <h3>12.4 ข้อแนะนำการทำงานกับโค้ดนี้</h3>
+  <ul>
+    <li>ใช้ <code>AGENTS.md</code> เป็นแหล่งความจริงของพฤติกรรมที่ยอมรับแล้ว และอัปเดตพร้อมโค้ดเสมอ</li>
+    <li>แยก commit ตามประเภท และให้แต่ละ commit รัน <code>tsc</code>/<code>lint</code> ผ่าน (กันการแดงชั่วคราวใน CI)</li>
+    <li>เก็บการเขียนข้อมูลไว้ใน services/hooks ไม่ใส่ในคอมโพเนนต์แสดงผล และตรวจ loading/empty/error/focus/disabled ทุกครั้งที่แก้การโต้ตอบ</li>
+    <li>ห้ามเปลี่ยนแอปให้กลายเป็นตัววางแผน/จอง/โซเชียลโดยไม่ได้รับการอนุมัติ</li>
+  </ul>
+</section>
+
+<!-- ============ 13 APPENDIX ============ -->
+<section>
+  <h2>13. ภาคผนวก</h2>
+  <h3>13.1 คำสั่งที่ใช้บ่อย</h3>
+  <table>
+    <tr><th style="width:42%">คำสั่ง</th><th>ใช้ทำอะไร</th></tr>
+    <tr><td><code>pnpm dev</code></td><td>รัน dev server (ถ้ายังไม่มีตัวที่รันอยู่)</td></tr>
+    <tr><td><code>pnpm exec tsc --noEmit</code> · <code>pnpm lint</code></td><td>ตรวจชนิดข้อมูล / กฎโค้ด (ไม่มีสคริปต์ <code>type-check</code>)</td></tr>
+    <tr><td><code>pnpm test</code></td><td>unit + migration/seed/RLS บน PGlite (ใช้ Node 22+)</td></tr>
+    <tr><td><code>pnpm test:e2e</code></td><td>Playwright e2e (ต้องมีไฟล์บัญชี QA ในเครื่อง)</td></tr>
+    <tr><td><code>pnpm build</code></td><td>build production (Webpack)</td></tr>
+    <tr><td><code>pnpm import:places</code> · <code>pnpm import:places:check</code></td><td>สร้าง/ตรวจ <code>supabase/seed.sql</code> จาก CSV</td></tr>
+    <tr><td><code>pnpm db:seed:places</code></td><td>รัน seed กับโปรเจค Supabase ที่ลิงก์ไว้</td></tr>
+    <tr><td><code>pnpm exec supabase db push --linked --dry-run</code></td><td>ดูรายการ migration ที่จะถูก apply (แล้วค่อยรันไม่มี <code>--dry-run</code>)</td></tr>
+    <tr><td><code>pnpm audit --prod --audit-level=high</code></td><td>ตรวจช่องโหว่ dependency แบบเดียวกับ CI</td></tr>
+  </table>
+  <h3>13.2 ตัวแปรสภาพแวดล้อมสำคัญ</h3>
+  <table>
+    <tr><th style="width:42%">ตัวแปร</th><th>ความหมาย</th></tr>
+    <tr><td><code>NEXT_PUBLIC_SUPABASE_URL</code></td><td>URL ของโปรเจค Supabase (สาธารณะ)</td></tr>
+    <tr><td><code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code></td><td>คีย์สาธารณะ (สิทธิ์ตามนโยบาย RLS)</td></tr>
+    <tr><td><code>NEXT_PUBLIC_STADIA_MAPS_API_KEY</code> (ไม่บังคับ)</td><td>ใช้เมื่อ deploy บนโดเมนที่ยังไม่ได้ยืนยันกับ Stadia</td></tr>
+  </table>
+  <p>คีย์ผู้ดูแล (service role) ไม่อยู่ในไฟล์ใด ๆ ของแอป สคริปต์ที่ต้องใช้จะอ่านจาก Supabase CLI ที่ล็อกอินไว้ในหน่วยความจำเท่านั้น</p>
+  <h3>13.3 เอกสารอ้างอิงใน repo</h3>
+  <table>
+    <tr><th style="width:42%">ไฟล์</th><th>เนื้อหา</th></tr>
+    <tr><td><code>AGENTS.md</code></td><td>พฤติกรรมและข้อตกลงที่ยอมรับแล้วทั้งหมด</td></tr>
+    <tr><td><code>docs/places-backend.md</code></td><td>catalog ใน Supabase, การนำเข้า, ลำดับ apply</td></tr>
+    <tr><td><code>docs/private-data-backend.md</code></td><td>ตารางส่วนตัว ธุรกรรม Storage การ cleanup</td></tr>
+    <tr><td><code>docs/supabase-setup.md</code></td><td>Auth, อีเมล, redirect, บัญชี QA</td></tr>
+    <tr><td><code>docs/security.md</code></td><td>ผลรีวิวความปลอดภัยและข้อยอมรับ</td></tr>
+    <tr><td><code>docs/testing.md</code></td><td>วิธีและผลการทดสอบ production acceptance</td></tr>
+    <tr><td><code>data/README.md</code></td><td>catalog และขั้นตอนรูปอุทยาน</td></tr>
+  </table>
+  <p style="margin-top:6mm;font-size:8.5pt;color:var(--mute)">รายงานนี้จัดทำจากการอ่านโค้ดและเอกสารใน repository และข้อมูลที่ผู้ดูแลโปรเจคแจ้งระหว่างการทำงาน ณ 30 ต.ค. 2569 ค่าตั้งภายนอก (Supabase dashboard, Stadia, Vercel) อาจเปลี่ยนแปลงได้โดยไม่สะท้อนในโค้ด</p>
+</section>
+
+</body>
+</html>
